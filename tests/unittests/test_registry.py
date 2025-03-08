@@ -1,8 +1,9 @@
-from tursu.registry import Command, CommandRegitry
+from tursu.registry import StepRegitry
+from tursu.steps import Step
 
 
 def test_registry():
-    registry = CommandRegitry()
+    registry = StepRegitry()
     registry.scan("unittests.fixtures")
 
     from unittests.fixtures.steps import (
@@ -13,12 +14,12 @@ def test_registry():
     )
 
     assert registry._handlers == {
-        "given": [Command("a user {username}", give_user)],
-        "then": [
-            Command("the mailbox {email} contains {subject}", assert_mailbox_contains),
-            Command("I see a mailbox {email} for {username}", assert_user_has_mailbox),
-        ],
+        "given": [Step("a user {username}", give_user)],
         "when": [
-            Command("I create a mailbox {email}", create_mailbox),
+            Step("{username} create a mailbox {email}", create_mailbox),
+        ],
+        "then": [
+            Step("the mailbox {email} contains {subject}", assert_mailbox_contains),
+            Step("I see a mailbox {email} for {username}", assert_user_has_mailbox),
         ],
     }

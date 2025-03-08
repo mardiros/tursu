@@ -254,6 +254,7 @@ name = "tursu"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "pytest" },
     { name = "venusian" },
 ]
 
@@ -265,7 +266,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "venusian", specifier = ">=3.1.1,<4" }]
+requires-dist = [
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "venusian", specifier = ">=3.1.1,<4" },
+]
 
 [package.metadata.requires-dev]
 dev = [

@@ -1,3 +1,3 @@
-from .registry import given, when, then
+from .registry import given, then, when
 
 __all__ = ["given", "when", "then"]

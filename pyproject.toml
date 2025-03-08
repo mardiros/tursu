@@ -13,7 +13,10 @@ classifiers = [
 ]
 version = "0.1.0"
 requires-python = ">=3.9"
-dependencies = ["venusian>=3.1.1,<4"]
+dependencies = [
+    "pytest>=8.3.5",
+    "venusian>=3.1.1,<4",
+]
 
 [project.urls]
 Homepage = "https://mardiros.github.io/tursu"

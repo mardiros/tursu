@@ -2,7 +2,8 @@ import importlib
 from typing import Callable, Literal
 
 import venusian
-from typing_extensions import Any
+
+from .steps import Step
 
 VENUSIAN_CATEGORY = "tursu"
 
@@ -44,31 +45,18 @@ def then(pattern: str) -> Callable[[Handler], Handler]:
     return _step("then", pattern)
 
 
-class Command:
-    def __init__(self, pattern: str, hook: Handler):
-        self.pattern = pattern
-        self.hook = hook
-
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Command):
-            return False
-        return self.pattern == other.pattern and self.hook == other.hook
-
-    def __repr__(self):
-        return f'Command("{self.pattern}", {self.hook.__qualname__})'
-
-class CommandRegitry:
+class StepRegitry:
     """Store all the handlers for gherkin action."""
 
     def __init__(self) -> None:
-        self._handlers: dict[Keyword, list[Command]] = {
+        self._handlers: dict[Keyword, list[Step]] = {
             "given": [],
             "when": [],
             "then": [],
         }
 
     def register_handler(self, type: Keyword, pattern: str, handler: Handler) -> None:
-        self._handlers[type].append(Command(pattern, handler))
+        self._handlers[type].append(Step(pattern, handler))
 
     def scan(
         self,
