@@ -43,7 +43,7 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                 case type() if val.annotation is int:
                     re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>\d+)")
                 case _:
-                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>\w+)")
+                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>.+)")
         self.re_pattern = re.compile(re_pattern)
 
     def get_matches(self, text: str) -> Mapping[str, Any] | None:

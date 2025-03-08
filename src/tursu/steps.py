@@ -30,3 +30,6 @@ class Step:
 
     def __repr__(self) -> str:
         return f"Step({self.pattern}, {self.hook.__qualname__})"
+
+    def __call__(self, **kwargs: Any) -> None:
+        self.hook(**kwargs)

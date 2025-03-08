@@ -1,14 +1,12 @@
 import importlib
-from typing import Callable, Literal
+from typing import Callable
 
 import venusian
 
-from .steps import Step
+from .exceptions import Unregistered
+from .steps import Handler, Keyword, Step
 
 VENUSIAN_CATEGORY = "tursu"
-
-Keyword = Literal["given", "when", "then"]
-Handler = Callable[..., None]
 
 
 def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
@@ -57,6 +55,16 @@ class StepRegitry:
 
     def register_handler(self, type: Keyword, pattern: str, handler: Handler) -> None:
         self._handlers[type].append(Step(pattern, handler))
+
+    def run_step(self, step: Keyword, text: str) -> None:
+        handlers = self._handlers[step]
+        for handler in handlers:
+            matches = handler.pattern.get_matches(text)
+            if matches is not None:
+                handler(**matches)
+                break
+        else:
+            raise Unregistered(f"{step.capitalize()} {text}")
 
     def scan(
         self,

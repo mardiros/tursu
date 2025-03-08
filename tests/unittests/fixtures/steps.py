@@ -15,6 +15,9 @@ class DummyApp:
         assert username in self.mailboxes
         self.mailboxes[username][mailbox] = [f"Welcome {username}"]
 
+    def clear(self):
+        self.mailboxes.clear()
+
 
 app = DummyApp()
 

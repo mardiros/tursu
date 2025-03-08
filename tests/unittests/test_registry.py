@@ -1,8 +1,13 @@
-from tursu.registry import StepRegitry
+from collections.abc import Iterator
+
+import pytest
+
+from tursu.registry import StepRegitry, Unregistered
 from tursu.steps import Step
+from unittests.fixtures.steps import DummyApp
 
 
-def test_registry():
+def test_registry_handler():
     registry = StepRegitry()
     registry.scan("unittests.fixtures")
 
@@ -23,3 +28,33 @@ def test_registry():
             Step("I see a mailbox {email} for {username}", assert_user_has_mailbox),
         ],
     }
+
+
+@pytest.fixture()
+def dummy_app() -> Iterator[DummyApp]:
+    from unittests.fixtures.steps import app
+
+    yield app
+    app.clear()
+
+
+def test_registry_step(dummy_app: DummyApp):
+    registry = StepRegitry()
+    registry.scan("unittests.fixtures")
+
+    registry.run_step("given", "a user Bob")
+    registry.run_step("when", "Bob create a mailbox bob@alice.net")
+    registry.run_step("then", "I see a mailbox bob@alice.net for Bob")
+
+    assert dummy_app.mailboxes == {
+        "Bob": {
+            "bob@alice.net": [
+                "Welcome Bob",
+            ],
+        },
+    }
+
+    with pytest.raises(Unregistered) as ctx:
+        registry.run_step("when", "I see a mailbox bob@alice.net for Bob")
+
+    assert str(ctx.value) == 'When I see a mailbox bob@alice.net for Bob'
