@@ -10,12 +10,12 @@ Keyword = Literal["given", "when", "then"]
 Handler = Callable[..., None]
 
 
-def _step(name: str, pattern: str) -> Callable[[Handler], Handler]:
+def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
     def wrapper(wrapped: Handler) -> Handler:
         def callback(scanner: venusian.Scanner, name: str, ob: Handler) -> None:
             if not hasattr(scanner, "registry"):
                 return  # coverage: ignore
-            scanner.registry.register_handler("given", pattern, wrapped)  # type: ignore
+            scanner.registry.register_handler(step_name, step_pattern, wrapped)  # type: ignore
 
         venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)  # type: ignore
         return wrapped
@@ -30,6 +30,20 @@ def given(pattern: str) -> Callable[[Handler], Handler]:
     return _step("given", pattern)
 
 
+def when(pattern: str) -> Callable[[Handler], Handler]:
+    """
+    Decorator to listen for the when gherkin keyword.
+    """
+    return _step("when", pattern)
+
+
+def then(pattern: str) -> Callable[[Handler], Handler]:
+    """
+    Decorator to listen for the then gherkin keyword.
+    """
+    return _step("then", pattern)
+
+
 class Command:
     def __init__(self, pattern: str, hook: Handler):
         self.pattern = pattern
@@ -40,6 +54,8 @@ class Command:
             return False
         return self.pattern == other.pattern and self.hook == other.hook
 
+    def __repr__(self):
+        return f'Command("{self.pattern}", {self.hook.__qualname__})'
 
 class CommandRegitry:
     """Store all the handlers for gherkin action."""
