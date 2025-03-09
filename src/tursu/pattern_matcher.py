@@ -50,7 +50,9 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                 case _:
                     # if enclosed by double quote, use double quote as escaper
                     # not a gherkin spec.
-                    re_pattern = re_pattern.replace(f'"{{{key}}}"', rf'"(?P<{key}>[^"]+)"')
+                    re_pattern = re_pattern.replace(
+                        f'"{{{key}}}"', rf'"(?P<{key}>[^"]+)"'
+                    )
                     # otherwise, match one word
                     re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>[^\s]+)")
         self.re_pattern = re.compile(f"^{re_pattern}$")
