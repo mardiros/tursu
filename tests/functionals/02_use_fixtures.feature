@@ -1,4 +1,4 @@
-Feature: Discover Scenario
+Feature: Use pytest fixtures in step tags
 
   Scenario: I can find scenario based on tag
     Given a user Bob using a fixture
