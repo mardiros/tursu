@@ -15,8 +15,8 @@ enabling seamless integration with pytest for running your tests.
 - Supports **step definitions** in Python for easy test scenario implementation.
 - Allows integration with existing pytest setups.
 
-## Installation
+## Installation using uv
 
 ```
-pip install tursu
+uv add --group dev tursu
 ```
