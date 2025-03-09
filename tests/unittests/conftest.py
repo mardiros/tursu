@@ -17,9 +17,7 @@ def doc():
 
 @pytest.fixture(scope="session")
 def registry():
-    reg = StepRegistry()
-    reg.scan()
-    return reg
+    return StepRegistry().scan()
 
 
 @pytest.fixture()

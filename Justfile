@@ -11,6 +11,15 @@ update:
 upgrade:
     uv sync --group dev --upgrade
 
+doc:
+    uv sync --group dev --group docs
+    cd docs && uv run make html
+    xdg-open docs/build/html/index.html
+
+cleandoc:
+    rm -rf docs/build
+    rm -rf docs/source/develop
+
 lint:
     uv run ruff check .
 
@@ -41,18 +50,8 @@ fmt:
 
 
 release major_minor_patch: test && changelog
-    #! /bin/bash
-    # Try to bump the version first
-    if ! uvx pdm bump {{major_minor_patch}}; then
-        # If it fails, check if pdm-bump is installed
-        if ! uvx pdm self list | grep -q pdm-bump; then
-            # If not installed, add pdm-bump
-            uvx pdm self add pdm-bump
-        fi
-        # Attempt to bump the version again
-        uvx pdm bump {{major_minor_patch}}
-    fi
-    uv sync
+    uvx --with=pdm,pdm-bump --python-preference system pdm bump {{major_minor_patch}}
+    uv sync --frozen --group dev
 
 changelog:
     uv run python scripts/write_changelog.py
