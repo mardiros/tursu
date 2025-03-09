@@ -26,6 +26,9 @@ class AbstractPatternMatcher(abc.ABC):
         self, text: str, kwargs: Mapping[str, Any]
     ) -> Mapping[str, Any] | None: ...
 
+    @abc.abstractmethod
+    def extract_fixtures(self, text: str) -> Mapping[str, Any] | None: ...
+
 
 class AbstractPattern(abc.ABC):
     def __init__(self, pattern: str) -> None:
@@ -45,13 +48,17 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                 case type() if val.annotation is int:
                     re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>\d+)")
                 case _:
-                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>.+)")
-        self.re_pattern = re.compile(re_pattern)
+                    # if enclosed by double quote, use double quote as escaper
+                    # not a gherkin spec.
+                    re_pattern = re_pattern.replace(f'"{{{key}}}"', rf'"(?P<{key}>[^"]+)"')
+                    # otherwise, match one word
+                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>[^\s]+)")
+        self.re_pattern = re.compile(f"^{re_pattern}$")
 
     def get_matches(
         self, text: str, kwargs: Mapping[str, Any]
     ) -> Mapping[str, Any] | None:
-        matches = self.re_pattern.search(text)
+        matches = self.re_pattern.match(text)
         if matches:
             res = {}
             matchdict = matches.groupdict()
@@ -62,6 +69,21 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                     res[key] = kwargs[key]
                 elif val.default and val.default != val.empty:
                     res[key] = val.default
+            return res
+
+        return None
+
+    def extract_fixtures(self, text: str) -> Mapping[str, Any] | None:
+        matches = self.re_pattern.match(text)
+        if matches:
+            res = {}
+            matchdict = matches.groupdict()
+            for key, val in self.signature.parameters.items():
+                if key in matchdict:
+                    continue
+                if val.default != val.empty:
+                    continue
+                res[key] = val.annotation
             return res
 
         return None

@@ -38,7 +38,7 @@ def assert_user_has_mailbox(email: str, username: str):
     assert email in app.mailboxes[username]
 
 
-@then("the mailbox {email} contains {subject}")
+@then('the mailbox {email} contains "{subject}"')
 def assert_mailbox_contains(email: str, subject: str):
     for mailbox in app.mailboxes.values():
         if email in mailbox:

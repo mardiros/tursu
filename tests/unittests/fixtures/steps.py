@@ -15,32 +15,26 @@ class DummyApp:
         assert username in self.mailboxes
         self.mailboxes[username][mailbox] = [f"Welcome {username}"]
 
-    def clear(self):
-        self.mailboxes.clear()
-
-
-app = DummyApp()
-
 
 @given("a user {username}")
 def give_user(dummy_app: DummyApp, username: str):
-    app.create_user(username)
+    dummy_app.create_user(username)
 
 
 @when("{username} create a mailbox {email}")
-def create_mailbox(username: str, email: str):
-    app.add_mailbox(username, email)
+def create_mailbox(dummy_app: DummyApp, username: str, email: str):
+    dummy_app.add_mailbox(username, email)
 
 
 @then("I see a mailbox {email} for {username}")
-def assert_user_has_mailbox(email: str, username: str):
-    assert username in app.mailboxes
-    assert email in app.mailboxes[username]
+def assert_user_has_mailbox(dummy_app: DummyApp, email: str, username: str):
+    assert username in dummy_app.mailboxes
+    assert email in dummy_app.mailboxes[username]
 
 
-@then("the mailbox {email} contains {subject}")
-def assert_mailbox_contains(email: str, subject: str):
-    for mailbox in app.mailboxes.values():
+@then('the mailbox {email} contains "{subject}"')
+def assert_mailbox_contains(dummy_app: DummyApp, email: str, subject: str):
+    for mailbox in dummy_app.mailboxes.values():
         if email in mailbox:
             assert subject in mailbox[email]
             break

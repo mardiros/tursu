@@ -1,4 +1,5 @@
 import sys
+from collections.abc import Mapping
 from types import ModuleType
 from typing import Callable, Self
 
@@ -66,6 +67,18 @@ class StepRegistry:
             matches = handler.pattern.get_matches(text, kwargs)
             if matches is not None:
                 handler(**matches)
+                break
+        else:
+            raise Unregistered(f"{step.capitalize()} {text}")
+
+    def extract_fixtures(
+        self, step: StepKeyword, text: str, **kwargs: Any
+    ) -> Mapping[str, Any]:
+        handlers = self._handlers[step]
+        for handler in handlers:
+            fixtures = handler.pattern.extract_fixtures(text)
+            if fixtures is not None:
+                return fixtures
                 break
         else:
             raise Unregistered(f"{step.capitalize()} {text}")

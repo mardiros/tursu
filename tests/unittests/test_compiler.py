@@ -61,12 +61,12 @@ def test_compiler(
     """Discover Scenario"""
     from tursu import StepRegistry
 
-    def test_5_I_can_find_scenario_based_on_tag(registry: StepRegistry):
+    def test_5_I_can_find_scenario_based_on_tag(registry: StepRegistry, dummy_app):
         """I can find scenario based on tag"""
-        registry.run_step('given', 'a user Bob')
-        registry.run_step('when', 'Bob create a mailbox bob@alice.net')
-        registry.run_step('then', 'I see a mailbox bob@alice.net for Bob')
-        registry.run_step('then', 'the mailbox bob@alice.net contains Welcome Bob')
+        registry.run_step('given', 'a user Bob', dummy_app=dummy_app)
+        registry.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+        registry.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
+        registry.run_step('then', 'the mailbox bob@alice.net contains "Welcome Bob"', dummy_app=dummy_app)
             '''
         ).strip()
     )

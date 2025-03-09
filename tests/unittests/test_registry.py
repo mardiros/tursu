@@ -19,7 +19,7 @@ def test_registry_handler(registry: StepRegistry):
             Step("{username} create a mailbox {email}", create_mailbox),
         ],
         "then": [
-            Step("the mailbox {email} contains {subject}", assert_mailbox_contains),
+            Step('the mailbox {email} contains "{subject}"', assert_mailbox_contains),
             Step("I see a mailbox {email} for {username}", assert_user_has_mailbox),
         ],
     }

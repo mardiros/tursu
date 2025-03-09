@@ -120,9 +120,9 @@ def test_default_pattern_matcher_match(
         pytest.param(
             "I have {name} and fixtures",
             inspect.signature(mix_param),
-            "I have a name and fixtures",
+            "I have blaz and fixtures",
             {"age": 42},
-            {"name": "a name", "age": 42},
+            {"name": "blaz", "age": 42},
             id="fixtures",
         ),
     ],

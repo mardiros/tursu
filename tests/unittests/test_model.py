@@ -53,7 +53,7 @@ def test_model(doc: GherkinDocument):
                                 "location": {"line": 8, "column": 5},
                                 "keyword": "and",
                                 "keyword_type": "Conjunction",
-                                "text": "the mailbox bob@alice.net contains Welcome Bob",
+                                "text": 'the mailbox bob@alice.net contains "Welcome Bob"',
                             },
                         ],
                         "examples": [],

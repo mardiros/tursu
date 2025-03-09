@@ -58,7 +58,7 @@ class GherkinIterator:
             self.stack.pop()
 
 
-def step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
+def is_step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
     return value in get_args(StepKeyword)
 
 
@@ -79,6 +79,7 @@ class GherkinCompiler:
         module_name = None
         module_node = None
         test_function = None
+        args: Any = None
 
         for stack in self.emmiter.emit():
             el = stack[-1]
@@ -116,21 +117,43 @@ class GherkinCompiler:
                     keyword=_,
                     name=name,
                     description=description,
-                    steps=_,
+                    steps=steps,
                     examples=_,
                 ):
+                    fixtures: dict[str, type] = {}
+                    step_last_keyword = None
+                    for step in steps:
+                        if step.keyword_type == "Conjunction":
+                            assert step_last_keyword is not None, (
+                                f"Using {step.keyword} without context"
+                            )
+                        else:
+                            step_last_keyword = step.keyword
+                        assert is_step_keyword(step_last_keyword)
+
+                        fixtures.update(
+                            self.registry.extract_fixtures(step_last_keyword, step.text)
+                        )
+
+                    args = [
+                        ast.arg(
+                            arg="registry",
+                            annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
+                        )
+                    ]
+                    for key, _val in fixtures.items():
+                        args.append(
+                            ast.arg(
+                                arg=key,
+                                # annotation=ast.Name(id=val.__name__, ctx=ast.Load()),
+                            )
+                        )
+
                     docstring = f"{name}\n\n{description}".strip()
                     test_function = ast.FunctionDef(
                         name=f"test_{id}_{sanitize(name)}",
                         args=ast.arguments(
-                            args=[
-                                ast.arg(
-                                    arg="registry",
-                                    annotation=ast.Name(
-                                        id="StepRegistry", ctx=ast.Load()
-                                    ),
-                                )
-                            ],
+                            args=args,
                         ),
                         body=[
                             ast.Expr(
@@ -157,10 +180,16 @@ class GherkinCompiler:
                             f"Using {keyword} without context"
                         )
                         keyword = last_keyword
-                    assert step_keyword(keyword)
+                    assert is_step_keyword(keyword)
                     last_keyword = keyword
 
                     assert test_function is not None
+                    keywords = []
+                    step_fixtures = self.registry.extract_fixtures(last_keyword, text)
+                    for key, _val in step_fixtures.items():
+                        keywords.append(
+                            ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
+                        )
 
                     call_node = ast.Call(
                         func=ast.Attribute(
@@ -168,8 +197,11 @@ class GherkinCompiler:
                             attr="run_step",
                             ctx=ast.Load(),
                         ),  # registry.run_step
-                        args=[ast.Constant(value=keyword), ast.Constant(value=text)],
-                        keywords=[],  # No keyword arguments
+                        args=[
+                            ast.Constant(value=keyword),
+                            ast.Constant(value=text),
+                        ],
+                        keywords=keywords,
                     )
 
                     # Add the call node to the body of the function

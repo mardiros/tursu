@@ -24,7 +24,6 @@ def registry():
 
 @pytest.fixture()
 def dummy_app() -> Iterator[Any]:
-    from unittests.fixtures.steps import app
+    from unittests.fixtures.steps import DummyApp
 
-    yield app
-    app.clear()
+    yield DummyApp()

@@ -24,6 +24,7 @@ def generate_tests() -> None:
     to_removes: list[Path] = []
     for doc in walk_features(Path(caller_module.__file__).parent):
         compiler = GherkinCompiler(doc, reg)
+
         case = compiler.to_module()
         casefile = doc.filepath.parent / case.filename
         casefile.write_text(str(case))
