@@ -1,9 +1,10 @@
 import ast
 import re
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from typing import Any, TypeGuard, get_args
 
 from tursu.domain.model.gherkin import (
+    GherkinBackground,
     GherkinBackgroundEnvelope,
     GherkinDocument,
     GherkinFeature,
@@ -73,13 +74,50 @@ class GherkinCompiler:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
 
-    def to_module(self) -> TestModule:
-        last_keyword: StepKeyword | None = None
+    def _handle_step(
+        self,
+        test_function: ast.FunctionDef,
+        stp: GherkinStep,
+        last_keyword: StepKeyword | None,
+    ) -> StepKeyword:
+        keyword = stp.keyword
+        if stp.keyword_type == "Conjunction":
+            assert last_keyword is not None, f"Using {stp.keyword} without context"
+            keyword = last_keyword
+        assert is_step_keyword(keyword)
+        last_keyword = keyword
 
+        keywords = []
+        step_fixtures = self.registry.extract_fixtures(last_keyword, stp.text)
+        for key, _val in step_fixtures.items():
+            keywords.append(
+                ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
+            )
+
+        call_node = ast.Call(
+            func=ast.Attribute(
+                value=ast.Name(id="registry", ctx=ast.Load()),
+                attr="run_step",
+                ctx=ast.Load(),
+            ),  # registry.run_step
+            args=[
+                ast.Constant(value=last_keyword),
+                ast.Constant(value=stp.text),
+            ],
+            keywords=keywords,
+        )
+
+        # Add the call node to the body of the function
+        test_function.body.append(ast.Expr(value=call_node, lineno=stp.location.line))
+        return last_keyword
+
+    def to_module(self) -> TestModule:
         module_name = None
         module_node = None
         test_function = None
         args: Any = None
+        last_keyword: StepKeyword | None = None
+        background_steps: Sequence[GherkinStep] = []
 
         for stack in self.emmiter.emit():
             el = stack[-1]
@@ -110,6 +148,16 @@ class GherkinCompiler:
                     module_name = f"test_{GherkinCompiler.feat_idx}_{sanitize(name)}.py"
                     GherkinCompiler.feat_idx += 1
 
+                case GherkinBackground(
+                    id=_,
+                    location=_,
+                    keyword=_,
+                    name=_,
+                    description=_,
+                    steps=steps,
+                ):
+                    background_steps = steps
+
                 case GherkinScenario(
                     id=id,
                     location=location,
@@ -122,7 +170,7 @@ class GherkinCompiler:
                 ):
                     fixtures: dict[str, type] = {}
                     step_last_keyword = None
-                    for step in steps:
+                    for step in [*background_steps, *steps]:
                         if step.keyword_type == "Conjunction":
                             assert step_last_keyword is not None, (
                                 f"Using {step.keyword} without context"
@@ -164,50 +212,24 @@ class GherkinCompiler:
                         lineno=location.line,
                     )
                     assert module_node is not None
+                    last_keyword = None
                     module_node.body.append(test_function)
+                    for step in background_steps:
+                        last_keyword = self._handle_step(
+                            test_function, step, last_keyword
+                        )
 
                 case GherkinStep(
                     id=_,
-                    location=location,
-                    keyword=keyword,
-                    text=text,
-                    keyword_type=keyword_type,
+                    location=_,
+                    keyword=_,
+                    text=_,
+                    keyword_type=_,
                     data_table=_,
                     docstring=_,
                 ):
-                    if keyword_type == "Conjunction":
-                        assert last_keyword is not None, (
-                            f"Using {keyword} without context"
-                        )
-                        keyword = last_keyword
-                    assert is_step_keyword(keyword)
-                    last_keyword = keyword
-
                     assert test_function is not None
-                    keywords = []
-                    step_fixtures = self.registry.extract_fixtures(last_keyword, text)
-                    for key, _val in step_fixtures.items():
-                        keywords.append(
-                            ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
-                        )
-
-                    call_node = ast.Call(
-                        func=ast.Attribute(
-                            value=ast.Name(id="registry", ctx=ast.Load()),
-                            attr="run_step",
-                            ctx=ast.Load(),
-                        ),  # registry.run_step
-                        args=[
-                            ast.Constant(value=keyword),
-                            ast.Constant(value=text),
-                        ],
-                        keywords=keywords,
-                    )
-
-                    # Add the call node to the body of the function
-                    test_function.body.append(
-                        ast.Expr(value=call_node, lineno=location.line)
-                    )
+                    last_keyword = self._handle_step(test_function, el, last_keyword)
 
                 case _:
                     # print(el)
