@@ -1,12 +1,7 @@
-from pathlib import Path
-
 from tursu.domain.model.gherkin import GherkinDocument
 
-path = Path(__file__).parent / "fixtures" / "scenario.feature"
 
-
-def test_model():
-    doc = GherkinDocument.from_file(path)
+def test_model(doc: GherkinDocument):
     assert doc.model_dump(exclude_unset=True) == {
         "name": "scenario",
         "feature": {

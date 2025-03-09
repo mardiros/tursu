@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Self
-from typing_extensions import Annotated
+from typing import Annotated, Any, Self
 
 from gherkin import Parser
 from pydantic import BaseModel, Field
@@ -10,6 +9,7 @@ from pydantic.functional_validators import BeforeValidator
 
 def strip_whitespace(value: Any) -> str:
     return value.strip() if isinstance(value, str) else value
+
 
 StripedString = Annotated[str, BeforeValidator(strip_whitespace)]
 

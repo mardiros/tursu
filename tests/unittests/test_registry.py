@@ -57,4 +57,4 @@ def test_registry_step(dummy_app: DummyApp):
     with pytest.raises(Unregistered) as ctx:
         registry.run_step("when", "I see a mailbox bob@alice.net for Bob")
 
-    assert str(ctx.value) == 'When I see a mailbox bob@alice.net for Bob'
+    assert str(ctx.value) == "When I see a mailbox bob@alice.net for Bob"
