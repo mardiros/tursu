@@ -4,5 +4,5 @@ from tursu.registry import StepRegistry
 
 
 @pytest.fixture()
-def registry():
+def registry() -> StepRegistry:
     return StepRegistry().scan()

@@ -27,6 +27,9 @@ Repository = "https://github.com/mardiros/tursu.git"
 Issues = "https://github.com/mardiros/tursu/issues"
 Changelog = "https://mardiros.github.io/tursu/user/changelog.html"
 
+[project.scripts]
+tursu = "tursu.entrypoint:main"
+
 [dependency-groups]
 dev = ["mypy>=1.4.0,<2", "pytest>=8,<9", "pytest-cov>=6.0.0,<7"]
 docs = [
@@ -72,7 +75,7 @@ ignore = ["RUF022"]
 
 [tool.pyright]
 ignore = ["examples"]
-include = ["src", "tests"]
+include = ["src", "tepyteststs"]
 reportPrivateUsage = false
 reportUnknownMemberType = false
 reportUnknownParameterType = false
@@ -93,6 +96,7 @@ module = "tursu.*"
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
 module = "venusian"
+
 [tool.coverage.report]
 exclude_lines = [
   "if TYPE_CHECKING:",
