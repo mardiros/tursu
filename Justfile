@@ -11,6 +11,15 @@ update:
 upgrade:
     uv sync --group dev --upgrade
 
+doc:
+    uv sync --group dev --group docs
+    cd docs && uv run make html
+    xdg-open docs/build/html/index.html
+
+cleandoc:
+    rm -rf docs/build
+    rm -rf docs/source/develop
+
 lint:
     uv run ruff check .
 

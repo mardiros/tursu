@@ -1,3 +1,6 @@
+"""
+Run Gherkin test easilly.
+"""
 from importlib import metadata
 
 from .compile_all import generate_tests

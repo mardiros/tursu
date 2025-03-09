@@ -14,6 +14,18 @@ def walk_features(path: Path) -> Iterator[GherkinDocument]:
 
 
 def generate_tests() -> None:
+    """
+    Generate the test suite.
+
+    To run functional tests of your own, this function has to be added
+    in the `__init__.py` file of the tests directory.
+
+    ```python
+    from tursu import generate_tests
+
+    generate_tests()
+    ```
+    """
     caller_module = inspect.getmodule(inspect.stack()[1][0])
     assert caller_module
     assert caller_module.__file__
