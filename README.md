@@ -17,4 +17,6 @@ enabling seamless integration with pytest for running your tests.
 
 ## Installation
 
-will come soon
+```
+pip install tursu
+```
