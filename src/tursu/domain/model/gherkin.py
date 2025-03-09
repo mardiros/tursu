@@ -136,6 +136,7 @@ class GherkinFeature(BaseModel):
 
 class GherkinDocument(BaseModel):
     name: str
+    filepath: Path
     feature: GherkinFeature
     comments: Sequence[GherkinComment]
 
@@ -143,5 +144,6 @@ class GherkinDocument(BaseModel):
     def from_file(cls, file: Path) -> Self:
         return GherkinDocument(
             name=file.name[: -len(".feature")],
+            filepath=file,
             **Parser().parse(file.read_text()),  # type: ignore
         )

@@ -18,7 +18,6 @@ def generate_tests() -> None:
     assert caller_module
     assert caller_module.__file__
 
-    functestdir = Path(caller_module.__file__).parent
     reg = StepRegistry()
     reg.scan(caller_module)
 
@@ -26,8 +25,9 @@ def generate_tests() -> None:
     for doc in walk_features(Path(caller_module.__file__).parent):
         compiler = GherkinCompiler(doc, reg)
         case = compiler.to_module()
-        (functestdir / case.filename).write_text(str(case))
-        to_removes.append(functestdir / case.filename)
+        casefile = doc.filepath.parent / case.filename
+        casefile.write_text(str(case))
+        to_removes.append(casefile)
 
     def clean_up() -> None:
         for r in to_removes:
