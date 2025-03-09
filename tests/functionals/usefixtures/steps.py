@@ -1,8 +1,7 @@
 import pytest
 
+from functionals.conftest import DummyApp
 from tursu import given, then, when
-
-from .conftest import DummyApp
 
 
 @given("a user {username} using a fixture")

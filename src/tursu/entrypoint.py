@@ -86,6 +86,7 @@ Feature: As a user I logged in with my password
     Then I am connected with username Bob
 """
 
+
 def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
     with_dummies = not no_dummies
     outpath = Path(outdir)
