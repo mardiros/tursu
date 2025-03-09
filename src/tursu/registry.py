@@ -3,6 +3,7 @@ from types import ModuleType
 from typing import Callable, Self
 
 import venusian
+from typing_extensions import Any
 
 from .exceptions import Unregistered
 from .steps import Handler, Step, StepKeyword
@@ -59,10 +60,10 @@ class StepRegistry:
     ) -> None:
         self._handlers[type].append(Step(pattern, handler))
 
-    def run_step(self, step: StepKeyword, text: str) -> None:
+    def run_step(self, step: StepKeyword, text: str, **kwargs: Any) -> None:
         handlers = self._handlers[step]
         for handler in handlers:
-            matches = handler.pattern.get_matches(text)
+            matches = handler.pattern.get_matches(text, kwargs)
             if matches is not None:
                 handler(**matches)
                 break

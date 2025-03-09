@@ -62,4 +62,5 @@ def test_model(doc: GherkinDocument):
             ],
         },
         "comments": [],
+        "filepath": doc.filepath,
     }

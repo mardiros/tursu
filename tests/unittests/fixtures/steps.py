@@ -23,7 +23,7 @@ app = DummyApp()
 
 
 @given("a user {username}")
-def give_user(username: str):
+def give_user(dummy_app: DummyApp, username: str):
     app.create_user(username)
 
 

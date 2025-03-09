@@ -22,7 +22,9 @@ class AbstractPatternMatcher(abc.ABC):
         return f'"{self.pattern}"'
 
     @abc.abstractmethod
-    def get_matches(self, text: str) -> Mapping[str, Any] | None: ...
+    def get_matches(
+        self, text: str, kwargs: Mapping[str, Any]
+    ) -> Mapping[str, Any] | None: ...
 
 
 class AbstractPattern(abc.ABC):
@@ -46,7 +48,9 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                     re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>.+)")
         self.re_pattern = re.compile(re_pattern)
 
-    def get_matches(self, text: str) -> Mapping[str, Any] | None:
+    def get_matches(
+        self, text: str, kwargs: Mapping[str, Any]
+    ) -> Mapping[str, Any] | None:
         matches = self.re_pattern.search(text)
         if matches:
             res = {}
@@ -54,6 +58,8 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
             for key, val in self.signature.parameters.items():
                 if key in matchdict:
                     res[key] = self.signature.parameters[key].annotation(matchdict[key])
+                elif key in kwargs:
+                    res[key] = kwargs[key]
                 elif val.default and val.default != val.empty:
                     res[key] = val.default
             return res

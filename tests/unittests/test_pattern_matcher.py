@@ -103,4 +103,36 @@ def test_default_pattern_matcher_match(
     expected: Mapping[str, str] | None,
 ):
     matcher = DefaultPatternMatcher(pattern, signature)
-    assert matcher.get_matches(text) == expected
+    assert matcher.get_matches(text, {}) == expected
+
+
+@pytest.mark.parametrize(
+    "pattern,signature,text,fixtures,expected",
+    [
+        pytest.param(
+            "I have fixtures",
+            inspect.signature(dummy_str_pattern),
+            "I have fixtures",
+            {"param": "foo"},
+            {"param": "foo"},
+            id="fixtures",
+        ),
+        pytest.param(
+            "I have {name} and fixtures",
+            inspect.signature(mix_param),
+            "I have a name and fixtures",
+            {"age": 42},
+            {"name": "a name", "age": 42},
+            id="fixtures",
+        ),
+    ],
+)
+def test_fixtures_pattern_matcher_match(
+    pattern: str,
+    signature: inspect.Signature,
+    text: str,
+    fixtures: Mapping[str, str],
+    expected: Mapping[str, str] | None,
+):
+    matcher = DefaultPatternMatcher(pattern, signature)
+    assert matcher.get_matches(text, fixtures) == expected

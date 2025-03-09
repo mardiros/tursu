@@ -26,9 +26,11 @@ def test_registry_handler(registry: StepRegistry):
 
 
 def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
-    registry.run_step("given", "a user Bob")
-    registry.run_step("when", "Bob create a mailbox bob@alice.net")
-    registry.run_step("then", "I see a mailbox bob@alice.net for Bob")
+    registry.run_step("given", "a user Bob", dummy_app=dummy_app)
+    registry.run_step("when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app)
+    registry.run_step(
+        "then", "I see a mailbox bob@alice.net for Bob", dummy_app=dummy_app
+    )
 
     assert dummy_app.mailboxes == {
         "Bob": {

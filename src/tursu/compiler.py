@@ -67,6 +67,8 @@ def sanitize(name: str) -> str:
 
 
 class GherkinCompiler:
+    feat_idx = 1
+
     def __init__(self, doc: GherkinDocument, registry: StepRegistry) -> None:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
@@ -104,7 +106,8 @@ class GherkinCompiler:
                         ],
                         type_ignores=[],
                     )
-                    module_name = f"test_{sanitize(name)}.py"
+                    module_name = f"test_{GherkinCompiler.feat_idx}_{sanitize(name)}.py"
+                    GherkinCompiler.feat_idx += 1
 
                 case GherkinScenario(
                     id=id,
