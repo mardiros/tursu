@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Literal
 
 from gherkin import Parser
 from pydantic import BaseModel, Field
@@ -141,7 +141,7 @@ class GherkinDocument(BaseModel):
     comments: Sequence[GherkinComment]
 
     @classmethod
-    def from_file(cls, file: Path) -> Self:
+    def from_file(cls, file: Path) -> "GherkinDocument":
         return GherkinDocument(
             name=file.name[: -len(".feature")],
             filepath=file,

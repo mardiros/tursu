@@ -1,7 +1,7 @@
 import sys
 from collections.abc import Mapping
 from types import ModuleType
-from typing import Callable, Self
+from typing import Callable
 
 import venusian
 from typing_extensions import Any
@@ -83,7 +83,7 @@ class StepRegistry:
         else:
             raise Unregistered(f"{step.capitalize()} {text}")
 
-    def scan(self, mod: ModuleType | None = None) -> Self:
+    def scan(self, mod: ModuleType | None = None) -> "StepRegistry":
         """
         Scan the module (or modules) containing steps.
         """
