@@ -77,11 +77,13 @@ Feature: As a user I logged in with my password
     When Bob login with password notthat
     Then I am not connected
 
-  Scenario: I hit the wrong password
+  Scenario: I user another login
     Given a user Bob with password dumbsecret
     And a user Alice with password anothersecret
     When Alice login with password dumbsecret
     Then I am not connected
+    When Bob login with password dumbsecret
+    Then I am connected with username Bob
 """
 
 def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
