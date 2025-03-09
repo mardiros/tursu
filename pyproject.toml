@@ -1,0 +1,88 @@
+[project]
+authors = [{ name = "Guillaume Gauvrit", email = "guillaume@gauvr.it" }]
+description = "A gherkin tests runner"
+name = "tursu"
+license = { text = "MIT" }
+readme = "README.md"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "gherkin-official>=32.0.0",
+    "pydantic>=2.10.6",
+    "pytest>=8.3.5",
+    "venusian>=3.1.1,<4",
+]
+
+[project.urls]
+Homepage = "https://mardiros.github.io/tursu"
+Documentation = "https://mardiros.github.io/tursu"
+Repository = "https://github.com/mardiros/tursu.git"
+Issues = "https://github.com/mardiros/tursu/issues"
+Changelog = "https://mardiros.github.io/tursu/user/changelog.html"
+
+[dependency-groups]
+dev = ["mypy>=1.4.0,<2", "pytest>=8,<9", "pytest-cov>=6.0.0,<7"]
+
+
+[tool.uv]
+default-groups = []
+
+[tool.pdm.build]
+includes = ["src", "CHANGELOG.md"]
+excludes = ["tests"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+  "B",   # bug bear security warning
+  "I",   # isort import order
+  "F",   # pyflakes
+  "UP",  # alter when better syntax is available
+  "RUF", #  the ruff devleoper's own rules
+]
+ignore = ["RUF022"]
+
+[tool.pyright]
+ignore = ["examples"]
+include = ["src", "tests"]
+reportPrivateUsage = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportShadowedImports = false
+reportUnknownLambdaType = false
+reportUnknownArgumentType = false
+useLibraryCodeForTypes = true
+reportMissingTypeStubs = false
+typeCheckingMode = "strict"
+venvPath = ".venv"
+
+[[tool.mypy.overrides]]
+disallow_any_generics = true
+disallow_untyped_defs = true
+module = "tursu.*"
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = "venusian"
+[tool.coverage.report]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "except ImportError",
+  "\\s+\\.\\.\\.$",
+  "# coverage: ignore",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
