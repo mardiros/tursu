@@ -1,12 +1,5 @@
 import pytest
 
-from tursu.registry import StepRegistry
-
-
-@pytest.fixture()
-def registry():
-    return StepRegistry().scan()
-
 
 class DummyApp:
     def __init__(self):
@@ -21,6 +14,6 @@ class DummyApp:
         self.mailboxes[username][mailbox] = [f"Welcome {username}"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def app():
     return DummyApp()
