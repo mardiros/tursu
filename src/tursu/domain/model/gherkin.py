@@ -1,17 +1,20 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Annotated, Any, Self
+from typing import Annotated, Any, Literal, Self
 
 from gherkin import Parser
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
 
 
-def strip_whitespace(value: Any) -> str:
-    return value.strip() if isinstance(value, str) else value
+def sanitize(value: Any) -> str:
+    return value.strip().lower() if isinstance(value, str) else value
 
 
-StripedString = Annotated[str, BeforeValidator(strip_whitespace)]
+GherkinKeyword = Annotated[
+    Literal["feature", "scenario", "given", "when", "then", "and", "but"],
+    BeforeValidator(sanitize),
+]
 
 
 class GherkinLocation(BaseModel):
@@ -56,7 +59,7 @@ class GherkinDocString(BaseModel):
 class GherkinStep(BaseModel):
     id: str
     location: GherkinLocation
-    keyword: StripedString
+    keyword: GherkinKeyword
     text: str
     keyword_type: str = Field(alias="keywordType")
     data_table: GherkinDataTable | None = Field(default=None, alias="data_table")
@@ -66,7 +69,7 @@ class GherkinStep(BaseModel):
 class GherkinBackground(BaseModel):
     id: str
     location: GherkinLocation
-    keyword: StripedString
+    keyword: GherkinKeyword
     name: str
     description: str
     steps: Sequence[GherkinStep]
@@ -76,7 +79,7 @@ class GherkinExamples(BaseModel):
     id: str
     location: GherkinLocation
     tags: Sequence[GherkinTag]
-    keyword: StripedString
+    keyword: GherkinKeyword
     name: str
     description: str
     table_header: GherkinTableRow = Field(alias="tableHeader")
@@ -87,7 +90,7 @@ class GherkinScenario(BaseModel):
     id: str
     location: GherkinLocation
     tags: Sequence[GherkinTag]
-    keyword: StripedString
+    keyword: GherkinKeyword
     name: str
     description: str
     steps: Sequence[GherkinStep]
@@ -115,7 +118,7 @@ class GherkinRule(BaseModel):
     id: str
     location: GherkinLocation
     tags: Sequence[GherkinTag]
-    keyword: StripedString
+    keyword: GherkinKeyword
     name: str
     description: str
     children: Sequence[GherkinEnvelope]
@@ -125,7 +128,7 @@ class GherkinFeature(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     language: str
-    keyword: StripedString
+    keyword: GherkinKeyword
     name: str
     description: str
     children: Sequence[GherkinEnvelope]

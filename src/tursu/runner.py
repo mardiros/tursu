@@ -1,17 +1,21 @@
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, TypeGuard, get_args
 
 from tursu.domain.model.gherkin import (
     GherkinBackgroundEnvelope,
     GherkinDocument,
     GherkinFeature,
+    GherkinKeyword,
     GherkinRuleEnvelope,
     GherkinScenario,
     GherkinScenarioEnvelope,
+    GherkinStep,
 )
+from tursu.registry import StepRegitry
+from tursu.steps import StepKeyword
 
 
-class Runner:
+class GherkinIterator:
     def __init__(self, doc: GherkinDocument) -> None:
         self.doc = doc
         self.stack: list[Any] = []
@@ -49,3 +53,39 @@ class Runner:
             self.stack.append(step)
             yield self.stack
             self.stack.pop()
+
+
+def step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
+    return value in get_args(StepKeyword)
+
+
+class GherkinRunner:
+    def __init__(self, doc: GherkinDocument, registry: StepRegitry) -> None:
+        self.emmiter = GherkinIterator(doc)
+        self.registry = registry
+
+    def run(self) -> None:
+        last_keyword: StepKeyword | None = None
+        for stack in self.emmiter.emit():
+            el = stack[-1]
+            match el:
+                case GherkinStep(
+                    id=_,
+                    location=_,
+                    keyword=keyword,
+                    text=text,
+                    keyword_type=keyword_type,
+                    data_table=_,
+                    docstring=_,
+                ):
+                    if keyword_type == "Conjunction":
+                        assert last_keyword is not None, (
+                            f"Using {keyword} without context"
+                        )
+                        keyword = last_keyword
+                    assert step_keyword(keyword)
+                    self.registry.run_step(keyword, text)
+                    last_keyword = keyword
+                case _:
+                    # print(el)
+                    ...

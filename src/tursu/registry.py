@@ -4,7 +4,7 @@ from typing import Callable
 import venusian
 
 from .exceptions import Unregistered
-from .steps import Handler, Keyword, Step
+from .steps import Handler, Step, StepKeyword
 
 VENUSIAN_CATEGORY = "tursu"
 
@@ -47,16 +47,18 @@ class StepRegitry:
     """Store all the handlers for gherkin action."""
 
     def __init__(self) -> None:
-        self._handlers: dict[Keyword, list[Step]] = {
+        self._handlers: dict[StepKeyword, list[Step]] = {
             "given": [],
             "when": [],
             "then": [],
         }
 
-    def register_handler(self, type: Keyword, pattern: str, handler: Handler) -> None:
+    def register_handler(
+        self, type: StepKeyword, pattern: str, handler: Handler
+    ) -> None:
         self._handlers[type].append(Step(pattern, handler))
 
-    def run_step(self, step: Keyword, text: str) -> None:
+    def run_step(self, step: StepKeyword, text: str) -> None:
         handlers = self._handlers[step]
         for handler in handlers:
             matches = handler.pattern.get_matches(text)

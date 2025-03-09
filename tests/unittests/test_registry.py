@@ -1,5 +1,3 @@
-from collections.abc import Iterator
-
 import pytest
 
 from tursu.registry import StepRegitry, Unregistered
@@ -7,10 +5,7 @@ from tursu.steps import Step
 from unittests.fixtures.steps import DummyApp
 
 
-def test_registry_handler():
-    registry = StepRegitry()
-    registry.scan("unittests.fixtures")
-
+def test_registry_handler(registry: StepRegitry):
     from unittests.fixtures.steps import (
         assert_mailbox_contains,
         assert_user_has_mailbox,
@@ -30,18 +25,7 @@ def test_registry_handler():
     }
 
 
-@pytest.fixture()
-def dummy_app() -> Iterator[DummyApp]:
-    from unittests.fixtures.steps import app
-
-    yield app
-    app.clear()
-
-
-def test_registry_step(dummy_app: DummyApp):
-    registry = StepRegitry()
-    registry.scan("unittests.fixtures")
-
+def test_registry_step(dummy_app: DummyApp, registry: StepRegitry):
     registry.run_step("given", "a user Bob")
     registry.run_step("when", "Bob create a mailbox bob@alice.net")
     registry.run_step("then", "I see a mailbox bob@alice.net for Bob")

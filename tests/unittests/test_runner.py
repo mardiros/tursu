@@ -1,13 +1,16 @@
 import pytest
 
 from tursu.domain.model.gherkin import GherkinDocument, GherkinScenarioEnvelope
-from tursu.runner import Runner
+from tursu.registry import StepRegitry
+from tursu.runner import GherkinIterator, GherkinRunner
+
+from .fixtures.steps import DummyApp
 
 
 def test_emit_items(doc: GherkinDocument):
-    runner = Runner(doc)
+    gherkin_iter = GherkinIterator(doc)
 
-    iter_step = runner.emit()
+    iter_step = gherkin_iter.emit()
     assert next(iter_step) == [doc]
     assert next(iter_step) == [doc, doc.feature]
 
@@ -40,4 +43,16 @@ def test_emit_items(doc: GherkinDocument):
     with pytest.raises(StopIteration):
         next(iter_step)
 
-    assert runner.stack == []
+    assert gherkin_iter.stack == []
+
+
+def test_runner(doc: GherkinDocument, registry: StepRegitry, dummy_app: DummyApp):
+    runner = GherkinRunner(doc, registry)
+    runner.run()
+    assert dummy_app.mailboxes == {
+        "Bob": {
+            "bob@alice.net": [
+                "Welcome Bob",
+            ],
+        },
+    }
