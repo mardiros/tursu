@@ -1,8 +1,10 @@
+import textwrap
+
 import pytest
 
+from tursu.compiler import GherkinCompiler, GherkinIterator
 from tursu.domain.model.gherkin import GherkinDocument, GherkinScenarioEnvelope
-from tursu.registry import StepRegitry
-from tursu.runner import GherkinIterator, GherkinRunner
+from tursu.registry import StepRegistry
 
 from .fixtures.steps import DummyApp
 
@@ -46,13 +48,25 @@ def test_emit_items(doc: GherkinDocument):
     assert gherkin_iter.stack == []
 
 
-def test_runner(doc: GherkinDocument, registry: StepRegitry, dummy_app: DummyApp):
-    runner = GherkinRunner(doc, registry)
-    runner.run()
-    assert dummy_app.mailboxes == {
-        "Bob": {
-            "bob@alice.net": [
-                "Welcome Bob",
-            ],
-        },
-    }
+def test_compiler(
+    doc: GherkinDocument, registry: StepRegistry, dummy_app: DummyApp
+) -> None:
+    compiler = GherkinCompiler(doc, registry)
+    code = compiler.to_module()
+
+    assert (
+        str(code)
+        == textwrap.dedent(
+            '''
+    """Discover Scenario"""
+    from tursu import StepRegistry
+
+    def test_5_I_can_find_scenario_based_on_tag(registry: StepRegistry):
+        """I can find scenario based on tag"""
+        registry.run_step('given', 'a user Bob')
+        registry.run_step('when', 'Bob create a mailbox bob@alice.net')
+        registry.run_step('then', 'I see a mailbox bob@alice.net for Bob')
+        registry.run_step('then', 'the mailbox bob@alice.net contains Welcome Bob')
+            '''
+        ).strip()
+    )

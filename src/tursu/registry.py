@@ -1,5 +1,6 @@
-import importlib
-from typing import Callable
+import sys
+from types import ModuleType
+from typing import Callable, Self
 
 import venusian
 
@@ -43,7 +44,7 @@ def then(pattern: str) -> Callable[[Handler], Handler]:
     return _step("then", pattern)
 
 
-class StepRegitry:
+class StepRegistry:
     """Store all the handlers for gherkin action."""
 
     def __init__(self) -> None:
@@ -68,22 +69,20 @@ class StepRegitry:
         else:
             raise Unregistered(f"{step.capitalize()} {text}")
 
-    def scan(
-        self,
-        *mods: str,
-    ) -> None:
+    def scan(self, mod: ModuleType | None = None) -> Self:
         """
-        Scan the module (or modules) containing service handlers.
+        Scan the module (or modules) containing steps.
+        """
+        if mod is None:
+            import inspect
 
-        when a message is handled by the bus, the bus propagate the message
-        to hook functions, called :term:`Service Handler` that receive the message,
-        and a :term:`Unit Of Work` to process it has a business transaction.
-        """
+            mod = inspect.getmodule(inspect.stack()[1][0])
+            assert mod
+            module_name = mod.__name__
+            if "." in module_name:  # Check if it's a submodule
+                parent_name = module_name.rsplit(".", 1)[0]  # Remove the last part
+                mod = sys.modules.get(parent_name)
+
         scanner = venusian.Scanner(registry=self)
-        for modname in mods:
-            if modname.startswith("."):
-                raise ValueError(
-                    f"scan error: relative package unsupported for {modname}"
-                )
-            mod = importlib.import_module(modname)
-            scanner.scan(mod, categories=[VENUSIAN_CATEGORY])  # type: ignore
+        scanner.scan(mod, categories=[VENUSIAN_CATEGORY])  # type: ignore
+        return self

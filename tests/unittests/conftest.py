@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import StepRegitry
+from tursu.registry import StepRegistry
 
 path = Path(__file__).parent / "fixtures" / "scenario.feature"
 
@@ -17,8 +17,8 @@ def doc():
 
 @pytest.fixture(scope="session")
 def registry():
-    reg = StepRegitry()
-    reg.scan("unittests.fixtures")
+    reg = StepRegistry()
+    reg.scan()
     return reg
 
 

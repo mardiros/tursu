@@ -17,9 +17,12 @@ lint:
 typecheck:
     uv run mypy src
 
-test: lint typecheck unittest
+test: lint typecheck unittest functest
 
 unittest test_suite=default_unittest_suite:
+    uv run pytest -sxv {{test_suite}}
+
+functest test_suite=default_functest_suite:
     uv run pytest -sxv {{test_suite}}
 
 lf:
