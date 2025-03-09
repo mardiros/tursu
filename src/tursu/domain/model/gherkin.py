@@ -12,7 +12,7 @@ def sanitize(value: Any) -> str:
 
 
 GherkinKeyword = Annotated[
-    Literal["feature", "scenario", "given", "when", "then", "and", "but"],
+    Literal["feature", "scenario", "background", "given", "when", "then", "and", "but"],
     BeforeValidator(sanitize),
 ]
 
