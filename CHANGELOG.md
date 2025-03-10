@@ -1,3 +1,7 @@
+0.5.1 - Released on 2025-03-10
+------------------------------
+* Remove asyncio dependency
+
 0.5.0 - Released on 2025-03-10
 ------------------------------
 * Remove asyncio support
