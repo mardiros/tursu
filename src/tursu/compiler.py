@@ -128,7 +128,7 @@ class GherkinCompiler:
 
     def _handle_step(
         self,
-        test_function: ast.AsyncFunctionDef,
+        test_function: ast.FunctionDef,
         stp: GherkinStep,
         last_keyword: StepKeyword | None,
     ) -> StepKeyword:
@@ -153,19 +153,17 @@ class GherkinCompiler:
                 )
             )
 
-        call_node = ast.Await(
-            ast.Call(
-                func=ast.Attribute(
-                    value=ast.Name(id="registry", ctx=ast.Load()),
-                    attr="run_step",
-                    ctx=ast.Load(),
-                ),  # registry.run_step
-                args=[
-                    ast.Constant(value=last_keyword),
-                    ast.Constant(value=stp.text),
-                ],
-                keywords=keywords,
-            )
+        call_node = ast.Call(
+            func=ast.Attribute(
+                value=ast.Name(id="registry", ctx=ast.Load()),
+                attr="run_step",
+                ctx=ast.Load(),
+            ),  # registry.run_step
+            args=[
+                ast.Constant(value=last_keyword),
+                ast.Constant(value=stp.text),
+            ],
+            keywords=keywords,
         )
 
         # Add the call node to the body of the function
@@ -278,7 +276,7 @@ class GherkinCompiler:
                             )
                             decorator_list.append(tag_decorator)
 
-                    test_function = ast.AsyncFunctionDef(
+                    test_function = ast.FunctionDef(
                         name=f"test_{id}_{sanitize(name)}",
                         args=ast.arguments(
                             args=args,

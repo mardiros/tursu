@@ -1,5 +1,4 @@
 import inspect
-from collections.abc import Coroutine
 from typing import Any, Callable, Literal
 
 from .pattern_matcher import (
@@ -9,9 +8,7 @@ from .pattern_matcher import (
 )
 
 StepKeyword = Literal["given", "when", "then"]
-SyncHandler = Callable[..., None]
-AsyncHandler = Callable[..., Coroutine[Any, None, None]]
-Handler = SyncHandler | AsyncHandler
+Handler = Callable[..., None]
 
 
 class Step:
@@ -34,7 +31,5 @@ class Step:
     def __repr__(self) -> str:
         return f'Step("{self.pattern}", {self.hook.__qualname__})'
 
-    async def __call__(self, **kwargs: Any) -> None:
-        result = self.hook(**kwargs)
-        if inspect.iscoroutine(result):
-            await result
+    def __call__(self, **kwargs: Any) -> None:
+        self.hook(**kwargs)

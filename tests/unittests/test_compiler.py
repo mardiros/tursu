@@ -70,13 +70,13 @@ def test_compiler(
         from tursu import StepRegistry
 
         @pytest.mark.wip
-        async def test_7_I_can_find_scenario_based_on_tag(registry: StepRegistry, dummy_app):
+        def test_7_I_can_find_scenario_based_on_tag(registry: StepRegistry, dummy_app):
             """I can find scenario based on tag"""
-            await registry.run_step('given', 'a user Bob', dummy_app=dummy_app)
-            await registry.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-            await registry.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
-            await registry.run_step('then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-            await registry.run_step('then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+            registry.run_step('given', 'a user Bob', dummy_app=dummy_app)
+            registry.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+            registry.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
+            registry.run_step('then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
+            registry.run_step('then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
             '''
         ).strip()
     )
