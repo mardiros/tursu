@@ -94,6 +94,13 @@ class GherkinCompiler:
                 ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
             )
 
+        if stp.doc_string:
+            keywords.append(
+                ast.keyword(
+                    arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
+                )
+            )
+
         call_node = ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="registry", ctx=ast.Load()),
@@ -214,10 +221,11 @@ class GherkinCompiler:
                     assert module_node is not None
                     last_keyword = None
                     module_node.body.append(test_function)
-                    for step in background_steps:
-                        last_keyword = self._handle_step(
-                            test_function, step, last_keyword
-                        )
+                    if background_steps:
+                        for step in background_steps:
+                            last_keyword = self._handle_step(
+                                test_function, step, last_keyword
+                            )
 
                 case GherkinStep(
                     id=_,
@@ -226,7 +234,7 @@ class GherkinCompiler:
                     text=_,
                     keyword_type=_,
                     data_table=_,
-                    docstring=_,
+                    doc_string=_,
                 ):
                     assert test_function is not None
                     last_keyword = self._handle_step(test_function, el, last_keyword)

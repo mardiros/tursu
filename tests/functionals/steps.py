@@ -21,3 +21,8 @@ def assert_connected(app: DummyApp, username: str):
 @then("I am not connected")
 def assert_not_connected(app: DummyApp):
     assert app.connected_user is None
+
+
+@then("I see the docstring")
+def asset_docstring(app: DummyApp, doc_string: dict[str, str]):
+    assert doc_string == {"nick": app.connected_user}
