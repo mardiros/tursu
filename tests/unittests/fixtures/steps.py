@@ -1,19 +1,30 @@
+from typing import Any
+
 import pytest
+from pydantic import BaseModel
 
 from tursu import given, then, when
 
 
+class DummyMail(BaseModel):
+    email: str
+    subject: str
+    body: str
+
+
 class DummyApp:
     def __init__(self):
-        self.mailboxes: dict[str, dict[str, list[str]]] = {}
+        self.mailboxes: dict[str, list[DummyMail]] = {}
 
     def create_user(self, username: str) -> None:
         assert username not in self.mailboxes
-        self.mailboxes[username] = {}
+        self.mailboxes[username] = []
 
     def add_mailbox(self, username: str, mailbox: str) -> None:
         assert username in self.mailboxes
-        self.mailboxes[username][mailbox] = [f"Welcome {username}"]
+        self.mailboxes[username] = [
+            DummyMail(email=mailbox, subject=f"Welcome {username}", body="...")
+        ]
 
 
 @given("a user {username}")
@@ -29,14 +40,22 @@ def create_mailbox(dummy_app: DummyApp, username: str, email: str):
 @then("I see a mailbox {email} for {username}")
 def assert_user_has_mailbox(dummy_app: DummyApp, email: str, username: str):
     assert username in dummy_app.mailboxes
-    assert email in dummy_app.mailboxes[username]
 
 
-@then('the mailbox {email} contains "{subject}"')
-def assert_mailbox_contains(dummy_app: DummyApp, email: str, subject: str):
-    for mailbox in dummy_app.mailboxes.values():
-        if email in mailbox:
-            assert subject in mailbox[email]
-            break
+@then('the mailbox {email} "{subject}" message is')
+def assert_mailbox_contains(
+    dummy_app: DummyApp, email: str, subject: str, doc_string: str
+):
+    for mailboxes in dummy_app.mailboxes.values():
+        for mailbox in mailboxes:
+            if mailbox.email == email and mailbox.subject in subject:
+                assert mailbox.body == doc_string
     else:
         pytest.fail(f"mailbox {email} not found or not contains {subject}")
+
+
+@then("the API for {username} respond")
+def assert_api_response(
+    dummy_app: DummyApp, username: str, doc_string: list[dict[str, Any]]
+):
+    assert [m.model_dump() for m in dummy_app.mailboxes[username]] == doc_string

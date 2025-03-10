@@ -1,9 +1,10 @@
-from collections.abc import Sequence
+import json
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from gherkin import Parser
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from pydantic.functional_validators import BeforeValidator
 
 
@@ -51,9 +52,15 @@ class GherkinDataTable(BaseModel):
 
 class GherkinDocString(BaseModel):
     location: GherkinLocation
-    content: str
+    content: str | Mapping[str, Any] | Sequence[Any]
     delimiter: str
-    media_type: str | None = Field(alias="mediaType")
+    media_type: str | None = Field(default=None, alias="mediaType")
+
+    @model_validator(mode="after")
+    def check_passwords_match(self) -> "GherkinDocString":
+        if self.media_type == "json":
+            self.content = json.loads(self.content)  # type: ignore
+        return self
 
 
 class GherkinStep(BaseModel):
@@ -62,8 +69,8 @@ class GherkinStep(BaseModel):
     keyword: GherkinKeyword
     text: str
     keyword_type: str = Field(alias="keywordType")
-    data_table: GherkinDataTable | None = Field(default=None, alias="data_table")
-    docstring: GherkinDocString | None = Field(default=None, alias="docstring")
+    data_table: GherkinDataTable | None = Field(default=None, alias="dataTable")
+    doc_string: GherkinDocString | None = Field(default=None, alias="docString")
 
 
 class GherkinBackground(BaseModel):
@@ -142,8 +149,9 @@ class GherkinDocument(BaseModel):
 
     @classmethod
     def from_file(cls, file: Path) -> "GherkinDocument":
+        official_doc = Parser().parse(file.read_text())
         return GherkinDocument(
             name=file.name[: -len(".feature")],
             filepath=file,
-            **Parser().parse(file.read_text()),  # type: ignore
+            **official_doc,  # type: ignore
         )

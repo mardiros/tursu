@@ -83,6 +83,8 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
             for key, val in self.signature.parameters.items():
                 if key in matchdict:
                     continue
+                elif key == "doc_string":
+                    continue
                 if val.default != val.empty:
                     continue
                 res[key] = val.annotation

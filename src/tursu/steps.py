@@ -29,7 +29,7 @@ class Step:
         return self.pattern == other.pattern and self.hook == other.hook
 
     def __repr__(self) -> str:
-        return f"Step({self.pattern}, {self.hook.__qualname__})"
+        return f'Step("{self.pattern}", {self.hook.__qualname__})'
 
     def __call__(self, **kwargs: Any) -> None:
         self.hook(**kwargs)
