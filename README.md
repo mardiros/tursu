@@ -51,7 +51,6 @@ collected 3 items
         <Function test_14_I_user_another_login>
 ```
 
-
 ### Run the tests.
 
 ```{bash}
@@ -67,3 +66,17 @@ tests/functionals2/test_1_As_a_user_I_logged_in_with_my_password.py ... [100%]
 
 ===================== 3 passed in 0.02s ===================
 ```
+
+### Gherkin keywords support.
+
+tursu use the gherkin-official package to parse scenario, however,
+they must be compiled to pytest tests function, implementation in development.
+
+✅ Scenario
+✅ Feature
+✅ Background
+✅ Step (Given, When, Then, And, But)
+✅ Doc String
+❌ Scenario Outlines / Examples
+❌ Tags
+❌ Rule
