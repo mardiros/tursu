@@ -84,10 +84,10 @@ tursu use the gherkin-official package to parse scenario, however,
 they must be compiled to pytest tests function, implementation in development.
 
 - ✅ Scenario
-- ✅ Feature
 - ✅ Background
-- ✅ Step (Given, When, Then, And, But)
+- ✅ Rule
+- ✅ Feature
+- ✅ Steps (Given, When, Then, And, But)
 - ✅ Doc String
 - ❌ Scenario Outlines / Examples
 - ❌ Tags
-- ❌ Rule
