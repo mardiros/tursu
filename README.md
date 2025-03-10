@@ -18,8 +18,17 @@ enabling seamless integration with pytest for running your tests.
 
 ### Installation using uv
 
-```
+```{bash}
 uv add --group dev tursu
+```
+
+In your pyproject.toml file, ensure you run your test using asyncio active.
+
+The tests run as coroutine and let your run async steps.
+
+```{toml}
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 ```
 
 ### Creating a new test suite

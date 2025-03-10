@@ -1,0 +1,32 @@
+import pytest
+
+from functionals.conftest import DummyApp
+from tursu import given, then, when
+
+
+@given("a user {username} using async")
+async def give_user_with_fixture(app: DummyApp, username: str):
+    app.create_user(username)
+
+
+@when("{username} create a mailbox {email} using async")
+async def create_mailbox_with_fixture(app: DummyApp, username: str, email: str):
+    app.add_mailbox(username, email)
+
+
+@then("I see a mailbox {email} for {username} using async")
+async def assert_user_has_mailbox_with_fixture(
+    app: DummyApp, email: str, username: str
+):
+    assert username in app.mailboxes
+    assert email in app.mailboxes[username]
+
+
+@then('the mailbox {email} contains "{subject}" using async')
+async def assert_mailbox_contains_with_fixture(app: DummyApp, email: str, subject: str):
+    for mailbox in app.mailboxes.values():
+        if email in mailbox:
+            assert subject in mailbox[email]
+            break
+    else:
+        pytest.fail(f"mailbox {email} not found or not contains {subject}")
