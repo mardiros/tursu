@@ -209,6 +209,10 @@ class GherkinCompiler:
                         name=f"test_{id}_{sanitize(name)}",
                         args=ast.arguments(
                             args=args,
+                            posonlyargs=[],
+                            kwonlyargs=[],
+                            kw_defaults=[],
+                            defaults=[],
                         ),
                         body=[
                             ast.Expr(
