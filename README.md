@@ -1,4 +1,4 @@
-# turşu
+# Turşu
 
 This project allows you to write **Gherkin**-based behavior-driven development (BDD) tests
 and execute them using **pytest**.
