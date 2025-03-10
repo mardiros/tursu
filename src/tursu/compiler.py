@@ -7,8 +7,10 @@ from tursu.domain.model.gherkin import (
     GherkinBackground,
     GherkinBackgroundEnvelope,
     GherkinDocument,
+    GherkinExamples,
     GherkinFeature,
     GherkinKeyword,
+    GherkinRule,
     GherkinRuleEnvelope,
     GherkinScenario,
     GherkinScenarioEnvelope,
@@ -73,6 +75,56 @@ class GherkinCompiler:
     def __init__(self, doc: GherkinDocument, registry: StepRegistry) -> None:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
+
+    def get_tags(self, stack: list[Any]) -> set[str]:
+        ret = set()
+        for el in stack:
+            match el:
+                case (
+                    GherkinFeature(
+                        location=_,
+                        tags=tags,
+                        language=_,
+                        keyword=_,
+                        name=_,
+                        description=_,
+                        children=_,
+                    )
+                    | GherkinRule(
+                        id=_,
+                        location=_,
+                        tags=tags,
+                        keyword=_,
+                        name=_,
+                        description=_,
+                        children=_,
+                    )
+                    | GherkinScenario(
+                        id=_,
+                        location=_,
+                        tags=tags,
+                        keyword=_,
+                        name=_,
+                        description=_,
+                        steps=_,
+                        examples=_,
+                    )
+                    | GherkinExamples(
+                        id=_,
+                        location=_,
+                        tags=tags,
+                        keyword=_,
+                        name=_,
+                        description=_,
+                        table_header=_,
+                        table_body=_,
+                    )
+                ):
+                    for tag in tags:
+                        ret.add(tag.name.lstrip("@"))
+                case _:
+                    ...
+        return ret
 
     def _handle_step(
         self,
@@ -142,7 +194,10 @@ class GherkinCompiler:
                 ):
                     assert module_node is None
                     docstring = f"{name}\n\n{description}".strip()
-                    import_node = ast.ImportFrom(
+                    import_pytest = ast.Import(
+                        names=[ast.alias(name="pytest", asname=None)]
+                    )
+                    import_tursu = ast.ImportFrom(
                         module="tursu",  # the module name
                         names=[ast.alias(name="StepRegistry", asname=None)],
                         level=0,  # import at the top level
@@ -150,7 +205,8 @@ class GherkinCompiler:
                     module_node = ast.Module(
                         body=[
                             ast.Expr(value=ast.Constant(docstring), lineno=1),
-                            import_node,
+                            import_pytest,
+                            import_tursu,
                         ],
                         type_ignores=[],
                     )
@@ -207,6 +263,21 @@ class GherkinCompiler:
                         )
 
                     docstring = f"{name}\n\n{description}".strip()
+
+                    decorator_list: list[ast.expr] = []
+                    tags = self.get_tags(stack)
+                    if tags:
+                        for tag in tags:
+                            decorator = ast.Attribute(
+                                value=ast.Name(id="pytest", ctx=ast.Load()),
+                                attr="mark",
+                                ctx=ast.Load(),
+                            )
+                            tag_decorator = ast.Attribute(
+                                value=decorator, attr=tag, ctx=ast.Load()
+                            )
+                            decorator_list.append(tag_decorator)
+
                     test_function = ast.AsyncFunctionDef(
                         name=f"test_{id}_{sanitize(name)}",
                         args=ast.arguments(
@@ -221,7 +292,7 @@ class GherkinCompiler:
                                 value=ast.Constant(docstring), lineno=location.line + 1
                             ),
                         ],
-                        decorator_list=[],
+                        decorator_list=decorator_list,
                         lineno=location.line,
                     )
                     assert module_node is not None

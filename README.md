@@ -88,6 +88,6 @@ they must be compiled to pytest tests function, implementation in development.
 - ✅ Rule
 - ✅ Feature
 - ✅ Steps (Given, When, Then, And, But)
+- ✅ Tags  (converted as pytest marker)
 - ✅ Doc String
 - ❌ Scenario Outlines / Examples
-- ❌ Tags
