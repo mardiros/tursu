@@ -1,3 +1,9 @@
+0.4.0 - Released on 2025-03-10
+------------------------------
+* Now autorize async method for given when then decorated methods
+* Implement tags converted to pytest marker
+* Implement Rule (do nothing except adding tags)
+
 0.3.1 - Released on 2025-03-10
 ------------------------------
 * Fix annotation support for literal, enums, boolean and float types
