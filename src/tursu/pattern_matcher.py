@@ -1,8 +1,63 @@
 import abc
 import re
 from collections.abc import Mapping
+from enum import Enum
 from inspect import Signature
-from typing import Any
+from typing import Any, Literal, get_args, get_origin
+
+
+def cast_to_annotation(
+    value: str, annotation: type[int | float | bool | str | Enum]
+) -> int | float | bool | str | Enum:
+    """
+    Safely casts a string to the given annotation.
+
+    :param value: The parameter to be cast.
+    :param annotation: the constructor.
+
+    :return: The casted value if successful, otherwise raises a ValueError.
+    """
+
+    # Define safe standard library types
+    safe_types = (int, float, bool, str)
+
+    if annotation in safe_types:
+        # Handle special case for bool
+        if annotation is bool:
+            true_vals = {"true", "1", "yes", "on"}
+            false_vals = {"false", "0", "no", "off"}
+            lower_val = value.lower()
+            if lower_val in true_vals:
+                return True
+            elif lower_val in false_vals:
+                return False
+            else:
+                raise ValueError(
+                    f"Cannot cast '{value}' to bool: "
+                    f"use one of {(', ').join(sorted([*true_vals, *false_vals]))}"
+                )
+
+        try:
+            return annotation(value)
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"Cannot cast '{value}' to {annotation}: {exc}") from exc
+
+    if get_origin(annotation) is Literal:
+        if value in get_args(annotation):
+            return value
+        raise ValueError(
+            f"Value '{value}' is not a valid Literal: {get_args(annotation)}"
+        )
+
+    if isinstance(annotation, type) and issubclass(annotation, Enum):  # type: ignore
+        try:
+            return annotation[value]
+        except KeyError:
+            raise ValueError(
+                f"Cannot cast '{value}' to Enum {annotation.__name__}"
+            ) from None
+
+    raise TypeError(f"Unsafe or unsupported type: {annotation}")
 
 
 class AbstractPatternMatcher(abc.ABC):
@@ -66,7 +121,9 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
             matchdict = matches.groupdict()
             for key, val in self.signature.parameters.items():
                 if key in matchdict:
-                    res[key] = self.signature.parameters[key].annotation(matchdict[key])
+                    # transform the annotation to call the constructror with the value
+                    typ = self.signature.parameters[key].annotation
+                    res[key] = cast_to_annotation(matchdict[key], typ)
                 elif key in kwargs:
                     res[key] = kwargs[key]
                 elif val.default and val.default != val.empty:
