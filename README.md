@@ -22,18 +22,6 @@ enabling seamless integration with pytest for running your tests.
 uv add --group dev tursu
 ```
 
-In your pyproject.toml file, ensure you run your test using asyncio active.
-
-The tests run as coroutine and let your run async steps.
-
-Here is a way to configure the same loop for all your tests, you may use a different option.
-
-```{toml}
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "session"
-```
-
 ### Creating a new test suite
 
 The simplest way to initialize a test suite is to run the tursu cli.

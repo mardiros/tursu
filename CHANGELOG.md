@@ -1,3 +1,7 @@
+0.5.0 - Released on 2025-03-10
+------------------------------
+* Remove asyncio support
+
 0.4.0 - Released on 2025-03-10
 ------------------------------
 * Now autorize async method for given when then decorated methods
