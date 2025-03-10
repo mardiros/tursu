@@ -27,14 +27,14 @@ def test_registry_handler(registry: StepRegistry):
     }
 
 
-def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
-    registry.run_step("given", "a user Bob", dummy_app=dummy_app)
-    registry.run_step("when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app)
-    registry.run_step(
+async def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
+    await registry.run_step("given", "a user Bob", dummy_app=dummy_app)
+    await registry.run_step("when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app)
+    await registry.run_step(
         "then", "I see a mailbox bob@alice.net for Bob", dummy_app=dummy_app
     )
 
-    registry.run_step(
+    await registry.run_step(
         "then",
         "the API for Bob respond",
         dummy_app=dummy_app,
@@ -50,6 +50,6 @@ def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step("when", "I see a mailbox bob@alice.net for Bob")
+        await registry.run_step("when", "I see a mailbox bob@alice.net for Bob")
 
     assert str(ctx.value) == "When I see a mailbox bob@alice.net for Bob"

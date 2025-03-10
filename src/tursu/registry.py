@@ -61,12 +61,12 @@ class StepRegistry:
     ) -> None:
         self._handlers[type].append(Step(pattern, handler))
 
-    def run_step(self, step: StepKeyword, text: str, **kwargs: Any) -> None:
+    async def run_step(self, step: StepKeyword, text: str, **kwargs: Any) -> None:
         handlers = self._handlers[step]
         for handler in handlers:
             matches = handler.pattern.get_matches(text, kwargs)
             if matches is not None:
-                handler(**matches)
+                await handler(**matches)
                 break
         else:
             raise Unregistered(f"{step.capitalize()} {text}")
