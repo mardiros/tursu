@@ -66,8 +66,10 @@ def test_compiler(
         == textwrap.dedent(
             '''
         """Discover Scenario"""
+        import pytest
         from tursu import StepRegistry
 
+        @pytest.mark.wip
         async def test_7_I_can_find_scenario_based_on_tag(registry: StepRegistry, dummy_app):
             """I can find scenario based on tag"""
             await registry.run_step('given', 'a user Bob', dummy_app=dummy_app)
