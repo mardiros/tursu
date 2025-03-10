@@ -6,7 +6,6 @@ and execute them using **pytest**.
 It compiles Gherkin syntax into Python code using **Abstract Syntax Tree (AST)** manipulation,
 enabling seamless integration with pytest for running your tests.
 
-
 ## Features
 
 - Write tests using **Gherkin syntax** (Given, When, Then).
@@ -72,11 +71,11 @@ tests/functionals2/test_1_As_a_user_I_logged_in_with_my_password.py ... [100%]
 tursu use the gherkin-official package to parse scenario, however,
 they must be compiled to pytest tests function, implementation in development.
 
-✅ Scenario
-✅ Feature
-✅ Background
-✅ Step (Given, When, Then, And, But)
-✅ Doc String
-❌ Scenario Outlines / Examples
-❌ Tags
-❌ Rule
+- ✅ Scenario
+- ✅ Feature
+- ✅ Background
+- ✅ Step (Given, When, Then, And, But)
+- ✅ Doc String
+- ❌ Scenario Outlines / Examples
+- ❌ Tags
+- ❌ Rule
