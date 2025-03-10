@@ -1,9 +1,11 @@
 import inspect
 from collections.abc import Mapping
+from enum import Enum
+from typing import Any, Literal
 
 import pytest
 
-from tursu.pattern_matcher import DefaultPatternMatcher
+from tursu.pattern_matcher import DefaultPatternMatcher, cast_to_annotation
 
 
 def dummy_str_pattern(param: str): ...
@@ -19,6 +21,79 @@ def default_param(name: str = "Alice", age: int = 42): ...
 
 
 def mix_param(name: str, age: int = 42): ...
+
+
+class Foobar(Enum):
+    foo = "Foo"
+    bar = "Bar"
+
+
+@pytest.mark.parametrize(
+    "value,annotation,expected",
+    [
+        pytest.param("1", str, "1", id="str"),
+        pytest.param("1", int, 1, id="int"),
+        pytest.param("1", float, 1.0, id="float"),
+        pytest.param("1", bool, True, id="bool[1]"),
+        pytest.param("true", bool, True, id="bool[true]"),
+        pytest.param("on", bool, True, id="bool[on]"),
+        pytest.param("0", bool, False, id="bool[0]"),
+        pytest.param("false", bool, False, id="bool[false]"),
+        pytest.param("off", bool, False, id="bool[off]"),
+        pytest.param("foo", Literal["foo", "bar"], "foo", id="literal"),
+        pytest.param("foo", Foobar, Foobar.foo, id="enum"),
+    ],
+)
+def test_cast_to_annotation(value: Any, annotation: Any, expected: Any) -> None:
+    assert cast_to_annotation(value, annotation) == expected
+
+
+@pytest.mark.parametrize(
+    "value,annotation,expected",
+    [
+        pytest.param(
+            "one",
+            int,
+            "Cannot cast 'one' to <class 'int'>: "
+            "invalid literal for int() with base 10: 'one'",
+            id="int",
+        ),
+        pytest.param(
+            "one",
+            float,
+            "Cannot cast 'one' to <class 'float'>: "
+            "could not convert string to float: 'one'",
+            id="float",
+        ),
+        pytest.param(
+            "one",
+            bool,
+            "Cannot cast 'one' to bool: use one of 0, 1, false, no, off, on, true, yes",
+            id="bool",
+        ),
+        pytest.param(
+            "Foo",
+            Literal["foo", "bar"],
+            "Value 'Foo' is not a valid Literal: ('foo', 'bar')",
+            id="literal",
+        ),
+        pytest.param("Foo", Foobar, "Cannot cast 'Foo' to Enum Foobar", id="enum"),
+    ],
+)
+def test_cast_to_annotation_value_error(
+    value: Any, annotation: Any, expected: Any
+) -> None:
+    with pytest.raises(ValueError) as ctx:
+        assert cast_to_annotation(value, annotation)
+
+    assert str(ctx.value) == expected
+
+
+def test_cast_to_annotation_type_error() -> None:
+    with pytest.raises(TypeError) as ctx:
+        assert cast_to_annotation("value", dict)  # type: ignore
+
+    assert str(ctx.value) == "Unsafe or unsupported type: <class 'dict'>"
 
 
 @pytest.mark.parametrize(
