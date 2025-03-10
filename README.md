@@ -26,9 +26,12 @@ In your pyproject.toml file, ensure you run your test using asyncio active.
 
 The tests run as coroutine and let your run async steps.
 
+Here is a way to configure the same loop for all your tests, you may use a different option.
+
 ```{toml}
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 ```
 
 ### Creating a new test suite
@@ -81,10 +84,10 @@ tursu use the gherkin-official package to parse scenario, however,
 they must be compiled to pytest tests function, implementation in development.
 
 - ✅ Scenario
-- ✅ Feature
 - ✅ Background
-- ✅ Step (Given, When, Then, And, But)
+- ✅ Rule
+- ✅ Feature
+- ✅ Steps (Given, When, Then, And, But)
 - ✅ Doc String
 - ❌ Scenario Outlines / Examples
 - ❌ Tags
-- ❌ Rule
