@@ -1,3 +1,7 @@
+0.3.0 - Released on 2025-03-10
+------------------------------
+* Add support of docstring in tests
+
 0.2.0 - Released on 2025-03-09
 ------------------------------
 * Implement a tursu init command
