@@ -1,3 +1,7 @@
+0.3.1 - Released on 2025-03-10
+------------------------------
+* Fix annotation support for literal, enums, boolean and float types
+
 0.3.0 - Released on 2025-03-10
 ------------------------------
 * Add support of docstring in tests
