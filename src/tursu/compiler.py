@@ -7,6 +7,7 @@ from tursu.domain.model.gherkin import (
     GherkinBackground,
     GherkinBackgroundEnvelope,
     GherkinDocument,
+    GherkinEnvelope,
     GherkinExamples,
     GherkinFeature,
     GherkinKeyword,
@@ -34,10 +35,10 @@ class GherkinIterator:
             yield self.stack
         self.stack.pop()
 
-    def emit_feature(self, feature: GherkinFeature) -> Iterator[Any]:
-        self.stack.append(feature)
-        yield self.stack
-        for child in self.doc.feature.children:
+    def emit_feature_from_enveloppe(
+        self, enveloppe: Sequence[GherkinEnvelope]
+    ) -> Iterator[Any]:
+        for child in enveloppe:
             match child:
                 case GherkinBackgroundEnvelope(background=background):
                     self.stack.append(background)
@@ -52,7 +53,14 @@ class GherkinIterator:
                 case GherkinRuleEnvelope(rule=rule):
                     self.stack.append(rule)
                     yield self.stack
+                    for child in self.emit_feature_from_enveloppe(rule.children):
+                        yield child
                     self.stack.pop()
+
+    def emit_feature(self, feature: GherkinFeature) -> Iterator[Any]:
+        self.stack.append(feature)
+        yield self.stack
+        yield from self.emit_feature_from_enveloppe(self.doc.feature.children)
         self.stack.pop()
 
     def emit_scenario(

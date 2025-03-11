@@ -3,6 +3,8 @@ Feature: Discover Scenario
   Background:
     Given a user Bob
 
+Rule: I write a wip test
+
   @wip
   Scenario: I can find scenario based on tag
     When Bob create a mailbox bob@alice.net

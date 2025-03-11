@@ -3,11 +3,7 @@ import textwrap
 import pytest
 
 from tursu.compiler import GherkinCompiler, GherkinIterator
-from tursu.domain.model.gherkin import (
-    GherkinBackgroundEnvelope,
-    GherkinDocument,
-    GherkinScenarioEnvelope,
-)
+from tursu.domain.model.gherkin import GherkinDocument
 from tursu.registry import StepRegistry
 
 from .fixtures.steps import DummyApp
@@ -17,37 +13,58 @@ def test_emit_items(doc: GherkinDocument):
     gherkin_iter = GherkinIterator(doc)
 
     iter_step = gherkin_iter.emit()
-    assert next(iter_step) == [doc]
-    assert next(iter_step) == [doc, doc.feature]
+    assert [repr(i) for i in next(iter_step)] == ["Document: scenario.feature"]
 
-    assert isinstance(doc.feature.children[0], GherkinBackgroundEnvelope)
-    assert next(iter_step) == [doc, doc.feature, doc.feature.children[0].background]
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+    ]
 
-    assert isinstance(doc.feature.children[1], GherkinScenarioEnvelope)
-    assert next(iter_step) == [doc, doc.feature, doc.feature.children[1].scenario]
-    assert next(iter_step) == [
-        doc,
-        doc.feature,
-        doc.feature.children[1].scenario,
-        doc.feature.children[1].scenario.steps[0],
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Background: ",
     ]
-    assert next(iter_step) == [
-        doc,
-        doc.feature,
-        doc.feature.children[1].scenario,
-        doc.feature.children[1].scenario.steps[1],
+
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
     ]
-    assert next(iter_step) == [
-        doc,
-        doc.feature,
-        doc.feature.children[1].scenario,
-        doc.feature.children[1].scenario.steps[2],
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
     ]
-    assert next(iter_step) == [
-        doc,
-        doc.feature,
-        doc.feature.children[1].scenario,
-        doc.feature.children[1].scenario.steps[3],
+
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
+        "When Bob create a mailbox bob@alice.net",
+    ]
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
+        "Then I see a mailbox bob@alice.net for Bob",
+    ]
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
+        'And the mailbox bob@alice.net "Welcome Bob" message is',
+    ]
+    assert [repr(i) for i in next(iter_step)] == [
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
+        "And the API for bob@alice.net respond",
     ]
     with pytest.raises(StopIteration):
         next(iter_step)
