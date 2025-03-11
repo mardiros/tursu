@@ -8,6 +8,7 @@ from unittests.fixtures.steps import DummyApp, DummyMail
 def test_registry_handler(registry: StepRegistry):
     from unittests.fixtures.steps import (
         assert_api_response,
+        assert_dataset,
         assert_mailbox_contains,
         assert_user_has_mailbox,
         create_mailbox,
@@ -21,6 +22,7 @@ def test_registry_handler(registry: StepRegistry):
         ],
         "then": [
             Step("the API for {username} respond", assert_api_response),
+            Step("the users dataset is", assert_dataset),
             Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
             Step("I see a mailbox {email} for {username}", assert_user_has_mailbox),
         ],
