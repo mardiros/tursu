@@ -33,7 +33,6 @@ def test_model(doc: GherkinDocument):
             {
                 "scenario": {
                     "description": "",
-                    "examples": [],
                     "id": "7",
                     "keyword": "scenario",
                     "location": {

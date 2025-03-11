@@ -66,6 +66,7 @@ def test_compiler(
         == textwrap.dedent(
             '''
         """Discover Scenario"""
+        from typing import Any
         import pytest
         from tursu import StepRegistry
 

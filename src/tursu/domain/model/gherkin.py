@@ -16,6 +16,8 @@ GherkinKeyword = Annotated[
     Literal[
         "feature",
         "scenario",
+        "scenario outline",
+        "examples",
         "background",
         "rule",
         "given",
@@ -25,6 +27,11 @@ GherkinKeyword = Annotated[
         "but",
     ],
     BeforeValidator(sanitize),
+]
+
+GherkinScenarioKeyword = Annotated[Literal["scenario"], BeforeValidator(sanitize)]
+GherkinScenarioOutlineKeyword = Annotated[
+    Literal["scenario outline"], BeforeValidator(sanitize)
 ]
 
 
@@ -107,7 +114,17 @@ class GherkinScenario(BaseModel):
     id: str
     location: GherkinLocation
     tags: Sequence[GherkinTag]
-    keyword: GherkinKeyword
+    keyword: GherkinScenarioKeyword
+    name: str
+    description: str
+    steps: Sequence[GherkinStep]
+
+
+class GherkinScenarioOutline(BaseModel):
+    id: str
+    location: GherkinLocation
+    tags: Sequence[GherkinTag]
+    keyword: GherkinScenarioOutlineKeyword
     name: str
     description: str
     steps: Sequence[GherkinStep]
@@ -119,7 +136,7 @@ class GherkinBackgroundEnvelope(BaseModel):
 
 
 class GherkinScenarioEnvelope(BaseModel):
-    scenario: GherkinScenario
+    scenario: GherkinScenario | GherkinScenarioOutline
 
 
 class GherkinRuleEnvelope(BaseModel):
