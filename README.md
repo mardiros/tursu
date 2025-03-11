@@ -79,4 +79,4 @@ they must be compiled to pytest tests function, implementation in development.
 - ✅ Steps (Given, When, Then, And, But)
 - ✅ Tags  (converted as pytest marker)
 - ✅ Doc String
-- ❌ Datatables
+- ✅ Datatables
