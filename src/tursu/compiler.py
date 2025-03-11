@@ -19,7 +19,7 @@ from tursu.domain.model.gherkin import (
     GherkinStep,
 )
 from tursu.domain.model.testmod import TestModule
-from tursu.registry import StepRegistry
+from tursu.registry import Tursu
 from tursu.steps import StepKeyword
 
 
@@ -83,7 +83,7 @@ def sanitize(name: str) -> str:
 class GherkinCompiler:
     feat_idx = 1
 
-    def __init__(self, doc: GherkinDocument, registry: StepRegistry) -> None:
+    def __init__(self, doc: GherkinDocument, registry: Tursu) -> None:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
 
@@ -198,10 +198,10 @@ class GherkinCompiler:
                 )
             call_format_node = ast.Call(
                 func=ast.Attribute(
-                    value=ast.Name(id="registry", ctx=ast.Load()),
+                    value=ast.Name(id="tursu", ctx=ast.Load()),
                     attr="format_example_step",
                     ctx=ast.Load(),
-                ),  # registry.run_step
+                ),  # tursu.run_step
                 args=[
                     text,
                 ],
@@ -210,10 +210,10 @@ class GherkinCompiler:
 
         call_node = ast.Call(
             func=ast.Attribute(
-                value=ast.Name(id="registry", ctx=ast.Load()),
+                value=ast.Name(id="tursu", ctx=ast.Load()),
                 attr="run_step",
                 ctx=ast.Load(),
-            ),  # registry.run_step
+            ),  # tursu.run_step
             args=[
                 ast.Name(id="request", ctx=ast.Load()),
                 ast.Constant(value=last_keyword),
@@ -275,7 +275,7 @@ class GherkinCompiler:
                     )
                     import_tursu = ast.ImportFrom(
                         module="tursu",  # the module name
-                        names=[ast.alias(name="StepRegistry", asname=None)],
+                        names=[ast.alias(name="Tursu", asname=None)],
                         level=0,  # import at the top level
                     )
                     module_node = ast.Module(
@@ -314,8 +314,8 @@ class GherkinCompiler:
                     args = [
                         ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
-                            arg="registry",
-                            annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
+                            arg="tursu",
+                            annotation=ast.Name(id="Tursu", ctx=ast.Load()),
                         ),
                     ]
                     for key, _val in fixtures.items():
@@ -440,8 +440,8 @@ class GherkinCompiler:
                     args = [
                         ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
-                            arg="registry",
-                            annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
+                            arg="tursu",
+                            annotation=ast.Name(id="Tursu", ctx=ast.Load()),
                         ),
                     ]
                     for key, _val in fixtures.items():

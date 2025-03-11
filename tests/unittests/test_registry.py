@@ -2,12 +2,12 @@ from typing import Any
 
 import pytest
 
-from tursu.registry import StepRegistry, Unregistered
+from tursu.registry import Tursu, Unregistered
 from tursu.steps import Step
 from unittests.fixtures.steps import DummyApp, DummyMail
 
 
-def test_registry_handler(registry: StepRegistry):
+def test_registry_handler(tursu: Tursu):
     from unittests.fixtures.steps import (
         assert_api_response,
         assert_dataset,
@@ -17,7 +17,7 @@ def test_registry_handler(registry: StepRegistry):
         give_user,
     )
 
-    assert registry._handlers == {
+    assert tursu._handlers == {
         "given": [Step("a user {username}", give_user)],
         "when": [
             Step("{username} create a mailbox {email}", create_mailbox),
@@ -31,16 +31,16 @@ def test_registry_handler(registry: StepRegistry):
     }
 
 
-def test_registry_step(request: Any, dummy_app: DummyApp, registry: StepRegistry):
-    registry.run_step(request, "given", "a user Bob", dummy_app=dummy_app)
-    registry.run_step(
+def test_registry_step(request: Any, dummy_app: DummyApp, tursu: Tursu):
+    tursu.run_step(request, "given", "a user Bob", dummy_app=dummy_app)
+    tursu.run_step(
         request, "when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
     )
-    registry.run_step(
+    tursu.run_step(
         request, "then", "I see a mailbox bob@alice.net for Bob", dummy_app=dummy_app
     )
 
-    registry.run_step(
+    tursu.run_step(
         request,
         "then",
         "the API for Bob respond",
@@ -57,6 +57,6 @@ def test_registry_step(request: Any, dummy_app: DummyApp, registry: StepRegistry
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(request, "when", "I see a mailbox bob@alice.net for Bob")
+        tursu.run_step(request, "when", "I see a mailbox bob@alice.net for Bob")
 
     assert str(ctx.value) == "When I see a mailbox bob@alice.net for Bob"

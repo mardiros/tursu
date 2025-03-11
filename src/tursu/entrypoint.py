@@ -12,12 +12,12 @@ generate_tests()
 DEFAULT_CONFTEST = """\
 import pytest
 
-from tursu.registry import StepRegistry
+from tursu.registry import Tursu
 
 
 @pytest.fixture(scope="session")
-def registry() -> StepRegistry:
-    return StepRegistry().scan()
+def tursu() -> Tursu:
+    return Tursu().scan()
 """
 
 DEFAULT_CONFTEST_WITH_DUMMIES = f'''
