@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from tursu.registry import StepRegistry, Unregistered
@@ -29,14 +31,17 @@ def test_registry_handler(registry: StepRegistry):
     }
 
 
-def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
-    registry.run_step("given", "a user Bob", dummy_app=dummy_app)
-    registry.run_step("when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app)
+def test_registry_step(request: Any, dummy_app: DummyApp, registry: StepRegistry):
+    registry.run_step(request, "given", "a user Bob", dummy_app=dummy_app)
     registry.run_step(
-        "then", "I see a mailbox bob@alice.net for Bob", dummy_app=dummy_app
+        request, "when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
+    )
+    registry.run_step(
+        request, "then", "I see a mailbox bob@alice.net for Bob", dummy_app=dummy_app
     )
 
     registry.run_step(
+        request,
         "then",
         "the API for Bob respond",
         dummy_app=dummy_app,
@@ -52,6 +57,6 @@ def test_registry_step(dummy_app: DummyApp, registry: StepRegistry):
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step("when", "I see a mailbox bob@alice.net for Bob")
+        registry.run_step(request, "when", "I see a mailbox bob@alice.net for Bob")
 
     assert str(ctx.value) == "When I see a mailbox bob@alice.net for Bob"

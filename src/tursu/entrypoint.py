@@ -15,7 +15,7 @@ import pytest
 from tursu.registry import StepRegistry
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def registry() -> StepRegistry:
     return StepRegistry().scan()
 """

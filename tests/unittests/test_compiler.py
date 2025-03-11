@@ -67,11 +67,11 @@ def test_emit_items(doc: GherkinDocument):
         "And the API for bob@alice.net respond",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        'Document: scenario.feature',
-        'Feature: Discover Scenario',
-        'Rule: I write a wip test',
-        'Scenario: I can find scenario based on tag',
-        'And the users dataset is',
+        "Document: scenario.feature",
+        "Feature: Discover Scenario",
+        "Rule: I write a wip test",
+        "Scenario: I can find scenario based on tag",
+        "And the users dataset is",
     ]
 
     with pytest.raises(StopIteration):
@@ -96,14 +96,14 @@ def test_compiler(
         from tursu import StepRegistry
 
         @pytest.mark.wip
-        def test_10_I_can_find_scenario_based_on_tag(registry: StepRegistry, dummy_app):
+        def test_10_I_can_find_scenario_based_on_tag(request, registry: StepRegistry, dummy_app):
             """I can find scenario based on tag"""
-            registry.run_step('given', 'a user Bob', dummy_app=dummy_app)
-            registry.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-            registry.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
-            registry.run_step('then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-            registry.run_step('then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
-            registry.run_step('then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
+            registry.run_step(request, 'given', 'a user Bob', dummy_app=dummy_app)
+            registry.run_step(request, 'when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+            registry.run_step(request, 'then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
+            registry.run_step(request, 'then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
+            registry.run_step(request, 'then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+            registry.run_step(request, 'then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
             '''
         ).strip()
     )
@@ -128,14 +128,14 @@ def test_compiler_compile_outline(
 
     @pytest.mark.oulined
     @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='examples'), pytest.param('Bob', 'bob@bob.net', id='examples')])
-    def test_10_I_can_load_scenario_outline(registry: StepRegistry, dummy_app: Any, username: str, email: str):
+    def test_10_I_can_load_scenario_outline(request, registry: StepRegistry, dummy_app: Any, username: str, email: str):
         """I can load scenario outline
 
         This scenario is complex and require a comment."""
-        registry.run_step('given', 'a user momo', dummy_app=dummy_app)
-        registry.run_step('given', registry.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
-        registry.run_step('when', registry.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
-        registry.run_step('then', registry.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
+        registry.run_step(request, 'given', 'a user momo', dummy_app=dummy_app)
+        registry.run_step(request, 'given', registry.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
+        registry.run_step(request, 'when', registry.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
+        registry.run_step(request, 'then', registry.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
      '''
         ).strip()
     )
