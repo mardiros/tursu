@@ -78,7 +78,8 @@ class GherkinTableRow(BaseModel):
     cells: Sequence[GherkinCell]
 
     def __repr__(self) -> str:
-        return f"| {'\t|\t'.join([repr(cell) for cell in self.cells])} |"
+        separator = "\t|\t"  # before Python 3.12, backslash are forbidden in f-strings
+        return f"| {separator.join([repr(cell) for cell in self.cells])} |"
 
 
 class GherkinDataTable(BaseModel):
