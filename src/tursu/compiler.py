@@ -316,7 +316,7 @@ class GherkinCompiler:
                         ast.arg(
                             arg="registry",
                             annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
-                        )
+                        ),
                     ]
                     for key, _val in fixtures.items():
                         args.append(
@@ -442,7 +442,7 @@ class GherkinCompiler:
                         ast.arg(
                             arg="registry",
                             annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
-                        )
+                        ),
                     ]
                     for key, _val in fixtures.items():
                         args.append(

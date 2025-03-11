@@ -1,4 +1,5 @@
 from typing import Any
+
 import pytest
 
 from tursu.registry import StepRegistry, Unregistered
