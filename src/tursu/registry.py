@@ -47,7 +47,7 @@ def then(pattern: str) -> Callable[[Handler], Handler]:
     return _step("then", pattern)
 
 
-class StepRegistry:
+class Tursu:
     """Store all the handlers for gherkin action."""
 
     def __init__(self) -> None:
@@ -105,7 +105,7 @@ class StepRegistry:
         else:
             raise Unregistered(f"{step.capitalize()} {text}")
 
-    def scan(self, mod: ModuleType | None = None) -> "StepRegistry":
+    def scan(self, mod: ModuleType | None = None) -> "Tursu":
         """
         Scan the module (or modules) containing steps.
         """

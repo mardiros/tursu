@@ -5,7 +5,7 @@ from pathlib import Path
 
 from tursu.compiler import GherkinCompiler
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import StepRegistry
+from tursu.registry import Tursu
 
 
 def walk_features(path: Path) -> Iterator[GherkinDocument]:
@@ -30,7 +30,7 @@ def generate_tests() -> None:
     assert caller_module
     assert caller_module.__file__
 
-    reg = StepRegistry()
+    reg = Tursu()
     reg.scan(caller_module)
 
     to_removes: list[Path] = []

@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import StepRegistry
+from tursu.registry import Tursu
 
 docs_dir = Path(__file__).parent / "fixtures"
 
@@ -21,8 +21,8 @@ def outline_doc():
 
 
 @pytest.fixture(scope="session")
-def registry():
-    return StepRegistry().scan()
+def tursu():
+    return Tursu().scan()
 
 
 @pytest.fixture()

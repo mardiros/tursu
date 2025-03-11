@@ -4,7 +4,7 @@ import pytest
 
 from tursu.compiler import GherkinCompiler, GherkinIterator
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import StepRegistry
+from tursu.registry import Tursu
 
 from .fixtures.steps import DummyApp
 
@@ -81,9 +81,9 @@ def test_emit_items(doc: GherkinDocument):
 
 
 def test_compiler(
-    doc: GherkinDocument, registry: StepRegistry, dummy_app: DummyApp
+    doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp
 ) -> None:
-    compiler = GherkinCompiler(doc, registry)
+    compiler = GherkinCompiler(doc, tursu)
     code = compiler.to_module()
 
     assert (
@@ -93,26 +93,26 @@ def test_compiler(
         """Discover Scenario"""
         from typing import Any
         import pytest
-        from tursu import StepRegistry
+        from tursu import Tursu
 
         @pytest.mark.wip
-        def test_10_I_can_find_scenario_based_on_tag(request, registry: StepRegistry, dummy_app):
+        def test_10_I_can_find_scenario_based_on_tag(request, tursu: Tursu, dummy_app):
             """I can find scenario based on tag"""
-            registry.run_step(request, 'given', 'a user Bob', dummy_app=dummy_app)
-            registry.run_step(request, 'when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-            registry.run_step(request, 'then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
-            registry.run_step(request, 'then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-            registry.run_step(request, 'then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
-            registry.run_step(request, 'then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
+            tursu.run_step(request, 'given', 'a user Bob', dummy_app=dummy_app)
+            tursu.run_step(request, 'when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+            tursu.run_step(request, 'then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
+            tursu.run_step(request, 'then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
+            tursu.run_step(request, 'then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+            tursu.run_step(request, 'then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
             '''
         ).strip()
     )
 
 
 def test_compiler_compile_outline(
-    outline_doc: GherkinDocument, registry: StepRegistry, dummy_app: DummyApp
+    outline_doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp
 ) -> None:
-    compiler = GherkinCompiler(outline_doc, registry)
+    compiler = GherkinCompiler(outline_doc, tursu)
     code = compiler.to_module()
 
     assert (
@@ -124,18 +124,18 @@ def test_compiler_compile_outline(
     This feature is complex and require a comment."""
     from typing import Any
     import pytest
-    from tursu import StepRegistry
+    from tursu import Tursu
 
     @pytest.mark.oulined
     @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='examples'), pytest.param('Bob', 'bob@bob.net', id='examples')])
-    def test_10_I_can_load_scenario_outline(request, registry: StepRegistry, dummy_app: Any, username: str, email: str):
+    def test_10_I_can_load_scenario_outline(request, tursu: Tursu, dummy_app: Any, username: str, email: str):
         """I can load scenario outline
 
         This scenario is complex and require a comment."""
-        registry.run_step(request, 'given', 'a user momo', dummy_app=dummy_app)
-        registry.run_step(request, 'given', registry.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
-        registry.run_step(request, 'when', registry.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
-        registry.run_step(request, 'then', registry.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
+        tursu.run_step(request, 'given', 'a user momo', dummy_app=dummy_app)
+        tursu.run_step(request, 'given', tursu.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
+        tursu.run_step(request, 'when', tursu.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
+        tursu.run_step(request, 'then', tursu.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
      '''
         ).strip()
     )
