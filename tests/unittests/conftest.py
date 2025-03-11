@@ -7,12 +7,17 @@ import pytest
 from tursu.domain.model.gherkin import GherkinDocument
 from tursu.registry import StepRegistry
 
-path = Path(__file__).parent / "fixtures" / "scenario.feature"
+docs_dir = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture
 def doc():
-    return GherkinDocument.from_file(path)
+    return GherkinDocument.from_file(docs_dir / "scenario.feature")
+
+
+@pytest.fixture
+def outline_doc():
+    return GherkinDocument.from_file(docs_dir / "scenario_outline.feature")
 
 
 @pytest.fixture(scope="session")

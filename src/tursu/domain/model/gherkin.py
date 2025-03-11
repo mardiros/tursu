@@ -16,6 +16,8 @@ GherkinKeyword = Annotated[
     Literal[
         "feature",
         "scenario",
+        "scenario outline",
+        "examples",
         "background",
         "rule",
         "given",
@@ -25,6 +27,15 @@ GherkinKeyword = Annotated[
         "but",
     ],
     BeforeValidator(sanitize),
+]
+
+GherkinScenarioKeyword = Annotated[Literal["scenario"], BeforeValidator(sanitize)]
+GherkinScenarioOutlineKeyword = Annotated[
+    Literal["scenario outline"], BeforeValidator(sanitize)
+]
+
+StrippedWhitespace = Annotated[
+    str, BeforeValidator(lambda value: value.strip() if value else value)
 ]
 
 
@@ -37,16 +48,28 @@ class GherkinComment(BaseModel):
     location: GherkinLocation
     text: str
 
+    def __repr__(self) -> str:
+        return f"Comment: {self.text}"
+
 
 class GherkinTag(BaseModel):
     id: str
     location: GherkinLocation
-    name: str
+    name: Annotated[
+        str,
+        BeforeValidator(lambda value: value.strip().lstrip("@") if value else value),
+    ]
+
+    def __repr__(self) -> str:
+        return f"@{self.name}" or "@<notag>"
 
 
 class GherkinCell(BaseModel):
     location: GherkinLocation
     value: str
+
+    def __repr__(self) -> str:
+        return f"{self.value}" or "<novalue>"
 
 
 class GherkinTableRow(BaseModel):
@@ -54,10 +77,16 @@ class GherkinTableRow(BaseModel):
     location: GherkinLocation
     cells: Sequence[GherkinCell]
 
+    def __repr__(self) -> str:
+        return f"| {'\t|\t'.join(repr(self.cells))} |"
+
 
 class GherkinDataTable(BaseModel):
     location: GherkinLocation
-    rows: Sequence[GherkinTableRow]
+    rows: list[GherkinTableRow]
+
+    def __repr__(self) -> str:
+        return f"{'\n'.join(repr(self.rows))}"
 
 
 class GherkinDocString(BaseModel):
@@ -72,6 +101,9 @@ class GherkinDocString(BaseModel):
             self.content = json.loads(self.content)  # type: ignore
         return self
 
+    def __repr__(self) -> str:
+        return f"{self.delimiter}{self.content}{self.delimiter}"
+
 
 class GherkinStep(BaseModel):
     id: str
@@ -82,14 +114,20 @@ class GherkinStep(BaseModel):
     data_table: GherkinDataTable | None = Field(default=None, alias="dataTable")
     doc_string: GherkinDocString | None = Field(default=None, alias="docString")
 
+    def __repr__(self) -> str:
+        return f"{self.keyword.capitalize()} {self.text}"
+
 
 class GherkinBackground(BaseModel):
     id: str
     location: GherkinLocation
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     steps: Sequence[GherkinStep]
+
+    def __repr__(self) -> str:
+        return f"Background: {self.name}"
 
 
 class GherkinExamples(BaseModel):
@@ -97,33 +135,61 @@ class GherkinExamples(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     table_header: GherkinTableRow = Field(alias="tableHeader")
     table_body: Sequence[GherkinTableRow] = Field(alias="tableBody")
+
+    def __repr__(self) -> str:
+        return f"Example: {self.name}"
 
 
 class GherkinScenario(BaseModel):
     id: str
     location: GherkinLocation
     tags: Sequence[GherkinTag]
-    keyword: GherkinKeyword
-    name: str
-    description: str
+    keyword: GherkinScenarioKeyword
+    name: StrippedWhitespace
+    description: StrippedWhitespace
+    steps: Sequence[GherkinStep]
+
+    def __repr__(self) -> str:
+        return f"Scenario: {self.name}"
+
+
+class GherkinScenarioOutline(BaseModel):
+    id: str
+    location: GherkinLocation
+    tags: Sequence[GherkinTag]
+    keyword: GherkinScenarioOutlineKeyword
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     steps: Sequence[GherkinStep]
     examples: Sequence[GherkinExamples]
+
+    def __repr__(self) -> str:
+        return f"Scenario Outline: {self.name}"
 
 
 class GherkinBackgroundEnvelope(BaseModel):
     background: GherkinBackground
 
+    def __repr__(self) -> str:
+        return "BackgroundEnvelope"
+
 
 class GherkinScenarioEnvelope(BaseModel):
-    scenario: GherkinScenario
+    scenario: GherkinScenario | GherkinScenarioOutline
+
+    def __repr__(self) -> str:
+        return "ScenarioEnvelope"
 
 
 class GherkinRuleEnvelope(BaseModel):
     rule: "GherkinRule"
+
+    def __repr__(self) -> str:
+        return "RuleEnvelope"
 
 
 GherkinEnvelope = (
@@ -136,9 +202,12 @@ class GherkinRule(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     children: Sequence[GherkinEnvelope]
+
+    def __repr__(self) -> str:
+        return f"Rule: {self.name}"
 
 
 class GherkinFeature(BaseModel):
@@ -146,13 +215,16 @@ class GherkinFeature(BaseModel):
     tags: Sequence[GherkinTag]
     language: str
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     children: Sequence[GherkinEnvelope]
+
+    def __repr__(self) -> str:
+        return f"Feature: {self.name}"
 
 
 class GherkinDocument(BaseModel):
-    name: str
+    name: StrippedWhitespace
     filepath: Path
     feature: GherkinFeature
     comments: Sequence[GherkinComment]
@@ -165,3 +237,6 @@ class GherkinDocument(BaseModel):
             filepath=file,
             **official_doc,  # type: ignore
         )
+
+    def __repr__(self) -> str:
+        return f"Document: {self.name}.feature"

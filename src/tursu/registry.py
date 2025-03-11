@@ -61,6 +61,11 @@ class StepRegistry:
     ) -> None:
         self._handlers[type].append(Step(pattern, handler))
 
+    def format_example_step(self, text: str, **kwargs: Any) -> str:
+        for key, val in kwargs.items():
+            text = text.replace(f"<{key}>", val)
+        return text
+
     def run_step(self, step: StepKeyword, text: str, **kwargs: Any) -> None:
         handlers = self._handlers[step]
         for handler in handlers:
