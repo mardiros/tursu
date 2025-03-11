@@ -24,5 +24,11 @@ def assert_not_connected(app: DummyApp):
 
 
 @then("I see the docstring")
-def asset_docstring(app: DummyApp, doc_string: dict[str, str]):
+def assert_docstring(app: DummyApp, doc_string: dict[str, str]):
     assert doc_string == {"nick": app.connected_user}
+
+
+@then("I see the data_table")
+def assert_data_table(app: DummyApp, data_table: list[dict[str, str]]):
+    records = [{"username": key, "password": val} for key, val in app.users.items()]
+    assert records == data_table, records

@@ -78,7 +78,7 @@ class GherkinTableRow(BaseModel):
     cells: Sequence[GherkinCell]
 
     def __repr__(self) -> str:
-        return f"| {'\t|\t'.join(repr(self.cells))} |"
+        return f"| {'\t|\t'.join([repr(cell) for cell in self.cells])} |"
 
 
 class GherkinDataTable(BaseModel):

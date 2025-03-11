@@ -59,3 +59,12 @@ def assert_api_response(
     dummy_app: DummyApp, username: str, doc_string: list[dict[str, Any]]
 ):
     assert [m.model_dump() for m in dummy_app.mailboxes[username]] == doc_string
+
+
+@then("the users dataset is")
+def assert_dataset(dummy_app: DummyApp, data_table: list[dict[str, str]]):
+    assert [
+        {"username": username, "email": m.email}
+        for username in dummy_app.mailboxes
+        for m in dummy_app.mailboxes[username]
+    ]

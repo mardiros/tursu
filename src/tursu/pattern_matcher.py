@@ -142,6 +142,8 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
                     continue
                 elif key == "doc_string":
                     continue
+                elif key == "data_table":
+                    continue
                 if val.default != val.empty:
                     continue
                 res[key] = val.annotation

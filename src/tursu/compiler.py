@@ -175,8 +175,15 @@ class GherkinCompiler:
             )
 
         if stp.data_table:
-            print(stp.data_table)
-            raise NotImplementedError()
+            tabl = []
+            hdr = [c.value for c in stp.data_table.rows[0].cells]
+            for row in stp.data_table.rows[1:]:
+                vals = [c.value for c in row.cells]
+                tabl.append(dict(zip(hdr, vals)))
+
+            keywords.append(
+                ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+            )
 
         call_format_node = None
         text = ast.Constant(value=stp.text)
