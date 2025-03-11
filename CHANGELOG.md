@@ -1,3 +1,8 @@
+0.7.0 - Released on 2025-03-11
+------------------------------
+* Breaking change: Now the registry is named tursu
+* Using -v will print the current gherkin step
+
 0.6.2 - Released on 2025-03-11
 ------------------------------
 * Implement scenario outline
