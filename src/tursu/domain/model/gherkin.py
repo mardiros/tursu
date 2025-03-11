@@ -34,6 +34,10 @@ GherkinScenarioOutlineKeyword = Annotated[
     Literal["scenario outline"], BeforeValidator(sanitize)
 ]
 
+StrippedWhitespace = Annotated[
+    str, BeforeValidator(lambda value: value.strip() if value else value)
+]
+
 
 class GherkinLocation(BaseModel):
     line: int
@@ -45,16 +49,19 @@ class GherkinComment(BaseModel):
     text: str
 
     def __repr__(self) -> str:
-        return f"{self.text}"
+        return f"Comment: {self.text}"
 
 
 class GherkinTag(BaseModel):
     id: str
     location: GherkinLocation
-    name: str
+    name: Annotated[
+        str,
+        BeforeValidator(lambda value: value.strip().lstrip("@") if value else value),
+    ]
 
     def __repr__(self) -> str:
-        return f"{self.name}"
+        return f"@{self.name}" or "@<notag>"
 
 
 class GherkinCell(BaseModel):
@@ -62,7 +69,7 @@ class GherkinCell(BaseModel):
     value: str
 
     def __repr__(self) -> str:
-        return f"{self.value}"
+        return f"{self.value}" or "<novalue>"
 
 
 class GherkinTableRow(BaseModel):
@@ -71,7 +78,7 @@ class GherkinTableRow(BaseModel):
     cells: Sequence[GherkinCell]
 
     def __repr__(self) -> str:
-        return f"| {' | '.join(repr(self.cells))} |"
+        return f"| {'\t|\t'.join(repr(self.cells))} |"
 
 
 class GherkinDataTable(BaseModel):
@@ -115,8 +122,8 @@ class GherkinBackground(BaseModel):
     id: str
     location: GherkinLocation
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     steps: Sequence[GherkinStep]
 
     def __repr__(self) -> str:
@@ -128,8 +135,8 @@ class GherkinExamples(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     table_header: GherkinTableRow = Field(alias="tableHeader")
     table_body: Sequence[GherkinTableRow] = Field(alias="tableBody")
 
@@ -142,8 +149,8 @@ class GherkinScenario(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinScenarioKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     steps: Sequence[GherkinStep]
 
     def __repr__(self) -> str:
@@ -155,8 +162,8 @@ class GherkinScenarioOutline(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinScenarioOutlineKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     steps: Sequence[GherkinStep]
     examples: Sequence[GherkinExamples]
 
@@ -195,8 +202,8 @@ class GherkinRule(BaseModel):
     location: GherkinLocation
     tags: Sequence[GherkinTag]
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     children: Sequence[GherkinEnvelope]
 
     def __repr__(self) -> str:
@@ -208,8 +215,8 @@ class GherkinFeature(BaseModel):
     tags: Sequence[GherkinTag]
     language: str
     keyword: GherkinKeyword
-    name: str
-    description: str
+    name: StrippedWhitespace
+    description: StrippedWhitespace
     children: Sequence[GherkinEnvelope]
 
     def __repr__(self) -> str:
@@ -217,7 +224,7 @@ class GherkinFeature(BaseModel):
 
 
 class GherkinDocument(BaseModel):
-    name: str
+    name: StrippedWhitespace
     filepath: Path
     feature: GherkinFeature
     comments: Sequence[GherkinComment]

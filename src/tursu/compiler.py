@@ -141,7 +141,7 @@ class GherkinCompiler:
                     )
                 ):
                     for tag in tags:
-                        ret.add(tag.name.lstrip("@"))
+                        ret.add(tag.name)
                 case _:
                     ...
         return ret
@@ -317,7 +317,7 @@ class GherkinCompiler:
                             )
                         )
 
-                    docstring = f"{name}\n\n{description}".strip()
+                    docstring = f"{name}\n\n    {description}".strip()
 
                     tag_decorator_list: list[ast.expr] = []
                     tags = self.get_tags(stack)
@@ -450,7 +450,7 @@ class GherkinCompiler:
                             )
                         )
 
-                    docstring = f"{name}\n\n{description}".strip()
+                    docstring = f"{name}\n\n    {description}".strip()
 
                     test_function = ast.FunctionDef(
                         name=f"test_{id}_{sanitize(name)}",

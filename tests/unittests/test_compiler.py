@@ -98,3 +98,35 @@ def test_compiler(
             '''
         ).strip()
     )
+
+
+def test_compiler_compile_outline(
+    outline_doc: GherkinDocument, registry: StepRegistry, dummy_app: DummyApp
+) -> None:
+    compiler = GherkinCompiler(outline_doc, registry)
+    code = compiler.to_module()
+
+    assert (
+        str(code)
+        == textwrap.dedent(
+            '''
+    """Discover Scenario Outline
+
+    This feature is complex and require a comment."""
+    from typing import Any
+    import pytest
+    from tursu import StepRegistry
+
+    @pytest.mark.oulined
+    @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='examples'), pytest.param('Bob', 'bob@bob.net', id='examples')])
+    def test_10_I_can_load_scenario_outline(registry: StepRegistry, dummy_app: Any, username: str, email: str):
+        """I can load scenario outline
+
+        This scenario is complex and require a comment."""
+        registry.run_step('given', 'a user momo', dummy_app=dummy_app)
+        registry.run_step('given', registry.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
+        registry.run_step('when', registry.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
+        registry.run_step('then', registry.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
+     '''
+        ).strip()
+    )
