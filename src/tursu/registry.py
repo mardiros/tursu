@@ -4,6 +4,7 @@ from types import ModuleType
 from typing import Callable
 
 import venusian
+from _pytest.fixtures import FixtureRequest
 from typing_extensions import Any
 
 from .exceptions import Unregistered
@@ -66,12 +67,28 @@ class StepRegistry:
             text = text.replace(f"<{key}>", val)
         return text
 
-    def run_step(self, step: StepKeyword, text: str, **kwargs: Any) -> None:
+    def run_step(
+        self, request: FixtureRequest, step: StepKeyword, text: str, **kwargs: Any
+    ) -> None:
+        verbose = request.config.option.verbose
         handlers = self._handlers[step]
         for handler in handlers:
             matches = handler.pattern.get_matches(text, kwargs)
             if matches is not None:
-                handler(**matches)
+                if verbose:
+                    print(f"\033[90m⏳ {step.capitalize()} {text}\033[0m")
+                try:
+                    handler(**matches)
+                except Exception:
+                    if verbose:
+                        sys.stdout.write("\033[F")  # Move cursor up
+                        sys.stdout.write("\033[K")  # Clear the line
+                        print(f"\033[91m❌ {step.capitalize()} {text}\033[0m")
+                else:
+                    if verbose:
+                        sys.stdout.write("\033[F")  # Move cursor up
+                        sys.stdout.write("\033[K")  # Clear the line
+                        print(f"\033[92m✅ {step.capitalize()} {text}\033[0m")
                 break
         else:
             raise Unregistered(f"{step.capitalize()} {text}")

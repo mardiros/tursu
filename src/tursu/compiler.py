@@ -215,6 +215,7 @@ class GherkinCompiler:
                 ctx=ast.Load(),
             ),  # registry.run_step
             args=[
+                ast.Name(id="request", ctx=ast.Load()),
                 ast.Constant(value=last_keyword),
                 call_format_node if call_format_node else text,
             ],
@@ -311,6 +312,7 @@ class GherkinCompiler:
                     fixtures = self.build_fixtures([*background_steps, *steps])
 
                     args = [
+                        ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
                             arg="registry",
                             annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
@@ -436,6 +438,7 @@ class GherkinCompiler:
                     fixtures = self.build_fixtures([*background_steps, *steps])
 
                     args = [
+                        ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
                             arg="registry",
                             annotation=ast.Name(id="StepRegistry", ctx=ast.Load()),
