@@ -1,4 +1,4 @@
-0.6.0 - Released on 2025-03-11
+0.6.1 - Released on 2025-03-11
 ------------------------------
 * Implement scenario outline
 * Implement data table
