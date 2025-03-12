@@ -105,6 +105,9 @@ class AbstractPatternMatcher(abc.ABC):
     @abc.abstractmethod
     def extract_fixtures(self, text: str) -> Mapping[str, Any] | None: ...
 
+    @abc.abstractmethod
+    def hightlight(self, matches: Mapping[str, Any]) -> str: ...
+
 
 class AbstractPattern(abc.ABC):
     def __init__(self, pattern: str) -> None:
@@ -171,3 +174,9 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
             return res
 
         return None
+
+    def hightlight(self, matches: Mapping[str, Any]) -> str:
+        colored_matches = {
+            key: f"\033[36m{value}\033[0m" for key, value in matches.items()
+        }
+        return self.pattern.format(**colored_matches)

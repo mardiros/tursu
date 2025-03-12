@@ -91,17 +91,17 @@ def test_compiler(doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp) -> No
         """Discover Scenario"""
         from typing import Any
         import pytest
-        from tursu import Tursu
+        from tursu.runner import tursu_runner, TursuRunner
 
         @pytest.mark.wip
-        def test_10_I_can_find_scenario_based_on_tag(request, tursu: Tursu, dummy_app):
+        def test_10_I_can_find_scenario_based_on_tag(tursu_runner: TursuRunner, dummy_app):
             """I can find scenario based on tag"""
-            tursu.run_step(request, 'given', 'a user Bob', dummy_app=dummy_app)
-            tursu.run_step(request, 'when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-            tursu.run_step(request, 'then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
-            tursu.run_step(request, 'then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-            tursu.run_step(request, 'then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
-            tursu.run_step(request, 'then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
+            tursu_runner.run_step('given', 'a user Bob', dummy_app=dummy_app)
+            tursu_runner.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+            tursu_runner.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
+            tursu_runner.run_step('then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
+            tursu_runner.run_step('then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+            tursu_runner.run_step('then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
             '''
         ).strip()
     )
@@ -122,18 +122,18 @@ def test_compiler_compile_outline(
     This feature is complex and require a comment."""
     from typing import Any
     import pytest
-    from tursu import Tursu
+    from tursu.runner import tursu_runner, TursuRunner
 
     @pytest.mark.oulined
     @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='examples'), pytest.param('Bob', 'bob@bob.net', id='examples')])
-    def test_10_I_can_load_scenario_outline(request, tursu: Tursu, dummy_app: Any, username: str, email: str):
+    def test_10_I_can_load_scenario_outline(tursu_runner: TursuRunner, dummy_app: Any, username: str, email: str):
         """I can load scenario outline
 
         This scenario is complex and require a comment."""
-        tursu.run_step(request, 'given', 'a user momo', dummy_app=dummy_app)
-        tursu.run_step(request, 'given', tursu.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
-        tursu.run_step(request, 'when', tursu.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
-        tursu.run_step(request, 'then', tursu.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
+        tursu_runner.run_step('given', 'a user momo', dummy_app=dummy_app)
+        tursu_runner.run_step('given', tursu_runner.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
+        tursu_runner.run_step('when', tursu_runner.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
+        tursu_runner.run_step('then', tursu_runner.format_example_step('I see a mailbox <email> for <username>', username=username, email=email), dummy_app=dummy_app)
      '''
         ).strip()
     )

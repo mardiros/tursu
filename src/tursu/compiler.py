@@ -198,7 +198,7 @@ class GherkinCompiler:
                 )
             call_format_node = ast.Call(
                 func=ast.Attribute(
-                    value=ast.Name(id="tursu", ctx=ast.Load()),
+                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
                     attr="format_example_step",
                     ctx=ast.Load(),
                 ),  # tursu.run_step
@@ -210,12 +210,11 @@ class GherkinCompiler:
 
         call_node = ast.Call(
             func=ast.Attribute(
-                value=ast.Name(id="tursu", ctx=ast.Load()),
+                value=ast.Name(id="tursu_runner", ctx=ast.Load()),
                 attr="run_step",
                 ctx=ast.Load(),
             ),  # tursu.run_step
             args=[
-                ast.Name(id="request", ctx=ast.Load()),
                 ast.Constant(value=last_keyword),
                 call_format_node if call_format_node else text,
             ],
@@ -274,8 +273,11 @@ class GherkinCompiler:
                         names=[ast.alias(name="pytest", asname=None)]
                     )
                     import_tursu = ast.ImportFrom(
-                        module="tursu",  # the module name
-                        names=[ast.alias(name="Tursu", asname=None)],
+                        module="tursu.runner",  # the module name
+                        names=[
+                            ast.alias(name="tursu_runner", asname=None),
+                            ast.alias(name="TursuRunner", asname=None),
+                        ],
                         level=0,  # import at the top level
                     )
                     module_node = ast.Module(
@@ -312,10 +314,9 @@ class GherkinCompiler:
                     fixtures = self.build_fixtures([*background_steps, *steps])
 
                     args = [
-                        ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
-                            arg="tursu",
-                            annotation=ast.Name(id="Tursu", ctx=ast.Load()),
+                            arg="tursu_runner",
+                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
                         ),
                     ]
                     for key, _val in fixtures.items():
@@ -438,10 +439,9 @@ class GherkinCompiler:
                     fixtures = self.build_fixtures([*background_steps, *steps])
 
                     args = [
-                        ast.Name(id="request", ctx=ast.Load()),
                         ast.arg(
-                            arg="tursu",
-                            annotation=ast.Name(id="Tursu", ctx=ast.Load()),
+                            arg="tursu_runner",
+                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
                         ),
                     ]
                     for key, _val in fixtures.items():

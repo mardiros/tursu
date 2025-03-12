@@ -1,4 +1,5 @@
 import inspect
+from collections.abc import Mapping
 from typing import Any, Callable, Literal
 
 from .pattern_matcher import (
@@ -33,3 +34,6 @@ class Step:
 
     def __call__(self, **kwargs: Any) -> None:
         self.hook(**kwargs)
+
+    def highlight(self, matches: Mapping[str, Any]) -> str:
+        return self.pattern.hightlight(matches)
