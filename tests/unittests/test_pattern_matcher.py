@@ -1,5 +1,6 @@
 import inspect
 from collections.abc import Mapping
+from datetime import UTC, date, datetime
 from enum import Enum
 from typing import Any, Literal
 
@@ -42,6 +43,16 @@ class Foobar(Enum):
         pytest.param("off", bool, False, id="bool[off]"),
         pytest.param("foo", Literal["foo", "bar"], "foo", id="literal"),
         pytest.param("foo", Foobar, Foobar.foo, id="enum"),
+        pytest.param("2025-03-12", date, date(2025, 3, 12), id="date"),
+        pytest.param(
+            "2000-01-02T10:00", datetime, datetime(2000, 1, 2, 10), id="datetime"
+        ),
+        pytest.param(
+            "2000-01-02T10:00Z",
+            datetime,
+            datetime(2000, 1, 2, 10, tzinfo=UTC),
+            id="UTC datetime",
+        ),
     ],
 )
 def test_cast_to_annotation(value: Any, annotation: Any, expected: Any) -> None:
@@ -70,6 +81,18 @@ def test_cast_to_annotation(value: Any, annotation: Any, expected: Any) -> None:
             bool,
             "Cannot cast 'one' to bool: use one of 0, 1, false, no, off, on, true, yes",
             id="bool",
+        ),
+        pytest.param(
+            "monday",
+            date,
+            "Cannot cast 'monday' to date: use iso format",
+            id="date",
+        ),
+        pytest.param(
+            "yore",
+            datetime,
+            "Cannot cast 'yore' to datetime: use iso format",
+            id="datetime",
         ),
         pytest.param(
             "Foo",
