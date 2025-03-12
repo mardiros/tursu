@@ -55,23 +55,4 @@
 
 ````
 
-````{py:method} compile() -> types.CodeType
-:canonical: tursu.domain.model.testmod.TestModule.compile
-
-```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.compile
-:parser: myst
-```
-
-````
-
-````{py:property} modname
-:canonical: tursu.domain.model.testmod.TestModule.modname
-:type: str
-
-```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.modname
-:parser: myst
-```
-
-````
-
 `````

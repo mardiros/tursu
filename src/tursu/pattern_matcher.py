@@ -1,14 +1,19 @@
+"""
+Pattern matcher
+"""
+
 import abc
 import re
 from collections.abc import Mapping
+from datetime import date, datetime
 from enum import Enum
 from inspect import Signature
 from typing import Any, Literal, get_args, get_origin
 
 
 def cast_to_annotation(
-    value: str, annotation: type[int | float | bool | str | Enum]
-) -> int | float | bool | str | Enum:
+    value: str, annotation: type[int | float | bool | str | date | datetime | Enum]
+) -> int | float | bool | str | date | datetime | Enum:
     """
     Safely casts a string to the given annotation.
 
@@ -19,8 +24,7 @@ def cast_to_annotation(
     """
 
     # Define safe standard library types
-    safe_types = (int, float, bool, str)
-
+    safe_types = (int, float, bool, str, date, datetime)
     if annotation in safe_types:
         # Handle special case for bool
         if annotation is bool:
@@ -37,8 +41,25 @@ def cast_to_annotation(
                     f"use one of {(', ').join(sorted([*true_vals, *false_vals]))}"
                 )
 
+        if annotation is date:
+            try:
+                return date.fromisoformat(value)
+            except ValueError:
+                raise ValueError(
+                    f"Cannot cast '{value}' to date: use iso format"
+                ) from None
+
+        if annotation is datetime:
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                raise ValueError(
+                    f"Cannot cast '{value}' to datetime: use iso format"
+                ) from None
+
         try:
-            return annotation(value)
+            # the type can't be a date or a datetime anymore
+            return annotation(value)  # type: ignore
         except (ValueError, TypeError) as exc:
             raise ValueError(f"Cannot cast '{value}' to {annotation}: {exc}") from exc
 

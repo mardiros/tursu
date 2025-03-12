@@ -80,9 +80,7 @@ def test_emit_items(doc: GherkinDocument):
     assert gherkin_iter.stack == []
 
 
-def test_compiler(
-    doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp
-) -> None:
+def test_compiler(doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp) -> None:
     compiler = GherkinCompiler(doc, tursu)
     code = compiler.to_module()
 

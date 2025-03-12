@@ -24,6 +24,19 @@
   -
 ````
 
+### Functions
+
+````{list-table}
+:class: autosummary longtable
+:align: left
+
+* - {py:obj}`cast_to_annotation <tursu.pattern_matcher.cast_to_annotation>`
+  - ```{autodoc2-docstring} tursu.pattern_matcher.cast_to_annotation
+    :parser: myst
+    :summary:
+    ```
+````
+
 ### API
 
 `````{py:class} AbstractPattern(pattern: str)
@@ -110,3 +123,11 @@ Bases: {py:obj}`tursu.pattern_matcher.AbstractPatternMatcher`
 ````
 
 `````
+
+````{py:function} cast_to_annotation(value: str, annotation: type[int | float | bool | str | datetime.date | datetime.datetime | enum.Enum]) -> int | float | bool | str | datetime.date | datetime.datetime | enum.Enum
+:canonical: tursu.pattern_matcher.cast_to_annotation
+
+```{autodoc2-docstring} tursu.pattern_matcher.cast_to_annotation
+:parser: myst
+```
+````

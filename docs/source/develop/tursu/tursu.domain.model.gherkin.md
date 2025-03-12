@@ -44,6 +44,8 @@
   -
 * - {py:obj}`GherkinScenarioEnvelope <tursu.domain.model.gherkin.GherkinScenarioEnvelope>`
   -
+* - {py:obj}`GherkinScenarioOutline <tursu.domain.model.gherkin.GherkinScenarioOutline>`
+  -
 * - {py:obj}`GherkinStep <tursu.domain.model.gherkin.GherkinStep>`
   -
 * - {py:obj}`GherkinTableRow <tursu.domain.model.gherkin.GherkinTableRow>`
@@ -81,6 +83,21 @@
     :parser: myst
     :summary:
     ```
+* - {py:obj}`GherkinScenarioKeyword <tursu.domain.model.gherkin.GherkinScenarioKeyword>`
+  - ```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioKeyword
+    :parser: myst
+    :summary:
+    ```
+* - {py:obj}`GherkinScenarioOutlineKeyword <tursu.domain.model.gherkin.GherkinScenarioOutlineKeyword>`
+  - ```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutlineKeyword
+    :parser: myst
+    :summary:
+    ```
+* - {py:obj}`StrippedWhitespace <tursu.domain.model.gherkin.StrippedWhitespace>`
+  - ```{autodoc2-docstring} tursu.domain.model.gherkin.StrippedWhitespace
+    :parser: myst
+    :summary:
+    ```
 ````
 
 ### API
@@ -90,9 +107,14 @@
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinBackground.__repr__
+
+````
+
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinBackground.description
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -140,7 +162,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinBackground.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -169,6 +191,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinBackgroundEnvelope.__repr__
+
+````
+
 ````{py:attribute} background
 :canonical: tursu.domain.model.gherkin.GherkinBackgroundEnvelope.background
 :type: tursu.domain.model.gherkin.GherkinBackground
@@ -187,6 +214,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinCell
 
 Bases: {py:obj}`pydantic.BaseModel`
+
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinCell.__repr__
+
+````
 
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinCell.location
@@ -219,6 +251,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinComment.__repr__
+
+````
+
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinComment.location
 :type: tursu.domain.model.gherkin.GherkinLocation
@@ -250,6 +287,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinDataTable.__repr__
+
+````
+
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinDataTable.location
 :type: tursu.domain.model.gherkin.GherkinLocation
@@ -264,7 +306,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} rows
 :canonical: tursu.domain.model.gherkin.GherkinDataTable.rows
-:type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinTableRow]
+:type: list[tursu.domain.model.gherkin.GherkinTableRow]
 :value: >
    None
 
@@ -281,9 +323,23 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinDocString.__repr__
+
+````
+
+````{py:method} check_passwords_match() -> tursu.domain.model.gherkin.GherkinDocString
+:canonical: tursu.domain.model.gherkin.GherkinDocString.check_passwords_match
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinDocString.check_passwords_match
+:parser: myst
+```
+
+````
+
 ````{py:attribute} content
 :canonical: tursu.domain.model.gherkin.GherkinDocString.content
-:type: str
+:type: str | collections.abc.Mapping[str, typing.Any] | collections.abc.Sequence[typing.Any]
 :value: >
    None
 
@@ -336,6 +392,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinDocument.__repr__
+
+````
+
 ````{py:attribute} comments
 :canonical: tursu.domain.model.gherkin.GherkinDocument.comments
 :type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinComment]
@@ -384,7 +445,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinDocument.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -412,9 +473,14 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinExamples.__repr__
+
+````
+
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinExamples.description
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -462,7 +528,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinExamples.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -515,6 +581,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinFeature.__repr__
+
+````
+
 ````{py:attribute} children
 :canonical: tursu.domain.model.gherkin.GherkinFeature.children
 :type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinEnvelope]
@@ -529,7 +600,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinFeature.description
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -577,7 +648,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinFeature.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -648,6 +719,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinRule.__repr__
+
+````
+
 ````{py:attribute} children
 :canonical: tursu.domain.model.gherkin.GherkinRule.children
 :type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinEnvelope]
@@ -662,7 +738,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinRule.description
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -710,7 +786,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinRule.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -739,6 +815,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinRuleEnvelope.__repr__
+
+````
+
 ````{py:attribute} rule
 :canonical: tursu.domain.model.gherkin.GherkinRuleEnvelope.rule
 :type: GherkinRule
@@ -758,25 +839,18 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinScenario.__repr__
+
+````
+
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinScenario.description
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
 ```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenario.description
-:parser: myst
-```
-
-````
-
-````{py:attribute} examples
-:canonical: tursu.domain.model.gherkin.GherkinScenario.examples
-:type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinExamples]
-:value: >
-   None
-
-```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenario.examples
 :parser: myst
 ```
 
@@ -796,7 +870,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} keyword
 :canonical: tursu.domain.model.gherkin.GherkinScenario.keyword
-:type: tursu.domain.model.gherkin.GherkinKeyword
+:type: tursu.domain.model.gherkin.GherkinScenarioKeyword
 :value: >
    None
 
@@ -820,7 +894,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinScenario.name
-:type: str
+:type: tursu.domain.model.gherkin.StrippedWhitespace
 :value: >
    None
 
@@ -861,9 +935,14 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinScenarioEnvelope.__repr__
+
+````
+
 ````{py:attribute} scenario
 :canonical: tursu.domain.model.gherkin.GherkinScenarioEnvelope.scenario
-:type: tursu.domain.model.gherkin.GherkinScenario
+:type: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline
 :value: >
    None
 
@@ -875,10 +954,145 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 `````
 
+````{py:data} GherkinScenarioKeyword
+:canonical: tursu.domain.model.gherkin.GherkinScenarioKeyword
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioKeyword
+:parser: myst
+```
+
+````
+
+`````{py:class} GherkinScenarioOutline(/, **data: typing.Any)
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline
+
+Bases: {py:obj}`pydantic.BaseModel`
+
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.__repr__
+
+````
+
+````{py:attribute} description
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.description
+:type: tursu.domain.model.gherkin.StrippedWhitespace
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.description
+:parser: myst
+```
+
+````
+
+````{py:attribute} examples
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.examples
+:type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinExamples]
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.examples
+:parser: myst
+```
+
+````
+
+````{py:attribute} id
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.id
+:type: str
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.id
+:parser: myst
+```
+
+````
+
+````{py:attribute} keyword
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.keyword
+:type: tursu.domain.model.gherkin.GherkinScenarioOutlineKeyword
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.keyword
+:parser: myst
+```
+
+````
+
+````{py:attribute} location
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.location
+:type: tursu.domain.model.gherkin.GherkinLocation
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.location
+:parser: myst
+```
+
+````
+
+````{py:attribute} name
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.name
+:type: tursu.domain.model.gherkin.StrippedWhitespace
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.name
+:parser: myst
+```
+
+````
+
+````{py:attribute} steps
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.steps
+:type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinStep]
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.steps
+:parser: myst
+```
+
+````
+
+````{py:attribute} tags
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutline.tags
+:type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinTag]
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutline.tags
+:parser: myst
+```
+
+````
+
+`````
+
+````{py:data} GherkinScenarioOutlineKeyword
+:canonical: tursu.domain.model.gherkin.GherkinScenarioOutlineKeyword
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinScenarioOutlineKeyword
+:parser: myst
+```
+
+````
+
 `````{py:class} GherkinStep(/, **data: typing.Any)
 :canonical: tursu.domain.model.gherkin.GherkinStep
 
 Bases: {py:obj}`pydantic.BaseModel`
+
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinStep.__repr__
+
+````
 
 ````{py:attribute} data_table
 :canonical: tursu.domain.model.gherkin.GherkinStep.data_table
@@ -892,13 +1106,13 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````
 
-````{py:attribute} docstring
-:canonical: tursu.domain.model.gherkin.GherkinStep.docstring
+````{py:attribute} doc_string
+:canonical: tursu.domain.model.gherkin.GherkinStep.doc_string
 :type: tursu.domain.model.gherkin.GherkinDocString | None
 :value: >
    'Field(...)'
 
-```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinStep.docstring
+```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinStep.doc_string
 :parser: myst
 ```
 
@@ -971,6 +1185,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinTableRow.__repr__
+
+````
+
 ````{py:attribute} cells
 :canonical: tursu.domain.model.gherkin.GherkinTableRow.cells
 :type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinCell]
@@ -1014,6 +1233,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinTag.__repr__
+
+````
+
 ````{py:attribute} id
 :canonical: tursu.domain.model.gherkin.GherkinTag.id
 :type: str
@@ -1040,7 +1264,7 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 ````{py:attribute} name
 :canonical: tursu.domain.model.gherkin.GherkinTag.name
-:type: str
+:type: typing.Annotated[str, BeforeValidator(lambda value: value.strip().lstrip('@') if value else value)]
 :value: >
    None
 
@@ -1051,6 +1275,17 @@ Bases: {py:obj}`pydantic.BaseModel`
 ````
 
 `````
+
+````{py:data} StrippedWhitespace
+:canonical: tursu.domain.model.gherkin.StrippedWhitespace
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.StrippedWhitespace
+:parser: myst
+```
+
+````
 
 ````{py:function} sanitize(value: typing.Any) -> str
 :canonical: tursu.domain.model.gherkin.sanitize

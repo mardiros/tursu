@@ -18,7 +18,7 @@ enabling seamless integration with pytest for running your tests.
 
 ### Installation using uv
 
-```{bash}
+```bash
 uv add --group dev tursu
 ```
 
@@ -32,7 +32,7 @@ uv run tursu init
 
 ### Discover your tests.
 
-```{bash}
+```bash
 𝝿 uv run pytest --collect-only tests/functionals2
 =================== test session starts ===================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
@@ -52,7 +52,7 @@ collected 3 items
 
 ### Run the tests.
 
-```{bash}
+```bash
 𝝿 uv run pytest tests/functionals2
 =================== test session starts ===================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
