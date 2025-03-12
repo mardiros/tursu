@@ -8,9 +8,6 @@ on:
         required: true
         default: "latest"
 
-env:
-  DOCKER_USERNAME: mardiros
-
 
 jobs:
 
@@ -30,8 +27,8 @@ jobs:
       - name: Build Docker image
         run: docker build \
           --build-arg VERSION=${{ inputs.version }} \
-          -t  $DOCKER_USERNAME/$IMAGE_NAME:${{ inputs.version }} \
-          .
+          -t  ${{ secrets.DOCKER_USERNAME }}/tursu:${{ inputs.version }} \
+          docker
 
       - name: Push Docker image
-        run: docker push $DOCKER_USERNAME/$IMAGE_NAME:${{ inputs.version }}
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/tursu:${{ inputs.version }}
