@@ -76,20 +76,26 @@ class Tursu:
             matches = handler.pattern.get_matches(text, kwargs)
             if matches is not None:
                 if verbose:
-                    print(f"\033[90m⏳ {step.capitalize()} {text}\033[0m")
+                    print(
+                        f"\033[90m⏳ {step.capitalize()} {handler.highlight(matches)}\033[0m"
+                    )
                 try:
                     handler(**matches)
                 except Exception:
                     if verbose:
                         sys.stdout.write("\033[F")  # Move cursor up
                         sys.stdout.write("\033[K")  # Clear the line
-                        print(f"\033[91m❌ {step.capitalize()} {text}\033[0m")
+                        print(
+                            f"\033[91m❌ {step.capitalize()} {handler.highlight(matches)}\033[0m"
+                        )
                     raise
                 else:
                     if verbose:
                         sys.stdout.write("\033[F")  # Move cursor up
                         sys.stdout.write("\033[K")  # Clear the line
-                        print(f"\033[92m✅ {step.capitalize()} {text}\033[0m")
+                        print(
+                            f"\033[92m✅ {step.capitalize()} {handler.highlight(matches)}\033[0m"
+                        )
                 break
         else:
             raise Unregistered(f"{step.capitalize()} {text}")

@@ -24,7 +24,11 @@ def default_param(name: str = "Alice", age: int = 42): ...
 def mix_param(name: str, age: int = 42): ...
 
 
-x = [{"username": "johndoe", "password": "secret123"}, {"username": "janedoe", "password": "password1"}]
+x = [
+    {"username": "johndoe", "password": "secret123"},
+    {"username": "janedoe", "password": "password1"},
+]
+
 
 class Foobar(Enum):
     foo = "Foo"
