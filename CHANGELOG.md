@@ -1,3 +1,9 @@
+0.9.0 - Released on 2025-03-12
+------------------------------
+* Improve test display
+* Add docs on tags
+* Refactor code to use a runner object to have a running state
+
 0.8.0 - Released on 2025-03-12
 ------------------------------
 * Add support of date and datetime in the pattern matcher
@@ -47,4 +53,3 @@
 0.1.2 - Released on 2025-03-09
 ------------------------------
 * Initial release
-

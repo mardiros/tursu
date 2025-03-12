@@ -98,7 +98,8 @@ But those parameters named are reserved
 * `doc_string` which is reserved for the associated Gherkin feature, seen later.
 * `data_table` which is reserved for the associated Gherkin feature, seen later.
 * `request` the pytest request object.
-* `tursu` an instance of `Tursu` that is use to run the steps.
+* `tursu_runner` an instance of `TursuRunner` use to run the steps.
+* `tursu` an instance of `Tursu` used as a step registry.
 
 In our example, we have an `app` that represent a configured app from a fixture.
 
