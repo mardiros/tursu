@@ -6,7 +6,6 @@ on:
       version:
         description: "Docker Image Version"
         required: true
-        default: "latest"
 
 
 jobs:

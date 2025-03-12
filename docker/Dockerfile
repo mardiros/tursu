@@ -13,7 +13,7 @@ ENV FUNCTIONAL_TESTS_SUITE=/tests
 
 RUN uv tool install --with pytest-playwright,tursu==$VERSION pytest
 
-RUN uvx tursu init -o /testsx` --overwrite
+RUN uvx tursu init -o /tests` --overwrite
 
 WORKDIR $PYTEST_SUITE_PATH
 
