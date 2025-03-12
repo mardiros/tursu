@@ -1,3 +1,8 @@
+0.8.0 - Released on 2025-03-12
+------------------------------
+* Add support of date and datetime in the pattern matcher
+* Improve the doc
+
 0.7.0 - Released on 2025-03-11
 ------------------------------
 * Breaking change: Now the registry is named tursu
