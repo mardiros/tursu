@@ -25,10 +25,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build \
-          --build-arg VERSION=${{ inputs.version }} \
-          -t  ${{ secrets.DOCKER_USERNAME }}/tursu:${{ inputs.version }} \
-          docker
+        run: docker build --build-arg VERSION=${{ inputs.version }} -t  ${{ secrets.DOCKER_USERNAME }}/tursu:${{ inputs.version }} docker
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/tursu:${{ inputs.version }}
