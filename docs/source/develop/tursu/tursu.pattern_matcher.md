@@ -97,6 +97,16 @@ Bases: {py:obj}`abc.ABC`
 
 ````
 
+````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+:canonical: tursu.pattern_matcher.AbstractPatternMatcher.hightlight
+:abstractmethod:
+
+```{autodoc2-docstring} tursu.pattern_matcher.AbstractPatternMatcher.hightlight
+:parser: myst
+```
+
+````
+
 `````
 
 `````{py:class} DefaultPatternMatcher(pattern: str, signature: inspect.Signature)
@@ -117,6 +127,15 @@ Bases: {py:obj}`tursu.pattern_matcher.AbstractPatternMatcher`
 :canonical: tursu.pattern_matcher.DefaultPatternMatcher.get_matches
 
 ```{autodoc2-docstring} tursu.pattern_matcher.DefaultPatternMatcher.get_matches
+:parser: myst
+```
+
+````
+
+````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+:canonical: tursu.pattern_matcher.DefaultPatternMatcher.hightlight
+
+```{autodoc2-docstring} tursu.pattern_matcher.DefaultPatternMatcher.hightlight
 :parser: myst
 ```
 
