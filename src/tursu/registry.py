@@ -84,6 +84,7 @@ class Tursu:
                         sys.stdout.write("\033[F")  # Move cursor up
                         sys.stdout.write("\033[K")  # Clear the line
                         print(f"\033[91m❌ {step.capitalize()} {text}\033[0m")
+                    raise
                 else:
                     if verbose:
                         sys.stdout.write("\033[F")  # Move cursor up
