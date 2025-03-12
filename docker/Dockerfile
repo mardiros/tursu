@@ -9,8 +9,12 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ENV PATH="$PATH:/home/pwuser/.local/bin"
 
+ENV FUNCTIONAL_TESTS_SUITE=/tests
+
 RUN uv tool install --with pytest-playwright,tursu==$VERSION pytest
 
-RUN uvx tursu init -o /tests --overwrite
+RUN uvx tursu init -o /testsx` --overwrite
 
-CMD ["uvx", "pytest", "-sv", "/tests"]
+WORKDIR $PYTEST_SUITE_PATH
+
+CMD ["uvx", "pytest", "-sv", $PYTEST_SUITE_PATH]
