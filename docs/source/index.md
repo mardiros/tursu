@@ -9,6 +9,7 @@
 
 introduction
 matching_steps
+using_tags
 changelog
 ```
 

@@ -84,15 +84,6 @@
 
 ````
 
-````{py:method} format_example_step(text: str, **kwargs: typing_extensions.Any) -> str
-:canonical: tursu.registry.Tursu.format_example_step
-
-```{autodoc2-docstring} tursu.registry.Tursu.format_example_step
-:parser: myst
-```
-
-````
-
 ````{py:method} register_handler(type: tursu.steps.StepKeyword, pattern: str, handler: tursu.steps.Handler) -> None
 :canonical: tursu.registry.Tursu.register_handler
 
@@ -102,7 +93,7 @@
 
 ````
 
-````{py:method} run_step(request: _pytest.fixtures.FixtureRequest, step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+````{py:method} run_step(tursu_runner: tursu.runner.TursuRunner, step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
 :canonical: tursu.registry.Tursu.run_step
 
 ```{autodoc2-docstring} tursu.registry.Tursu.run_step

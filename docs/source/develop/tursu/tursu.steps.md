@@ -87,6 +87,15 @@
 
 ````
 
+````{py:method} highlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+:canonical: tursu.steps.Step.highlight
+
+```{autodoc2-docstring} tursu.steps.Step.highlight
+:parser: myst
+```
+
+````
+
 `````
 
 ````{py:data} StepKeyword
