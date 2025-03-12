@@ -16,8 +16,8 @@
 :class: autosummary longtable
 :align: left
 
-* - {py:obj}`StepRegistry <tursu.registry.StepRegistry>`
-  - ```{autodoc2-docstring} tursu.registry.StepRegistry
+* - {py:obj}`Tursu <tursu.registry.Tursu>`
+  - ```{autodoc2-docstring} tursu.registry.Tursu
     :parser: myst
     :summary:
     ```
@@ -61,51 +61,60 @@
 
 ### API
 
-`````{py:class} StepRegistry()
-:canonical: tursu.registry.StepRegistry
+`````{py:class} Tursu()
+:canonical: tursu.registry.Tursu
 
-```{autodoc2-docstring} tursu.registry.StepRegistry
+```{autodoc2-docstring} tursu.registry.Tursu
 :parser: myst
 ```
 
 ```{rubric} Initialization
 ```
 
-```{autodoc2-docstring} tursu.registry.StepRegistry.__init__
+```{autodoc2-docstring} tursu.registry.Tursu.__init__
 :parser: myst
 ```
 
 ````{py:method} extract_fixtures(step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
-:canonical: tursu.registry.StepRegistry.extract_fixtures
+:canonical: tursu.registry.Tursu.extract_fixtures
 
-```{autodoc2-docstring} tursu.registry.StepRegistry.extract_fixtures
+```{autodoc2-docstring} tursu.registry.Tursu.extract_fixtures
+:parser: myst
+```
+
+````
+
+````{py:method} format_example_step(text: str, **kwargs: typing_extensions.Any) -> str
+:canonical: tursu.registry.Tursu.format_example_step
+
+```{autodoc2-docstring} tursu.registry.Tursu.format_example_step
 :parser: myst
 ```
 
 ````
 
 ````{py:method} register_handler(type: tursu.steps.StepKeyword, pattern: str, handler: tursu.steps.Handler) -> None
-:canonical: tursu.registry.StepRegistry.register_handler
+:canonical: tursu.registry.Tursu.register_handler
 
-```{autodoc2-docstring} tursu.registry.StepRegistry.register_handler
+```{autodoc2-docstring} tursu.registry.Tursu.register_handler
 :parser: myst
 ```
 
 ````
 
-````{py:method} run_step(step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
-:canonical: tursu.registry.StepRegistry.run_step
+````{py:method} run_step(request: _pytest.fixtures.FixtureRequest, step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+:canonical: tursu.registry.Tursu.run_step
 
-```{autodoc2-docstring} tursu.registry.StepRegistry.run_step
+```{autodoc2-docstring} tursu.registry.Tursu.run_step
 :parser: myst
 ```
 
 ````
 
-````{py:method} scan(mod: types.ModuleType | None = None) -> tursu.registry.StepRegistry
-:canonical: tursu.registry.StepRegistry.scan
+````{py:method} scan(mod: types.ModuleType | None = None) -> tursu.registry.Tursu
+:canonical: tursu.registry.Tursu.scan
 
-```{autodoc2-docstring} tursu.registry.StepRegistry.scan
+```{autodoc2-docstring} tursu.registry.Tursu.scan
 :parser: myst
 ```
 

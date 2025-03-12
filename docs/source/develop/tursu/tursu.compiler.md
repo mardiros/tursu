@@ -48,7 +48,7 @@
 
 ### API
 
-`````{py:class} GherkinCompiler(doc: tursu.domain.model.gherkin.GherkinDocument, registry: tursu.registry.StepRegistry)
+`````{py:class} GherkinCompiler(doc: tursu.domain.model.gherkin.GherkinDocument, registry: tursu.registry.Tursu)
 :canonical: tursu.compiler.GherkinCompiler
 
 ```{autodoc2-docstring} tursu.compiler.GherkinCompiler
@@ -62,12 +62,30 @@
 :parser: myst
 ```
 
+````{py:method} build_fixtures(steps: list[tursu.domain.model.gherkin.GherkinStep]) -> dict[str, type]
+:canonical: tursu.compiler.GherkinCompiler.build_fixtures
+
+```{autodoc2-docstring} tursu.compiler.GherkinCompiler.build_fixtures
+:parser: myst
+```
+
+````
+
 ````{py:attribute} feat_idx
 :canonical: tursu.compiler.GherkinCompiler.feat_idx
 :value: >
    1
 
 ```{autodoc2-docstring} tursu.compiler.GherkinCompiler.feat_idx
+:parser: myst
+```
+
+````
+
+````{py:method} get_tags(stack: list[typing.Any]) -> set[str]
+:canonical: tursu.compiler.GherkinCompiler.get_tags
+
+```{autodoc2-docstring} tursu.compiler.GherkinCompiler.get_tags
 :parser: myst
 ```
 
@@ -116,7 +134,16 @@
 
 ````
 
-````{py:method} emit_scenario(scenario: tursu.domain.model.gherkin.GherkinScenario) -> collections.abc.Iterator[typing.Any]
+````{py:method} emit_feature_from_enveloppe(enveloppe: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinEnvelope]) -> collections.abc.Iterator[typing.Any]
+:canonical: tursu.compiler.GherkinIterator.emit_feature_from_enveloppe
+
+```{autodoc2-docstring} tursu.compiler.GherkinIterator.emit_feature_from_enveloppe
+:parser: myst
+```
+
+````
+
+````{py:method} emit_scenario(scenario: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline) -> collections.abc.Iterator[typing.Any]
 :canonical: tursu.compiler.GherkinIterator.emit_scenario
 
 ```{autodoc2-docstring} tursu.compiler.GherkinIterator.emit_scenario
