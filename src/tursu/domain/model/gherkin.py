@@ -220,7 +220,7 @@ class GherkinFeature(BaseModel):
     children: Sequence[GherkinEnvelope]
 
     def __repr__(self) -> str:
-        return f"📽️ Feature: {self.name}"
+        return f"🥒 Feature: {self.name}"
 
 
 class GherkinDocument(BaseModel):

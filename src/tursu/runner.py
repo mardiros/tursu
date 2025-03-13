@@ -1,6 +1,8 @@
 import logging
 import re
 from collections.abc import Mapping
+from types import TracebackType
+from typing import Self
 
 import pytest
 from typing_extensions import Any
@@ -31,7 +33,7 @@ class TursuRunner:
         self.runned: list[str] = []
         self.scenario = scenario
         if self.verbose:
-            self.log("", remove_previous_line=True)
+            self.log(" " * (len(self.name) + 2), remove_previous_line=True)
             for step in self.scenario:
                 self.log(step)
 
@@ -58,13 +60,15 @@ class TursuRunner:
         middle_lines_str = "\n".join(middle_lines)
         return f"\n{top_border}\n{middle_lines_str}\n{bottom_border}\n"
 
-    def log(self, text: str, remove_previous_line: bool = False) -> None:
-        if self.verbose:
-            with self.capsys.disabled():
-                if remove_previous_line and self.verbose == 1:
-                    print("\033[F", end="")
-                    print("\033[K", end="")
-                print(text)
+    def log(
+        self, text: str, remove_previous_line: bool = False, end: str = "\n"
+    ) -> None:
+        if self.verbose:  # coverage: ignore
+            with self.capsys.disabled():  # coverage: ignore
+                if remove_previous_line and self.verbose == 1:  # coverage: ignore
+                    print("\033[F", end="")  # coverage: ignore
+                    print("\033[K", end="")  # coverage: ignore
+                print(text, end=end)  # coverage: ignore
 
     def run_step(
         self,
@@ -108,9 +112,13 @@ class TursuRunner:
         self.runned.append(text)
         self.log(text, True)
 
+    def __enter__(self) -> Self:
+        return self
 
-@pytest.fixture()
-def tursu_runner(
-    tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
-) -> TursuRunner:
-    return TursuRunner(request, capsys, tursu, [])
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self.log(" " * (len(self.name) + 2), end="")

@@ -1,11 +1,16 @@
 import pytest
 
 from tursu.registry import Tursu, Unregistered
-from tursu.runner import TursuRunner, tursu_runner
+from tursu.runner import TursuRunner
 from tursu.steps import Step
 from unittests.fixtures.steps import DummyApp, DummyMail
 
-tursu_runner = tursu_runner  # ignore import error for the imported and used fixture
+
+@pytest.fixture()
+def tursu_runner(
+    tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+) -> TursuRunner:
+    return TursuRunner(request, capsys, tursu, ["📄 Document: ..."])
 
 
 def test_registry_handler(tursu: Tursu):
@@ -69,6 +74,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tu
         tursu_runner.remove_ansi_escape_sequences(tursu_runner.fancy())
         == """
 ┌───────────────────────────────────────────────┐
+│ 📄 Document: ...                              │
 │ ✅ Given a user Bob                           │
 │ ✅ When Bob create a mailbox bob@alice.net    │
 │ ✅ Then I see a mailbox bob@alice.net for Bob │
