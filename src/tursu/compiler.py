@@ -242,6 +242,32 @@ class GherkinCompiler:
             )
         return fixtures
 
+    def build_args(
+        self, fixtures: dict[str, Any], examples_keys: list[Any] | None = None
+    ) -> list[ast.arg]:
+        args = [
+            ast.arg(
+                arg="tursu_runner",
+                annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
+            ),
+        ]
+        for key, _val in fixtures.items():
+            args.append(
+                ast.arg(
+                    arg=key,
+                    annotation=ast.Name(id="Any", ctx=ast.Load()),
+                )
+            )
+        if examples_keys:
+            for exkeys in examples_keys:
+                args.append(
+                    ast.arg(
+                        arg=exkeys,
+                        annotation=ast.Name(id="str", ctx=ast.Load()),
+                    )
+                )
+        return args
+
     def to_module(self) -> TestModule:
         module_name = None
         module_node = None
@@ -312,20 +338,7 @@ class GherkinCompiler:
                     steps=steps,
                 ):
                     fixtures = self.build_fixtures([*background_steps, *steps])
-
-                    args = [
-                        ast.arg(
-                            arg="tursu_runner",
-                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
-                        ),
-                    ]
-                    for key, _val in fixtures.items():
-                        args.append(
-                            ast.arg(
-                                arg=key,
-                                # annotation=ast.Name(id=val.__name__, ctx=ast.Load()),
-                            )
-                        )
+                    args = self.build_args(fixtures)
 
                     docstring = f"{name}\n\n    {description}".strip()
 
@@ -437,29 +450,7 @@ class GherkinCompiler:
                     )
 
                     fixtures = self.build_fixtures([*background_steps, *steps])
-
-                    args = [
-                        ast.arg(
-                            arg="tursu_runner",
-                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
-                        ),
-                    ]
-                    for key, _val in fixtures.items():
-                        args.append(
-                            ast.arg(
-                                arg=key,
-                                annotation=ast.Name(id="Any", ctx=ast.Load()),
-                            )
-                        )
-
-                    for exkeys in examples_keys:
-                        args.append(
-                            ast.arg(
-                                arg=exkeys,
-                                annotation=ast.Name(id="str", ctx=ast.Load()),
-                            )
-                        )
-
+                    args = self.build_args(fixtures, examples_keys)
                     docstring = f"{name}\n\n    {description}".strip()
 
                     test_function = ast.FunctionDef(

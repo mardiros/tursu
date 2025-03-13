@@ -1,6 +1,5 @@
 import logging
 import re
-import sys
 from collections.abc import Mapping
 
 import pytest
@@ -18,9 +17,15 @@ class ScenarioFailed(Exception): ...
 
 
 class TursuRunner:
-    def __init__(self, tursu: Tursu, request: pytest.FixtureRequest) -> None:
+    def __init__(
+        self,
+        tursu: Tursu,
+        request: pytest.FixtureRequest,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
         self.verbose = request.config.option.verbose
         self.tursu = tursu
+        self.capsys = capsys
         self.runned: list[str] = []
 
     def remove_ansi_escape_sequences(self, text: str) -> str:
@@ -45,6 +50,14 @@ class TursuRunner:
         middle_lines_str = "\n".join(middle_lines)
         return f"\n{top_border}\n{middle_lines_str}\n{bottom_border}\n"
 
+    def log(self, text: str, remove_previous_line: bool = False) -> None:
+        if self.verbose:
+            with self.capsys.disabled():
+                if remove_previous_line and self.verbose == 1:
+                    print("\033[F", end="")
+                    print("\033[K", end="")
+                print(text)
+
     def run_step(
         self,
         step: StepKeyword,
@@ -66,8 +79,7 @@ class TursuRunner:
     ) -> None:
         text = f"\033[90m⏳ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.append(text)
-        if self.verbose:
-            print(text)
+        self.log(text)
 
     def emit_error(
         self,
@@ -78,10 +90,7 @@ class TursuRunner:
         text = f"\033[91m❌ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
-        if self.verbose:
-            sys.stdout.write("\033[F")  # Move cursor up
-            sys.stdout.write("\033[K")  # Clear the line
-            print(text)
+        self.log(text, True)
 
     def emit_success(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
@@ -89,12 +98,11 @@ class TursuRunner:
         text = f"\033[92m✅ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
-        if self.verbose:
-            sys.stdout.write("\033[F")  # Move cursor up
-            sys.stdout.write("\033[K")  # Clear the line
-            print(text)
+        self.log(text, True)
 
 
 @pytest.fixture()
-def tursu_runner(tursu: Tursu, request: pytest.FixtureRequest) -> TursuRunner:
-    return TursuRunner(tursu, request)
+def tursu_runner(
+    tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+) -> TursuRunner:
+    return TursuRunner(tursu, request, capsys)

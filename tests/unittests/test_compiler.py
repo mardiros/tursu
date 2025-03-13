@@ -94,7 +94,7 @@ def test_compiler(doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp) -> No
         from tursu.runner import tursu_runner, TursuRunner
 
         @pytest.mark.wip
-        def test_10_I_can_find_scenario_based_on_tag(tursu_runner: TursuRunner, dummy_app):
+        def test_10_I_can_find_scenario_based_on_tag(tursu_runner: TursuRunner, dummy_app: Any):
             """I can find scenario based on tag"""
             tursu_runner.run_step('given', 'a user Bob', dummy_app=dummy_app)
             tursu_runner.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
