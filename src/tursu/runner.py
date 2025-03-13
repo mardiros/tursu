@@ -19,20 +19,28 @@ class ScenarioFailed(Exception): ...
 class TursuRunner:
     def __init__(
         self,
-        tursu: Tursu,
         request: pytest.FixtureRequest,
         capsys: pytest.CaptureFixture[str],
+        tursu: Tursu,
+        scenario: list[str],
     ) -> None:
+        self.name = request.node.nodeid
         self.verbose = request.config.option.verbose
         self.tursu = tursu
         self.capsys = capsys
         self.runned: list[str] = []
+        self.scenario = scenario
+        if self.verbose:
+            self.log("", remove_previous_line=True)
+            for step in self.scenario:
+                self.log(step)
 
     def remove_ansi_escape_sequences(self, text: str) -> str:
         return re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", text)
 
     def fancy(self) -> str:
-        lines: list[str] = self.runned or ["🔥 TursuRunner: no step runned"]
+        lines: list[str] = self.runned or ["🔥 no step runned"]
+        lines = self.scenario + lines
         line_lengthes = [len(self.remove_ansi_escape_sequences(line)) for line in lines]
         max_line_length = max(line_lengthes)
 
@@ -105,4 +113,4 @@ class TursuRunner:
 def tursu_runner(
     tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
 ) -> TursuRunner:
-    return TursuRunner(tursu, request, capsys)
+    return TursuRunner(request, capsys, tursu, [])

@@ -154,7 +154,7 @@ class GherkinScenario(BaseModel):
     steps: Sequence[GherkinStep]
 
     def __repr__(self) -> str:
-        return f"Scenario: {self.name}"
+        return f"🎬 Scenario: {self.name}"
 
 
 class GherkinScenarioOutline(BaseModel):
@@ -168,7 +168,7 @@ class GherkinScenarioOutline(BaseModel):
     examples: Sequence[GherkinExamples]
 
     def __repr__(self) -> str:
-        return f"Scenario Outline: {self.name}"
+        return f"🎬 Scenario Outline: {self.name}"
 
 
 class GherkinBackgroundEnvelope(BaseModel):
@@ -207,7 +207,7 @@ class GherkinRule(BaseModel):
     children: Sequence[GherkinEnvelope]
 
     def __repr__(self) -> str:
-        return f"Rule: {self.name}"
+        return f"🔹 Rule: {self.name}"
 
 
 class GherkinFeature(BaseModel):
@@ -220,7 +220,7 @@ class GherkinFeature(BaseModel):
     children: Sequence[GherkinEnvelope]
 
     def __repr__(self) -> str:
-        return f"Feature: {self.name}"
+        return f"📽️ Feature: {self.name}"
 
 
 class GherkinDocument(BaseModel):
@@ -239,4 +239,8 @@ class GherkinDocument(BaseModel):
         )
 
     def __repr__(self) -> str:
-        return f"Document: {self.name}.feature"
+        return f"📄 Document: {self.name}.feature"
+
+
+class Stack(BaseModel):
+    value: list[BaseModel]
