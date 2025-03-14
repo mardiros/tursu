@@ -10,6 +10,7 @@
 introduction
 matching_steps
 using_tags
+working_with_playwright
 changelog
 ```
 

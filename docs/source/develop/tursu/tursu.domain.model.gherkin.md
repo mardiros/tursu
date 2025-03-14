@@ -52,6 +52,8 @@
   -
 * - {py:obj}`GherkinTag <tursu.domain.model.gherkin.GherkinTag>`
   -
+* - {py:obj}`Stack <tursu.domain.model.gherkin.Stack>`
+  -
 ````
 
 ### Functions
@@ -1269,6 +1271,25 @@ Bases: {py:obj}`pydantic.BaseModel`
    None
 
 ```{autodoc2-docstring} tursu.domain.model.gherkin.GherkinTag.name
+:parser: myst
+```
+
+````
+
+`````
+
+`````{py:class} Stack(/, **data: typing.Any)
+:canonical: tursu.domain.model.gherkin.Stack
+
+Bases: {py:obj}`pydantic.BaseModel`
+
+````{py:attribute} value
+:canonical: tursu.domain.model.gherkin.Stack.value
+:type: list[pydantic.BaseModel]
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.gherkin.Stack.value
 :parser: myst
 ```
 

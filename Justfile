@@ -3,16 +3,16 @@ default_unittest_suite := 'tests/unittests'
 default_functest_suite := 'tests/functionals'
 
 install:
-    uv sync --group dev --frozen
+    uv sync --group dev --group playwright --frozen
 
 update:
-    uv sync --group dev
+    uv sync --all-groups
 
 upgrade:
-    uv sync --group dev --upgrade
+    uv sync --all-groups --upgrade
 
 doc:
-    uv sync --group dev --group docs
+    uv sync --group dev --group playwright --group docs
     cd docs && uv run make html
     xdg-open docs/build/html/index.html
 

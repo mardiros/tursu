@@ -39,6 +39,11 @@
     :parser: myst
     :summary:
     ```
+* - {py:obj}`repr_stack <tursu.compiler.repr_stack>`
+  - ```{autodoc2-docstring} tursu.compiler.repr_stack
+    :parser: myst
+    :summary:
+    ```
 * - {py:obj}`sanitize <tursu.compiler.sanitize>`
   - ```{autodoc2-docstring} tursu.compiler.sanitize
     :parser: myst
@@ -62,10 +67,37 @@
 :parser: myst
 ```
 
+````{py:method} build_args(fixtures: dict[str, typing.Any], examples_keys: list[typing.Any] | None = None) -> list[ast.arg]
+:canonical: tursu.compiler.GherkinCompiler.build_args
+
+```{autodoc2-docstring} tursu.compiler.GherkinCompiler.build_args
+:parser: myst
+```
+
+````
+
 ````{py:method} build_fixtures(steps: list[tursu.domain.model.gherkin.GherkinStep]) -> dict[str, type]
 :canonical: tursu.compiler.GherkinCompiler.build_fixtures
 
 ```{autodoc2-docstring} tursu.compiler.GherkinCompiler.build_fixtures
+:parser: myst
+```
+
+````
+
+````{py:method} build_tags_decorators(stack: list[typing.Any]) -> list[ast.expr]
+:canonical: tursu.compiler.GherkinCompiler.build_tags_decorators
+
+```{autodoc2-docstring} tursu.compiler.GherkinCompiler.build_tags_decorators
+:parser: myst
+```
+
+````
+
+````{py:method} create_test_function(id: str, name: str, args: list[ast.arg], docstring: str, location: tursu.domain.model.gherkin.GherkinLocation, decorator_list: list[ast.expr], stack: list[typing.Any]) -> tuple[ast.FunctionDef, list[ast.stmt]]
+:canonical: tursu.compiler.GherkinCompiler.create_test_function
+
+```{autodoc2-docstring} tursu.compiler.GherkinCompiler.create_test_function
 :parser: myst
 ```
 
@@ -158,6 +190,14 @@
 :canonical: tursu.compiler.is_step_keyword
 
 ```{autodoc2-docstring} tursu.compiler.is_step_keyword
+:parser: myst
+```
+````
+
+````{py:function} repr_stack(stack: list[typing.Any]) -> list[str]
+:canonical: tursu.compiler.repr_stack
+
+```{autodoc2-docstring} tursu.compiler.repr_stack
 :parser: myst
 ```
 ````
