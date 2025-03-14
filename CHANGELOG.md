@@ -1,3 +1,8 @@
+0.10.0 - Released on 2025-03-14
+-------------------------------
+* Improve test display
+* Add more doc about playwright and behave
+
 0.9.0 - Released on 2025-03-12
 ------------------------------
 * Improve test display
