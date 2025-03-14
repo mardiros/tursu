@@ -23,19 +23,6 @@
     ```
 ````
 
-### Functions
-
-````{list-table}
-:class: autosummary longtable
-:align: left
-
-* - {py:obj}`tursu_runner <tursu.runner.tursu_runner>`
-  - ```{autodoc2-docstring} tursu.runner.tursu_runner
-    :parser: myst
-    :summary:
-    ```
-````
-
 ### Data
 
 ````{list-table}
@@ -58,7 +45,7 @@ Bases: {py:obj}`Exception`
 
 ```
 
-`````{py:class} TursuRunner(tursu: tursu.registry.Tursu, request: pytest.FixtureRequest)
+`````{py:class} TursuRunner(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: tursu.registry.Tursu, scenario: list[str])
 :canonical: tursu.runner.TursuRunner
 
 ```{autodoc2-docstring} tursu.runner.TursuRunner
@@ -71,6 +58,24 @@ Bases: {py:obj}`Exception`
 ```{autodoc2-docstring} tursu.runner.TursuRunner.__init__
 :parser: myst
 ```
+
+````{py:method} __enter__() -> typing.Self
+:canonical: tursu.runner.TursuRunner.__enter__
+
+```{autodoc2-docstring} tursu.runner.TursuRunner.__enter__
+:parser: myst
+```
+
+````
+
+````{py:method} __exit__(exc_type: type[BaseException] | None, exc: BaseException | None, tb: types.TracebackType | None) -> None
+:canonical: tursu.runner.TursuRunner.__exit__
+
+```{autodoc2-docstring} tursu.runner.TursuRunner.__exit__
+:parser: myst
+```
+
+````
 
 ````{py:method} emit_error(keyword: tursu.steps.StepKeyword, step: tursu.steps.Step, matches: collections.abc.Mapping[str, typing_extensions.Any]) -> None
 :canonical: tursu.runner.TursuRunner.emit_error
@@ -117,6 +122,15 @@ Bases: {py:obj}`Exception`
 
 ````
 
+````{py:method} log(text: str, remove_previous_line: bool = False, end: str = '\n') -> None
+:canonical: tursu.runner.TursuRunner.log
+
+```{autodoc2-docstring} tursu.runner.TursuRunner.log
+:parser: myst
+```
+
+````
+
 ````{py:method} remove_ansi_escape_sequences(text: str) -> str
 :canonical: tursu.runner.TursuRunner.remove_ansi_escape_sequences
 
@@ -146,12 +160,4 @@ Bases: {py:obj}`Exception`
 :parser: myst
 ```
 
-````
-
-````{py:function} tursu_runner(tursu: tursu.registry.Tursu, request: pytest.FixtureRequest) -> tursu.runner.TursuRunner
-:canonical: tursu.runner.tursu_runner
-
-```{autodoc2-docstring} tursu.runner.tursu_runner
-:parser: myst
-```
 ````
