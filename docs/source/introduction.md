@@ -114,6 +114,12 @@ You may also use the `page` fixture while using `pytest-playwright`.
 uv run pytest tests/functionals
 ```
 
-You may use `-sv` to have the scenario displayed while testing.
+You can use `-v` to have the scenario displayed while testing.
 
-And you can use `--lf` to run the last failed tests or any feature you are used too!
+You can use `-vv` to have more info in the scenario displayed while testing.
+
+You can use `--lf` to run the last failed tests or any feature you are used too!
+
+You can use `--trace` to start a debugger in the tested scenario.
+
+You can use any pytest options you are used to use while doing unit testing.
