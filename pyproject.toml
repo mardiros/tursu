@@ -8,7 +8,14 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
+  "Topic :: Utilities",
+  "Topic :: Software Development :: Testing",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 version = "0.10.0"
@@ -107,7 +114,6 @@ markers = ["wip: work in progress."]
 [tool.coverage.report]
 exclude_lines = [
   "if TYPE_CHECKING:",
-  "except ImportError",
   "\\s+\\.\\.\\.$",
   "# coverage: ignore",
 ]
