@@ -1,7 +1,8 @@
 import logging
 import re
-import sys
 from collections.abc import Mapping
+from types import TracebackType
+from typing import Self
 
 import pytest
 from typing_extensions import Any
@@ -18,16 +19,30 @@ class ScenarioFailed(Exception): ...
 
 
 class TursuRunner:
-    def __init__(self, tursu: Tursu, request: pytest.FixtureRequest) -> None:
+    def __init__(
+        self,
+        request: pytest.FixtureRequest,
+        capsys: pytest.CaptureFixture[str],
+        tursu: Tursu,
+        scenario: list[str],
+    ) -> None:
+        self.name = request.node.nodeid
         self.verbose = request.config.option.verbose
         self.tursu = tursu
+        self.capsys = capsys
         self.runned: list[str] = []
+        self.scenario = scenario
+        if self.verbose:
+            self.log(" " * (len(self.name) + 2), remove_previous_line=True)
+            for step in self.scenario:
+                self.log(step)
 
     def remove_ansi_escape_sequences(self, text: str) -> str:
         return re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", text)
 
     def fancy(self) -> str:
-        lines: list[str] = self.runned or ["🔥 TursuRunner: no step runned"]
+        lines: list[str] = self.runned or ["🔥 no step runned"]
+        lines = self.scenario + lines
         line_lengthes = [len(self.remove_ansi_escape_sequences(line)) for line in lines]
         max_line_length = max(line_lengthes)
 
@@ -44,6 +59,16 @@ class TursuRunner:
 
         middle_lines_str = "\n".join(middle_lines)
         return f"\n{top_border}\n{middle_lines_str}\n{bottom_border}\n"
+
+    def log(
+        self, text: str, remove_previous_line: bool = False, end: str = "\n"
+    ) -> None:
+        if self.verbose:  # coverage: ignore
+            with self.capsys.disabled():  # coverage: ignore
+                if remove_previous_line and self.verbose == 1:  # coverage: ignore
+                    print("\033[F", end="")  # coverage: ignore
+                    print("\033[K", end="")  # coverage: ignore
+                print(text, end=end)  # coverage: ignore
 
     def run_step(
         self,
@@ -66,8 +91,7 @@ class TursuRunner:
     ) -> None:
         text = f"\033[90m⏳ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.append(text)
-        if self.verbose:
-            print(text)
+        self.log(text)
 
     def emit_error(
         self,
@@ -78,10 +102,7 @@ class TursuRunner:
         text = f"\033[91m❌ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
-        if self.verbose:
-            sys.stdout.write("\033[F")  # Move cursor up
-            sys.stdout.write("\033[K")  # Clear the line
-            print(text)
+        self.log(text, True)
 
     def emit_success(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
@@ -89,12 +110,15 @@ class TursuRunner:
         text = f"\033[92m✅ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
-        if self.verbose:
-            sys.stdout.write("\033[F")  # Move cursor up
-            sys.stdout.write("\033[K")  # Clear the line
-            print(text)
+        self.log(text, True)
 
+    def __enter__(self) -> Self:
+        return self
 
-@pytest.fixture()
-def tursu_runner(tursu: Tursu, request: pytest.FixtureRequest) -> TursuRunner:
-    return TursuRunner(tursu, request)
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self.log(" " * (len(self.name) + 2), end="")

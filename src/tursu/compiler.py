@@ -11,6 +11,7 @@ from tursu.domain.model.gherkin import (
     GherkinExamples,
     GherkinFeature,
     GherkinKeyword,
+    GherkinLocation,
     GherkinRule,
     GherkinRuleEnvelope,
     GherkinScenario,
@@ -21,6 +22,13 @@ from tursu.domain.model.gherkin import (
 from tursu.domain.model.testmod import TestModule
 from tursu.registry import Tursu
 from tursu.steps import StepKeyword
+
+
+def repr_stack(stack: list[Any]) -> list[str]:
+    ret = []
+    for el in stack:
+        ret.append(repr(el))
+    return ret
 
 
 class GherkinIterator:
@@ -148,8 +156,9 @@ class GherkinCompiler:
 
     def _handle_step(
         self,
-        test_function: ast.FunctionDef,
+        step_list: list[ast.stmt],
         stp: GherkinStep,
+        stack: list[Any],
         last_keyword: StepKeyword | None,
         examples: Sequence[GherkinExamples] | None = None,
     ) -> StepKeyword:
@@ -222,7 +231,7 @@ class GherkinCompiler:
         )
 
         # Add the call node to the body of the function
-        test_function.body.append(ast.Expr(value=call_node, lineno=stp.location.line))
+        step_list.append(ast.Expr(value=call_node, lineno=stp.location.line))
         return last_keyword
 
     def build_fixtures(self, steps: list[GherkinStep]) -> dict[str, type]:
@@ -242,10 +251,107 @@ class GherkinCompiler:
             )
         return fixtures
 
+    def build_args(
+        self, fixtures: dict[str, Any], examples_keys: list[Any] | None = None
+    ) -> list[ast.arg]:
+        args = [
+            ast.arg(
+                arg="request",
+                annotation=ast.Name(id="pytest.FixtureRequest", ctx=ast.Load()),
+            ),
+            ast.arg(
+                arg="capsys",
+                annotation=ast.Name(id="pytest.CaptureFixture[str]", ctx=ast.Load()),
+            ),
+            ast.arg(
+                arg="tursu",
+                annotation=ast.Name(id="Tursu", ctx=ast.Load()),
+            ),
+        ]
+        for key, _val in fixtures.items():
+            args.append(
+                ast.arg(
+                    arg=key,
+                    annotation=ast.Name(id="Any", ctx=ast.Load()),
+                )
+            )
+        if examples_keys:
+            for exkeys in examples_keys:
+                args.append(
+                    ast.arg(
+                        arg=exkeys,
+                        annotation=ast.Name(id="str", ctx=ast.Load()),
+                    )
+                )
+        return args
+
+    def build_tags_decorators(self, stack: list[Any]) -> list[ast.expr]:
+        decorator_list = []
+        tags = self.get_tags(stack)
+        if tags:
+            for tag in tags:
+                decorator = ast.Attribute(
+                    value=ast.Name(id="pytest", ctx=ast.Load()),
+                    attr="mark",
+                    ctx=ast.Load(),
+                )
+                tag_decorator = ast.Attribute(value=decorator, attr=tag, ctx=ast.Load())
+                decorator_list.append(tag_decorator)
+        return decorator_list  # type: ignore
+
+    def create_test_function(
+        self,
+        id: str,
+        name: str,
+        args: list[ast.arg],
+        docstring: str,
+        location: GherkinLocation,
+        decorator_list: list[ast.expr],
+        stack: list[Any],
+    ) -> tuple[ast.FunctionDef, list[ast.stmt]]:
+        step_list: list[ast.stmt] = []
+        runner_instance = ast.With(
+            items=[
+                ast.withitem(
+                    context_expr=ast.Call(
+                        func=ast.Name(id="TursuRunner", ctx=ast.Load()),
+                        args=[
+                            ast.Name(id="request", ctx=ast.Load()),
+                            ast.Name(id="capsys", ctx=ast.Load()),
+                            ast.Name(id="tursu", ctx=ast.Load()),
+                            ast.Constant(value=repr_stack(stack)),
+                        ],
+                        keywords=[],
+                    ),
+                    optional_vars=ast.Name(id="tursu_runner", ctx=ast.Store()),
+                )
+            ],
+            body=step_list,
+            lineno=stack[-1].location.line + 2,
+        )
+
+        return ast.FunctionDef(
+            name=f"test_{id}_{sanitize(name)}",
+            args=ast.arguments(
+                args=args,
+                posonlyargs=[],
+                kwonlyargs=[],
+                kw_defaults=[],
+                defaults=[],
+            ),
+            body=[
+                ast.Expr(value=ast.Constant(docstring), lineno=location.line + 1),
+                runner_instance,
+            ],
+            decorator_list=decorator_list,
+            lineno=location.line,
+        ), step_list
+
     def to_module(self) -> TestModule:
         module_name = None
         module_node = None
         test_function = None
+        step_list: list[ast.stmt] = []
         args: Any = None
         last_keyword: StepKeyword | None = None
         background_steps: Sequence[GherkinStep] = []
@@ -265,20 +371,26 @@ class GherkinCompiler:
                     assert module_node is None
                     docstring = f"{name}\n\n{description}".strip()
                     import_any = ast.ImportFrom(
-                        module="typing",  # the module name
+                        module="typing",
                         names=[ast.alias(name="Any", asname=None)],
-                        level=0,  # import at the top level
+                        level=0,
                     )
                     import_pytest = ast.Import(
                         names=[ast.alias(name="pytest", asname=None)]
                     )
                     import_tursu = ast.ImportFrom(
-                        module="tursu.runner",  # the module name
+                        module="tursu",
                         names=[
-                            ast.alias(name="tursu_runner", asname=None),
+                            ast.alias(name="Tursu", asname=None),
+                        ],
+                        level=0,
+                    )
+                    import_tursu_runner = ast.ImportFrom(
+                        module="tursu.runner",
+                        names=[
                             ast.alias(name="TursuRunner", asname=None),
                         ],
-                        level=0,  # import at the top level
+                        level=0,
                     )
                     module_node = ast.Module(
                         body=[
@@ -286,6 +398,7 @@ class GherkinCompiler:
                             import_any,
                             import_pytest,
                             import_tursu,
+                            import_tursu_runner,
                         ],
                         type_ignores=[],
                     )
@@ -312,53 +425,13 @@ class GherkinCompiler:
                     steps=steps,
                 ):
                     fixtures = self.build_fixtures([*background_steps, *steps])
-
-                    args = [
-                        ast.arg(
-                            arg="tursu_runner",
-                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
-                        ),
-                    ]
-                    for key, _val in fixtures.items():
-                        args.append(
-                            ast.arg(
-                                arg=key,
-                                # annotation=ast.Name(id=val.__name__, ctx=ast.Load()),
-                            )
-                        )
+                    args = self.build_args(fixtures)
 
                     docstring = f"{name}\n\n    {description}".strip()
+                    decorator_list = self.build_tags_decorators(stack)
 
-                    tag_decorator_list: list[ast.expr] = []
-                    tags = self.get_tags(stack)
-                    if tags:
-                        for tag in tags:
-                            decorator = ast.Attribute(
-                                value=ast.Name(id="pytest", ctx=ast.Load()),
-                                attr="mark",
-                                ctx=ast.Load(),
-                            )
-                            tag_decorator = ast.Attribute(
-                                value=decorator, attr=tag, ctx=ast.Load()
-                            )
-                            tag_decorator_list.append(tag_decorator)
-
-                    test_function = ast.FunctionDef(
-                        name=f"test_{id}_{sanitize(name)}",
-                        args=ast.arguments(
-                            args=args,
-                            posonlyargs=[],
-                            kwonlyargs=[],
-                            kw_defaults=[],
-                            defaults=[],
-                        ),
-                        body=[
-                            ast.Expr(
-                                value=ast.Constant(docstring), lineno=location.line + 1
-                            ),
-                        ],
-                        decorator_list=tag_decorator_list,
-                        lineno=location.line,
+                    test_function, step_list = self.create_test_function(
+                        id, name, args, docstring, location, decorator_list, stack
                     )
                     assert module_node is not None
                     last_keyword = None
@@ -366,7 +439,7 @@ class GherkinCompiler:
                     if background_steps:
                         for step in background_steps:
                             last_keyword = self._handle_step(
-                                test_function, step, last_keyword
+                                step_list, step, stack, last_keyword
                             )
 
                 case GherkinScenarioOutline(
@@ -379,20 +452,7 @@ class GherkinCompiler:
                     steps=steps,
                     examples=examples,
                 ):
-                    decorator_list: list[ast.expr] = []
-
-                    tags = self.get_tags(stack)
-                    if tags:
-                        for tag in tags:
-                            decorator = ast.Attribute(
-                                value=ast.Name(id="pytest", ctx=ast.Load()),
-                                attr="mark",
-                                ctx=ast.Load(),
-                            )
-                            tag_decorator = ast.Attribute(
-                                value=decorator, attr=tag, ctx=ast.Load()
-                            )
-                            decorator_list.append(tag_decorator)
+                    decorator_list = self.build_tags_decorators(stack)
 
                     examples_keys = [c.value for c in examples[0].table_header.cells]
                     params = ",".join(examples_keys)
@@ -437,47 +497,11 @@ class GherkinCompiler:
                     )
 
                     fixtures = self.build_fixtures([*background_steps, *steps])
-
-                    args = [
-                        ast.arg(
-                            arg="tursu_runner",
-                            annotation=ast.Name(id="TursuRunner", ctx=ast.Load()),
-                        ),
-                    ]
-                    for key, _val in fixtures.items():
-                        args.append(
-                            ast.arg(
-                                arg=key,
-                                annotation=ast.Name(id="Any", ctx=ast.Load()),
-                            )
-                        )
-
-                    for exkeys in examples_keys:
-                        args.append(
-                            ast.arg(
-                                arg=exkeys,
-                                annotation=ast.Name(id="str", ctx=ast.Load()),
-                            )
-                        )
-
+                    args = self.build_args(fixtures, examples_keys)
                     docstring = f"{name}\n\n    {description}".strip()
 
-                    test_function = ast.FunctionDef(
-                        name=f"test_{id}_{sanitize(name)}",
-                        args=ast.arguments(
-                            args=args,
-                            posonlyargs=[],
-                            kwonlyargs=[],
-                            kw_defaults=[],
-                            defaults=[],
-                        ),
-                        body=[
-                            ast.Expr(
-                                value=ast.Constant(docstring), lineno=location.line + 1
-                            ),
-                        ],
-                        decorator_list=decorator_list,
-                        lineno=location.line,
+                    test_function, step_list = self.create_test_function(
+                        id, name, args, docstring, location, decorator_list, stack
                     )
                     assert module_node is not None
                     last_keyword = None
@@ -485,7 +509,7 @@ class GherkinCompiler:
                     if background_steps:
                         for step in background_steps:
                             last_keyword = self._handle_step(
-                                test_function, step, last_keyword
+                                step_list, step, stack, last_keyword
                             )
 
                 case GherkinStep(
@@ -502,7 +526,7 @@ class GherkinCompiler:
                     if stack[-2].keyword == "scenario outline":
                         expls = stack[-2].examples
                     last_keyword = self._handle_step(
-                        test_function, el, last_keyword, expls
+                        step_list, el, stack, last_keyword, expls
                     )
 
                 case _:

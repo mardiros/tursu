@@ -91,20 +91,22 @@ While running pdb in a tests, you will see the functions on the disk.
 `@given`, `@when` and `@then` decorators can received many parameters,
 which are a mix of:
 
-* the matched element from the decorator text.
-* any pytest fixtures available.
+- the matched element from the decorator text.
+- any pytest fixtures available.
 
 But those parameters named are reserved
-* `doc_string` which is reserved for the associated Gherkin feature, seen later.
-* `data_table` which is reserved for the associated Gherkin feature, seen later.
-* `request` the pytest request object.
-* `tursu_runner` an instance of `TursuRunner` use to run the steps.
-* `tursu` an instance of `Tursu` used as a step registry.
+
+- `doc_string` which is reserved for the associated Gherkin feature, seen later.
+- `data_table` which is reserved for the associated Gherkin feature, seen later.
+- `tursu` an instance of `Tursu` used as a step registry.
+- `request`, the pytest request fixture object.
+- `capsys`, the pytest fixture capture fixture.
+
+You should probably not used other native pytest fixture as keyword for extensibility.
 
 In our example, we have an `app` that represent a configured app from a fixture.
 
 You may also use the `page` fixture while using `pytest-playwright`.
-
 
 ## Running the tests
 
