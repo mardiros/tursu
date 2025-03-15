@@ -35,7 +35,7 @@ class TursuRunner:
         if self.verbose:
             self.log(" " * (len(self.name) + 2), replace_previous_line=True)
             for step in self.scenario:
-                self.log(step + " " * (len(self.name) + 2 - len(step)))
+                self.log(step)
 
     def remove_ansi_escape_sequences(self, text: str) -> str:
         return re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", text)
@@ -67,8 +67,7 @@ class TursuRunner:
             with self.capsys.disabled():  # coverage: ignore
                 if replace_previous_line and self.verbose == 1:  # coverage: ignore
                     print("\033[F", end="")  # coverage: ignore
-                    print("\033[K", end="")  # coverage: ignore
-                print(text, end=end)  # coverage: ignore
+                print(f"{text}\033[K", end=end)  # coverage: ignore
 
     def run_step(
         self,
