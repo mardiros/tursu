@@ -1,6 +1,6 @@
 [project]
 authors = [{ name = "Guillaume Gauvrit", email = "guillaume@gauvr.it" }]
-description = "A gherkin tests runner"
+description = "🎬 A pytest plugin that transpiles Gherkin feature files to Python using AST, enforcing typing for ease of use and debugging."
 name = "tursu"
 license = { text = "MIT" }
 readme = "README.md"
