@@ -114,7 +114,7 @@ module = "venusian"
 markers = ["wip: work in progress."]
 
 [tool.coverage.report]
-exclude_lines = ["if TYPE_CHECKING:", "\\s+\\.\\.\\.$", "# coverage: ignore"]
+exclude_lines = ["if TYPE_CHECKING:", "# coverage: ignore"]
 
 [build-system]
 requires = ["pdm-backend"]

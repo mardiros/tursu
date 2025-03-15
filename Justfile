@@ -40,7 +40,7 @@ lf:
 cov test_suite=default_unittest_suite:
     rm -f .coverage
     rm -rf htmlcov
-    uv run pytest --cov-report=html --cov={{package}} {{test_suite}}
+    COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager uv run pytest --cov-report=html --cov={{package}}  --cov --cov-append {{test_suite}}
     xdg-open htmlcov/index.html
 
 
