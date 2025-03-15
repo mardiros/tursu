@@ -1,3 +1,17 @@
+0.11.0 - Released on 2025-03-15
+-------------------------------
+* Breaking change: now tursu is declared as a pytest plugin using entrypoint.
+  * the __init__.py will not scan the module, pytest will.
+    remove the code here.
+  * the conftest.py of the tested file has to be updated.
+    The tursu fixture is registered by the plugin, and now, to register tests,
+    the new command is:
+    ```python
+    from tursu.plugin import tursu_collect_file
+
+    tursu_collect_file()
+    ```
+
 0.10.1 - Released on 2025-03-15
 -------------------------------
 * Improve test display on the term
