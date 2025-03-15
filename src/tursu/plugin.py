@@ -21,10 +21,10 @@ def tursu() -> Tursu:
 
 
 class GherkinTestModule(pytest.Module):
-    def __init__(self, path: Path, **kwargs: Any) -> None:
+    def __init__(self, path: Path, tursu: Tursu, **kwargs: Any) -> None:
         doc = GherkinDocument.from_file(path)
         self.gherkin_doc = path.name
-        compiler = GherkinCompiler(doc, _tursu)
+        compiler = GherkinCompiler(doc, tursu)
         case = compiler.to_module()
 
         test_casefile = path.parent / case.filename
@@ -56,7 +56,9 @@ def tursu_collect_file() -> None:
 
         if file_path.suffix == ".feature":
             doc = GherkinDocument.from_file(file_path)
-            ret = GherkinTestModule.from_parent(parent, path=file_path, name=doc.name)
+            ret = GherkinTestModule.from_parent(
+                parent, path=file_path, tursu=_tursu, name=doc.name
+            )
             return ret
 
     conftest_mod.pytest_collect_file = pytest_collect_file  # type: ignore

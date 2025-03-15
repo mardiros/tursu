@@ -30,9 +30,12 @@ module = ast.Module(
 def test_testmodule():
     tmod = TestModule("dummy", module)
     assert tmod.filename == "test_dummy.py"
-    assert str(tmod) == textwrap.dedent(
-        """\
+    assert (
+        str(tmod)
+        == textwrap.dedent(
+            """\
         def hello_world():
             print('Hello, World!')
         """
-    ).strip()
+        ).strip()
+    )

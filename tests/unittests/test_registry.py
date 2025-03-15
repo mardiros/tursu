@@ -1,9 +1,9 @@
 import pytest
 
+from tests.unittests.fixtures.steps import DummyApp, DummyMail
 from tursu.registry import Tursu, Unregistered
 from tursu.runner import TursuRunner
 from tursu.steps import Step
-from unittests.fixtures.steps import DummyApp, DummyMail
 
 
 @pytest.fixture()
@@ -14,7 +14,7 @@ def tursu_runner(
 
 
 def test_registry_handler(tursu: Tursu):
-    from unittests.fixtures.steps import (
+    from tests.unittests.fixtures.steps import (
         assert_api_response,
         assert_dataset,
         assert_mailbox_contains,

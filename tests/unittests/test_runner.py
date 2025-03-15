@@ -4,9 +4,9 @@ from collections.abc import Iterator
 import pytest
 from typing_extensions import Generator
 
+from tests.unittests.fixtures.steps import DummyApp
 from tursu.registry import Tursu
 from tursu.runner import ScenarioFailed, TursuRunner
-from unittests.fixtures.steps import DummyApp
 
 
 class CapsysMock(pytest.CaptureFixture[str]):
