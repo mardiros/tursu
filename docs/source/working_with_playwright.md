@@ -34,7 +34,7 @@ That's it. You can just use the "Page" fixture provided by pytest-playwright dir
 ## Run the test
 
 ```bash
-uv run pytest --base-url http://localhost:8000 --browser chromium -v tests/using_playwright/
+uv run pytest --base-url http://localhost:8888 --browser chromium -v tests/using_playwright/
 ```
 
 Sure this tests will fail, this is BDD :)
