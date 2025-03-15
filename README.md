@@ -56,21 +56,57 @@ collected 3 items
 𝝿 uv run pytest tests/functionals
 ========================== test session starts ==========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
-rootdir: /home/guillaume/workspace/git/tursu
 configfile: pyproject.toml
-plugins: cov-6.0.0
 collected 3 items
 
-tests/functionals3/test_1_As_a_user_I_logged_in_with_my_password.py . [ 33%]
+tests/functionals/test_1_As_a_user_I_logged_in_with_my_password.py . [ 33%]
 ..                                                                [100%]
 
 =========================== 3 passed in 0.02s ===========================
 ```
 
-```bash
-𝝿 uv run pytest tests/functionals3
+Or run it with the details:
 
-### Gherkin keywords support.
+```bash
+𝝿 uv run pytest -v tests/functionals
+============================= test session starts =============================
+platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
+configfile: pyproject.toml
+collected 3 items
+
+
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I properly logged in
+✅ Given a user Bob with password dumbsecret
+✅ When Bob login with password dumbsecret
+✅ Then I am connected with username Bob
+                                                                         PASSED
+
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I hit the wrong password
+✅ Given a user Bob with password dumbsecret
+✅ When Bob login with password notthat
+✅ Then I am not connected
+                                                                         PASSED
+
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I user another login
+✅ Given a user Bob with password dumbsecret
+✅ Given a user Alice with password anothersecret
+✅ When Alice login with password dumbsecret
+✅ Then I am not connected
+✅ When Bob login with password dumbsecret
+✅ Then I am connected with username Bob
+                                                                         PASSED
+
+============================== 3 passed in 0.02s ==============================
+```
+
+
+### All Gherkin features are support.
 
 tursu use the gherkin-official package to parse scenario, however,
 they must be compiled to pytest tests function, implementation in development.
