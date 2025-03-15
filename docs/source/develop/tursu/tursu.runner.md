@@ -122,7 +122,7 @@ Bases: {py:obj}`Exception`
 
 ````
 
-````{py:method} log(text: str, remove_previous_line: bool = False, end: str = '\n') -> None
+````{py:method} log(text: str, replace_previous_line: bool = False, end: str = '\n') -> None
 :canonical: tursu.runner.TursuRunner.log
 
 ```{autodoc2-docstring} tursu.runner.TursuRunner.log

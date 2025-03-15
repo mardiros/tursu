@@ -25,9 +25,9 @@ class TursuRunnerNoLog(TursuRunner):
         super().__init__(request, capsys, tursu, ["📄 Document: ..."])
 
     def log(
-        self, text: str, remove_previous_line: bool = False, end: str = "\n"
+        self, text: str, replace_previous_line: bool = False, end: str = "\n"
     ) -> None:
-        if remove_previous_line:
+        if replace_previous_line:
             self.logged_lines.append("<UP>")
         self.logged_lines.append(f"{text}{end}")
 
