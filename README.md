@@ -103,6 +103,98 @@ collected 3 items
 ============================== 3 passed in 0.02s ==============================
 ```
 
+In case of error, the terminal will report all the context of the error.
+
+```bash
+$ uv run pytest tests/functionals
+============================ test session starts ==============================
+platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
+configfile: pyproject.toml
+plugins: cov-6.0.0, base-url-2.1.0, playwright-0.7.0, tursu-0.10.1
+collected 3 items
+
+tests/functionals/test_login.py F..                                      [100%]
+
+================================== FAILURES ===================================
+_________________________ test_3_I_properly_logged_in _________________________
+
+self = <tursu.runner.TursuRunner object at 0x775de9b49e80>, step = 'then'
+text = 'I am connected with username Bobby'
+kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>}
+
+    def run_step(
+        self,
+        step: StepKeyword,
+        text: str,
+        **kwargs: Any,
+    ) -> None:
+        try:
+>           self.tursu.run_step(self, step, text, **kwargs)
+
+src/tursu/runner.py:79:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/tursu/registry.py:98: in run_step
+    handler(**matches)
+src/tursu/steps.py:36: in __call__
+    self.hook(**kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>, username = 'Bobby'
+
+    @then("I am connected with username {username}")
+    def assert_connected(app: DummyApp, username: str):
+>       assert app.connected_user == username
+E       AssertionError
+
+tests/functionals/steps.py:18: AssertionError
+
+The above exception was the direct cause of the following exception:
+
+request = <FixtureRequest for <Function test_3_I_properly_logged_in>>
+capsys = <_pytest.capture.CaptureFixture object at 0x775de9b4a510>
+tursu = <tursu.registry.Tursu object at 0x775dea9ffb60>
+app = <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>
+
+    def test_3_I_properly_logged_in(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
+        """I properly logged in"""
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', '🎬 Scenario: I properly logged in']) as tursu_runner:
+            tursu_runner.run_step('given', 'a user Bob with password dumbsecret', app=app)
+            tursu_runner.run_step('when', 'Bob login with password dumbsecret', app=app)
+>           tursu_runner.run_step('then', 'I am connected with username Bobby', app=app)
+
+tests/functionals/test_login.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <tursu.runner.TursuRunner object at 0x775de9b49e80>, step = 'then'
+text = 'I am connected with username Bobby'
+kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>}
+
+    def run_step(
+        self,
+        step: StepKeyword,
+        text: str,
+        **kwargs: Any,
+    ) -> None:
+        try:
+            self.tursu.run_step(self, step, text, **kwargs)
+        except Exception as exc:
+>           raise ScenarioFailed(self.fancy()) from exc
+E           tursu.runner.ScenarioFailed:
+E           ┌────────────────────────────────────────────────────┐
+E           │ 📄 Document: login.feature                         │
+E           │ 🥒 Feature: As a user I logged in with my password │
+E           │ 🎬 Scenario: I properly logged in                  │
+E           │ ✅ Given a user Bob with password dumbsecret       │
+E           │ ✅ When Bob login with password dumbsecret         │
+E           │ ❌ Then I am connected with username Bobby         │
+E           └────────────────────────────────────────────────────┘
+
+src/tursu/runner.py:81: ScenarioFailed
+=========================== short test summary info ===========================
+FAILED tests/functionals/test_login.py::test_3_I_properly_logged_in - tursu.runner.ScenarioFailed:
+========================= 1 failed, 2 passed in 0.07s =========================
+```
+
 
 ### All Gherkin features are support.
 
