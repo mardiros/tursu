@@ -33,7 +33,7 @@ class TursuRunner:
         self.runned: list[str] = []
         self.scenario = scenario
         if self.verbose:
-            self.log(" " * (len(self.name) + 2), replace_previous_line=True)
+            self.log("", replace_previous_line=True)
             for step in self.scenario:
                 self.log(step)
 
@@ -102,6 +102,7 @@ class TursuRunner:
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
+        self.log("-" * (len(self.name) + 2), end="")
 
     def emit_success(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]

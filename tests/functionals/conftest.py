@@ -1,11 +1,8 @@
 import pytest
 
-from tursu.registry import Tursu
+from tursu.plugin import tursu_collect_file
 
-
-@pytest.fixture(scope="session")
-def tursu() -> Tursu:
-    return Tursu().scan()
+tursu_collect_file()
 
 
 class DummyApp:

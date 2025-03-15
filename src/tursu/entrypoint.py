@@ -3,24 +3,23 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-DEFAULT_INIT = """\
-from tursu import generate_tests
-
-generate_tests()
+DEFAULT_INIT = '''\
 """
+Functional tests suite based on Turşu.
+
+Documentation: https://mardiros.github.io/tursu/
+"""
+'''
 
 DEFAULT_CONFTEST = """\
-import pytest
+from tursu.plugin import tursu_collect_file
 
-from tursu.registry import Tursu
-
-
-@pytest.fixture(scope="session")
-def tursu() -> Tursu:
-    return Tursu().scan()
+tursu_collect_file()
 """
 
-DEFAULT_CONFTEST_WITH_DUMMIES = f'''
+DEFAULT_CONFTEST_WITH_DUMMIES = f'''\
+import pytest
+
 {DEFAULT_CONFTEST}
 
 class DummyApp:

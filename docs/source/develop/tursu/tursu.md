@@ -10,30 +10,12 @@
 
 ## Package Contents
 
-### Classes
-
-````{list-table}
-:class: autosummary longtable
-:align: left
-
-* - {py:obj}`Tursu <tursu.registry.Tursu>`
-  - ```{autodoc2-docstring} tursu.registry.Tursu
-    :parser: myst
-    :summary:
-    ```
-````
-
 ### Functions
 
 ````{list-table}
 :class: autosummary longtable
 :align: left
 
-* - {py:obj}`generate_tests <tursu.compile_all.generate_tests>`
-  - ```{autodoc2-docstring} tursu.compile_all.generate_tests
-    :parser: myst
-    :summary:
-    ```
 * - {py:obj}`given <tursu.registry.given>`
   - ```{autodoc2-docstring} tursu.registry.given
     :parser: myst
@@ -52,66 +34,6 @@
 ````
 
 ### API
-
-`````{py:class} Tursu()
-:canonical: tursu.registry.Tursu
-
-```{autodoc2-docstring} tursu.registry.Tursu
-:parser: myst
-```
-
-```{rubric} Initialization
-```
-
-```{autodoc2-docstring} tursu.registry.Tursu.__init__
-:parser: myst
-```
-
-````{py:method} extract_fixtures(step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
-:canonical: tursu.registry.Tursu.extract_fixtures
-
-```{autodoc2-docstring} tursu.registry.Tursu.extract_fixtures
-:parser: myst
-```
-
-````
-
-````{py:method} register_handler(type: tursu.steps.StepKeyword, pattern: str, handler: tursu.steps.Handler) -> None
-:canonical: tursu.registry.Tursu.register_handler
-
-```{autodoc2-docstring} tursu.registry.Tursu.register_handler
-:parser: myst
-```
-
-````
-
-````{py:method} run_step(tursu_runner: tursu.runner.TursuRunner, step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
-:canonical: tursu.registry.Tursu.run_step
-
-```{autodoc2-docstring} tursu.registry.Tursu.run_step
-:parser: myst
-```
-
-````
-
-````{py:method} scan(mod: types.ModuleType | None = None) -> tursu.registry.Tursu
-:canonical: tursu.registry.Tursu.scan
-
-```{autodoc2-docstring} tursu.registry.Tursu.scan
-:parser: myst
-```
-
-````
-
-`````
-
-````{py:function} generate_tests() -> None
-:canonical: tursu.compile_all.generate_tests
-
-```{autodoc2-docstring} tursu.compile_all.generate_tests
-:parser: myst
-```
-````
 
 ````{py:function} given(pattern: str) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
 :canonical: tursu.registry.given
