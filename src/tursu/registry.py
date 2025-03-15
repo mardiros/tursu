@@ -20,7 +20,10 @@ def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
         def callback(scanner: venusian.Scanner, name: str, ob: Handler) -> None:
             if not hasattr(scanner, "registry"):
                 return  # coverage: ignore
-            scanner.registry.register_handler(step_name, step_pattern, wrapped)  # type: ignore
+
+            scanner.registry.register_handler(  # type: ignore
+                step_name, step_pattern, wrapped
+            )
 
         venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)  # type: ignore
         return wrapped
@@ -30,21 +33,39 @@ def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
 
 def given(pattern: str) -> Callable[[Handler], Handler]:
     """
-    Decorator to listen for the given gherkin keyword.
+    Decorator to listen for the `Given` Gherkin keyword.
+
+    :param pattern: a pattern to extract parameter.
+                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    for the syntax.
+    :return: the decorate function that have any parameter coming from
+             the pattern matcher or pytest fixtures.
     """
     return _step("given", pattern)
 
 
 def when(pattern: str) -> Callable[[Handler], Handler]:
     """
-    Decorator to listen for the when gherkin keyword.
+    Decorator to listen for the `When` gherkin keyword.
+
+    :param pattern: a pattern to extract parameter.
+                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    for the syntax.
+    :return: the decorate function that have any parameter coming from
+             the pattern matcher or pytest fixtures.
     """
     return _step("when", pattern)
 
 
 def then(pattern: str) -> Callable[[Handler], Handler]:
     """
-    Decorator to listen for the then gherkin keyword.
+    Decorator to listen for the `Then` gherkin keyword.
+
+    :param pattern: a pattern to extract parameter.
+                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    for the syntax.
+    :return: the decorate function that have any parameter coming from
+             the pattern matcher or pytest fixtures.
     """
     return _step("then", pattern)
 

@@ -1,6 +1,7 @@
+(pattern-matcher)=
 # Matching Step Expression
 
-To match gherkin steps into python code, we used a [pattern macther](#tursu.pattern_matcher).
+To match gherkin steps into python code, we used a [pattern matcher](#tursu.pattern_matcher).
 
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.

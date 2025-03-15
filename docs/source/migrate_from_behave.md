@@ -5,6 +5,8 @@ better IDE support, and static analysis to Behavior-Driven Development (BDD) in 
 
 It improves upon Behave by eliminating dynamic attribute issues and enhancing maintainability.
 
+The cherry on top is that you can run the debugger without pain.
+
 ## Step 1 - Install tursu and configure it.
 
 Installation:
@@ -23,12 +25,12 @@ touch tests/functionals/__init__.py
 
 - create a minimal conftest.py
 
-```python
 ```bash
 cat << 'EOF' > tests/functionals/conftest.py
 from tursu.plugin import tursu_collect_file
 
 tursu_collect_file()
+```
 EOF
 ```
 

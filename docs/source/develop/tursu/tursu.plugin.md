@@ -40,7 +40,7 @@
 
 ### API
 
-`````{py:class} GherkinTestModule(path: pathlib.Path, **kwargs: typing.Any)
+`````{py:class} GherkinTestModule(path: pathlib.Path, tursu: tursu.registry.Tursu, **kwargs: typing.Any)
 :canonical: tursu.plugin.GherkinTestModule
 
 Bases: {py:obj}`pytest.Module`
@@ -50,7 +50,7 @@ Bases: {py:obj}`pytest.Module`
 
 ````
 
-````{py:method} collect() -> typing.Iterable[pytest.Item | pytest.Collector]
+````{py:method} collect() -> collections.abc.Iterable[pytest.Item | pytest.Collector]
 :canonical: tursu.plugin.GherkinTestModule.collect
 
 ````
@@ -65,7 +65,7 @@ Bases: {py:obj}`pytest.Module`
 ```
 ````
 
-````{py:function} tursu_collect_file()
+````{py:function} tursu_collect_file() -> None
 :canonical: tursu.plugin.tursu_collect_file
 
 ```{autodoc2-docstring} tursu.plugin.tursu_collect_file

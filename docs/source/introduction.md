@@ -39,9 +39,13 @@ An example will be written:
 
 ```gherkin
 # tests/functionals/login.feature
-Given a user Bob with password dumbsecret
-When Bob login with password dumbsecret
-Then I am connected with username Bob
+Feature: As a user I logged in with my password
+
+  Scenario: I properly logged in
+
+    Given a user Bob with password dumbsecret
+    When Bob login with password dumbsecret
+    Then I am connected with username Bob
 ```
 
 We can match it in a python method:
@@ -68,9 +72,16 @@ def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 ```
 
-The steps keyword, `Given`, `When` and `Then` will match
-those methods and a test will be automatically generated
-using Python AST.
+Every `Feature` keyword will be transformed to a python module.
+
+Every `Scenario keyword` keyword will be transformed to a python function.
+
+The steps keywords, `Given`, `When` and `Then` will match the decoverator above
+from those function.
+
+Everything whill be generated automatically using Python AST.
+
+The generated file will look like this:
 
 ```python
 def test_3_I_properly_logged_in(
@@ -98,7 +109,10 @@ def test_3_I_properly_logged_in(
 ```{note}
 Functions are written before run, then deleted from the disk.
 
-While running pdb in a tests, you can see those functions on the disk.
+While running `pdb` in a test run, using `--trace` in the pytest command, you can see
+those functions on the disk.
+
+async statement are not supported.
 ```
 
 ## Pytest Fixtures
