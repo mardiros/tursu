@@ -25,7 +25,7 @@
 
 ### API
 
-`````{py:class} TestModule(filename: str, module_node: ast.Module)
+`````{py:class} TestModule(scenario: str, module_node: ast.Module)
 :canonical: tursu.domain.model.testmod.TestModule
 
 ```{autodoc2-docstring} tursu.domain.model.testmod.TestModule
@@ -52,6 +52,16 @@
 
 ````{py:method} __str__() -> str
 :canonical: tursu.domain.model.testmod.TestModule.__str__
+
+````
+
+````{py:property} filename
+:canonical: tursu.domain.model.testmod.TestModule.filename
+:type: str
+
+```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.filename
+:parser: myst
+```
 
 ````
 

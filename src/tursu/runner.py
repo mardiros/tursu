@@ -102,6 +102,7 @@ class TursuRunner:
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
+        self.log("-" * (len(self.name) + 2), end="")
 
     def emit_success(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]

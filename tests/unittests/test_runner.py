@@ -3,7 +3,7 @@ import contextlib
 import pytest
 from typing_extensions import Generator
 
-from tursu import Tursu
+from tursu.registry import Tursu
 from tursu.runner import ScenarioFailed, TursuRunner
 from unittests.fixtures.steps import DummyApp
 

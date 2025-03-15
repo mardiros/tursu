@@ -42,7 +42,7 @@ collected 3 items
 <Dir tursu>
   <Dir tests>
     <Package functionals>
-      <Module test_1_As_a_user_I_logged_in_with_my_password.py>
+      <GherkinDocument login.feature>
         <Function test_3_I_properly_logged_in>
         <Function test_7_I_hit_the_wrong_password>
         <Function test_14_I_user_another_login>
@@ -59,7 +59,7 @@ platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
 configfile: pyproject.toml
 collected 3 items
 
-tests/functionals/test_1_As_a_user_I_logged_in_with_my_password.py . [ 33%]
+tests/functionals/test_login.py ...                               [ 33%]
 ..                                                                [100%]
 
 =========================== 3 passed in 0.02s ===========================
@@ -81,7 +81,6 @@ collected 3 items
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password dumbsecret
 ✅ Then I am connected with username Bob
-                                                                         PASSED
 
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
@@ -89,7 +88,6 @@ collected 3 items
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password notthat
 ✅ Then I am not connected
-                                                                         PASSED
 
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password

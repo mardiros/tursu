@@ -15,24 +15,21 @@ uv add --group dev tursu
 
 Add the Tursu Gherkin compiler to AST generate the tests suite:
 
-```python
-# tests/functionals/__init__.py
-from tursu import generate_tests
+- Ensure the `__init__.py` file exists in the functionals tests suite.
 
-generate_tests()
+```bash
+touch tests/functionals/__init__.py
 ```
 
-
-Create a minimal conftest.py
+- create a minimal conftest.py
 
 ```python
-# tests/functionals/conftest.py
-from tursu import Tursu
+```bash
+cat << 'EOF' > tests/functionals/conftest.py
+from tursu.plugin import tursu_collect_file
 
-@pytest.fixture()
-def tursu() -> Tursu:
-    return Tursu().scan()
-
+tursu_collect_file()
+EOF
 ```
 
 ## Step 2 - Replace context with fixtures in all decorators
