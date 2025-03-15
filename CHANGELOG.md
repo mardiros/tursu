@@ -1,3 +1,7 @@
+0.10.1 - Released on 2025-03-15
+-------------------------------
+* Improve test display on the term
+
 0.10.0 - Released on 2025-03-14
 -------------------------------
 * Improve test display
