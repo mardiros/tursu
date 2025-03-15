@@ -73,17 +73,32 @@ those methods and a test will be automatically generated
 using Python AST.
 
 ```python
-def test_3_I_properly_logged_in(request, tursu: Tursu, app):
-    tursu.run_step(request, 'given', 'a user Bob with password dumbsecret', app=app)
-    tursu.run_step(request, 'when', 'Bob login with password dumbsecret', app=app)
-    tursu.run_step(request, 'then', 'I am connected with username Bob', app=app)
+def test_3_I_properly_logged_in(
+    request: pytest.FixtureRequest,
+    capsys: pytest.CaptureFixture[str],
+    tursu: Tursu,
+    app: Any,
+):
+    """I properly logged in"""
+    with TursuRunner(
+        request,
+        capsys,
+        tursu,
+        [
+            "📄 Document: login.feature",
+            "🥒 Feature: As a user I logged in with my password",
+            "🎬 Scenario: I properly logged in",
+        ],
+    ) as tursu_runner:
+        tursu_runner.run_step("given", "a user Bob with password dumbsecret", app=app)
+        tursu_runner.run_step("when", "Bob login with password dumbsecret", app=app)
+        tursu_runner.run_step("then", "I am connected with username Bob", app=app)
 ```
 
 ```{note}
-The function are written before run, then deleted from the disk to avoid any
-cache issue.
+Functions are written before run, then deleted from the disk.
 
-While running pdb in a tests, you will see the functions on the disk.
+While running pdb in a tests, you can see those functions on the disk.
 ```
 
 ## Pytest Fixtures

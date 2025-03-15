@@ -35,7 +35,7 @@ def tursu() -> Tursu:
 
 ```
 
-## Step 2 - Replace context with fixtures
+## Step 2 - Replace context with fixtures in all decorators
 
 Tursu simplifies BDD by replacing Behave’s dynamic context with pytest fixtures,
 making it more maintainable and test-friendly.
@@ -99,6 +99,38 @@ def step_login(user: User):
 def step_welcome_message(user: User):
     assert user.logged_in, "Login failed!"
 ```
+
+```{note}
+- **context.text** has to be replaced by doc_string
+- **context.table** has to be replaced by data_table
+```
+
+### Behave
+
+```
+@given('a set of specific users')
+def step_impl(context):
+    for row in context.table:
+        context.model.add_user(name=row['name'], department=row['department'])
+
+@then('I will see the account details')
+def step_impl(context):
+    assert context.text == ...
+```
+
+### Tursu
+
+```
+@given('a set of specific users')
+def step_impl(model: MyModelFixture, data_dable: list[dict[str, str]]):
+    for row in data_dable:
+        model.add_user(name=row['name'], department=row['department'])
+
+@then('I will see the account details')
+def step_impl(doc_string: text):
+    assert doc_string == ...
+```
+
 
 ## Step 3 - Replace Behave Fixtures with Pytest autouse Fixtures
 

@@ -21,7 +21,7 @@ This test will be skipped because of the `@skip` tag:
 
 ```bash
 uv run pytest -v
-================================ test session starts ================================
+========================== test session starts ==========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
 configfile: pyproject.toml
 plugins: cov-6.0.0
@@ -29,7 +29,7 @@ collected 1 item
 
 tests/functionals/test_1_Discover_Gherkin_tag.py::test_2_I_can_skip_a_test SKIPPED (unconditional skip)        [100%]
 
-================================ 1 skipped in 0.01s ================================
+========================== 1 skipped in 0.01s ===========================
 ```
 
 ## Writing a wip tag
@@ -54,14 +54,13 @@ markers = ["wip: work in progress."]
 
 ```bash
 𝝿 uv run pytest tests/functionals2 -m wip
-================================ test session starts ================================
+========================== test session starts ==========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
-rootdir: /home/guillaume/workspace/git/tursu
 configfile: pyproject.toml
 plugins: cov-6.0.0
 collected 2 items / 1 deselected / 1 selected
 
-tests/functionals/test_1_Discover_Gherkin_tag.py                               [100%]
+tests/functionals/test_1_Discover_Gherkin_tag.py                   [100%]
 
-========================= 1 passed, 1 deselected in 0.01s ===========================
+=================== 1 passed, 1 deselected in 0.01s =====================
 ```

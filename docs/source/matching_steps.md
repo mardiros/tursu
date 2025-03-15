@@ -37,7 +37,7 @@ at the moment, there is no way to escape it).
 
 ## Typing support
 
-The default matcher does not encorce the type in the text of the decorator,
+The default matcher does not enforce the type in the text of the decorator,
 **it use the function signature**.
 
 Supported types are: `bool`, `date`, `datetime`, `float`, `int`, `str`, `Enum` and `Literal[...]`:
