@@ -1,3 +1,5 @@
-from tursu import generate_tests
+"""
+Functional tests suite based on Turşu.
 
-generate_tests()
+Documentation: https://mardiros.github.io/tursu/
+"""

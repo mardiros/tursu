@@ -91,7 +91,7 @@ def test_compiler(doc: GherkinDocument, tursu: Tursu, dummy_app: DummyApp) -> No
         """Discover Scenario"""
         from typing import Any
         import pytest
-        from tursu import Tursu
+        from tursu.registry import Tursu
         from tursu.runner import TursuRunner
 
         @pytest.mark.wip
@@ -124,7 +124,7 @@ def test_compiler_compile_outline(
     This feature is complex and require a comment."""
     from typing import Any
     import pytest
-    from tursu import Tursu
+    from tursu.registry import Tursu
     from tursu.runner import TursuRunner
 
     @pytest.mark.oulined

@@ -379,7 +379,7 @@ class GherkinCompiler:
                         names=[ast.alias(name="pytest", asname=None)]
                     )
                     import_tursu = ast.ImportFrom(
-                        module="tursu",
+                        module="tursu.registry",
                         names=[
                             ast.alias(name="Tursu", asname=None),
                         ],
@@ -402,7 +402,7 @@ class GherkinCompiler:
                         ],
                         type_ignores=[],
                     )
-                    module_name = f"test_{GherkinCompiler.feat_idx}_{sanitize(name)}.py"
+                    module_name = stack[0].name
                     GherkinCompiler.feat_idx += 1
 
                 case GherkinBackground(

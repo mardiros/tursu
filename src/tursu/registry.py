@@ -53,6 +53,7 @@ class Tursu:
     """Store all the handlers for gherkin action."""
 
     def __init__(self) -> None:
+        self.scanned: set[ModuleType] = set()
         self._handlers: dict[StepKeyword, list[Step]] = {
             "given": [],
             "when": [],
@@ -109,6 +110,9 @@ class Tursu:
                 parent_name = module_name.rsplit(".", 1)[0]  # Remove the last part
                 mod = sys.modules.get(parent_name)
 
-        scanner = venusian.Scanner(registry=self)
-        scanner.scan(mod, categories=[VENUSIAN_CATEGORY])  # type: ignore
+        assert mod
+        if mod not in self.scanned:
+            self.scanned.add(mod)
+            scanner = venusian.Scanner(registry=self)
+            scanner.scan(mod, categories=[VENUSIAN_CATEGORY])  # type: ignore
         return self

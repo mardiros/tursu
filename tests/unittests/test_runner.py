@@ -1,11 +1,12 @@
 import contextlib
+from collections.abc import Iterator
 
 import pytest
 from typing_extensions import Generator
 
-from tursu import Tursu
+from tests.unittests.fixtures.steps import DummyApp
+from tursu.registry import Tursu
 from tursu.runner import ScenarioFailed, TursuRunner
-from unittests.fixtures.steps import DummyApp
 
 
 class CapsysMock(pytest.CaptureFixture[str]):
@@ -35,10 +36,12 @@ class TursuRunnerNoLog(TursuRunner):
 @pytest.fixture()
 def tursu_runner(
     tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
-) -> TursuRunnerNoLog:
-    request.config.option.verbose = 1
+) -> Iterator[TursuRunnerNoLog]:
+    old_verbose = request.config.option.verbose
+    request.config.option.verbose = max(request.config.option.verbose, 1)
     with TursuRunnerNoLog(request, capsys, tursu) as runner:
-        return runner
+        yield runner
+    request.config.option.verbose = old_verbose
 
 
 def test_remove_ansi_escape_sequences(tursu_runner: TursuRunner):
@@ -47,15 +50,9 @@ def test_remove_ansi_escape_sequences(tursu_runner: TursuRunner):
 
 def test_log(tursu_runner: TursuRunnerNoLog):
     assert tursu_runner.logged_lines == [
-        # remove the python file name when verbose
-        # emit line up
         "<UP>",
-        # write white space instead
-        "                                          \n",
-        # write the scenario here
-        # remove the python file name when verbose
+        "\n",
         "📄 Document: ...\n",
-        "                                          ",
     ]
 
 
