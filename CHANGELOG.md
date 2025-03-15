@@ -1,3 +1,8 @@
+0.11.1 - Released on 2025-03-15
+-------------------------------
+* Update description for pypi
+* Update Dockerfile
+
 0.11.0 - Released on 2025-03-15
 -------------------------------
 * Breaking change: now tursu is declared as a pytest plugin using entrypoint.
