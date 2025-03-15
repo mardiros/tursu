@@ -14,4 +14,4 @@ RUN uv tool install --with pytest-playwright,tursu==$VERSION pytest
 RUN uvx tursu init -o /tests --overwrite
 
 ENTRYPOINT [ "uvx", "pytest"]
-CMD ["-sv", "/tests"]
+CMD ["-v", "/tests"]
