@@ -1,4 +1,5 @@
 (pattern-matcher)=
+
 # Matching Step Expression
 
 To match gherkin steps into python code, we used a [pattern matcher](#tursu.pattern_matcher).
@@ -6,8 +7,7 @@ To match gherkin steps into python code, we used a [pattern matcher](#tursu.patt
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.
 
-But if it is enclosed by `"`, then it can be a sentence (that can't contains `"`
-at the moment, there is no way to escape it).
+But if it is enclosed by `"`, then it can be a sentence.
 
 :::{list-table}
 :widths: 20 40 40
@@ -262,3 +262,48 @@ data_table looks like
 ]
 ```
 ````
+
+## Alternative Step matcher based on regular extension.
+
+This is less readable, but, may be usefull in certain situation,
+
+Regular Expression can be used to match patterns.
+
+First you need to import the [RegEx](#tursu.pattern_matcher.RegEx) class:
+
+```python
+from tursu.pattern_matcher import RegEx
+```
+
+Afterwhat, the named capturing group syntax has to be used `(?P<matched_name>regex_pattern)`:
+
+:::{list-table}
+:widths: 20 40 40
+:header-rows: 1
+
+- - matcher
+  - Python decorator example
+  - Gherkin usage example
+- - ```python
+    r"(?P<username>[^\s]+)"
+    ```
+  - ```python
+    @given(
+      RegEx(r'a user (?P<username>[^\s]+)')
+    )
+    ```
+  - ```Gherkin
+    Given a user Alice
+    ```
+- - ```python
+    r'(?P<expected>[^\"]+)'
+  - ```python
+    @then(
+      RegEx(r'I see the text "(?P<expected>[^\"]+)"')
+    )
+    ```
+  - ```Gherkin
+    I see the text "Welcome Alice"
+    ```
+:::
+```

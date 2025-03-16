@@ -12,7 +12,7 @@
 
 ### API
 
-```{py:exception} Unregistered()
+```{py:exception} Unregistered(registry: tursu.registry.Tursu, step: tursu.steps.StepKeyword, text: str)
 :canonical: tursu.exceptions.Unregistered
 
 Bases: {py:obj}`RuntimeError`

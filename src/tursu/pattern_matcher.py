@@ -1,5 +1,8 @@
 """
-Pattern matcher
+Pattern matcher module is used to make the link between gherkin step from a scenario
+
+and step from the registry, registered via the [@given](#tursu.given),
+[@when](#tursu.when) and [@then](#tursu.then) decorators.
 """
 
 import abc
@@ -11,7 +14,12 @@ from inspect import Signature
 from typing import Any, Literal, get_args, get_origin
 
 
-class PatternError(RuntimeError): ...
+class PatternError(RuntimeError):
+    """
+    Raised if a pattern is invalid.
+
+    This exception happens during the log of the [step registry](#tursu.registry.Tursu).
+    """
 
 
 def cast_to_annotation(
@@ -85,7 +93,22 @@ def cast_to_annotation(
 
 
 class AbstractPatternMatcher(abc.ABC):
+    """
+    Base class to that implement the maghin pattern.
+    """
+
+    pattern: str
+    """The string reprentation of the pattern to match."""
+    signature: Signature
+    """
+    The decorated function signature used for introspecting fixtures and type hinting.
+    """
+
     def __init__(self, pattern: str, signature: Signature) -> None:
+        """
+        :param pattern: Step decorator text.
+        :param signature: Signature of the decorated method.
+        """
         self.pattern = pattern
         self.signature = signature
 
@@ -102,31 +125,74 @@ class AbstractPatternMatcher(abc.ABC):
 
     @abc.abstractmethod
     def get_matches(
-        self, text: str, kwargs: Mapping[str, Any]
-    ) -> Mapping[str, Any] | None: ...
+        self, text: str, fixtures: Mapping[str, Any]
+    ) -> Mapping[str, Any] | None:
+        """
+        Used to know if the gherkin step from a scenario has matched the step,
+
+        and return the associated paramters.
+
+        :param text: the text to match
+        :param fixtures: the fixtures provided trom the test function, that have
+                         to be passed to fill the parameters of the function
+                         not provided by the matcher.
+        """
 
     @abc.abstractmethod
-    def extract_fixtures(self, text: str) -> Mapping[str, Any] | None: ...
+    def extract_fixtures(self, text: str) -> Mapping[str, Any] | None:
+        """Get the fixtures list to use from the text."""
 
     @abc.abstractmethod
-    def hightlight(self, matches: Mapping[str, Any]) -> str: ...
+    def hightlight(self, matches: Mapping[str, Any]) -> str:
+        """
+        Return a text representation of the step with the matched text highlighted
+        for the terminal.
+
+        :param matched: the list of matched step to consume.
+        :return: the highlighted version.
+        """
 
 
 class AbstractPattern(abc.ABC):
+    """
+    Identifier of a pattern in a step.
+
+    Technically its an
+    [AbstractPatternMatcher](#tursu.pattern_matcher.AbstractPatternMatcher) factory.
+    """
+
+    pattern: str
+    """The text representation of the pattern in the step."""
+
     def __init__(self, pattern: str) -> None:
         self.pattern = pattern
 
     @classmethod
     @abc.abstractmethod
-    def get_matcher(cls) -> type[AbstractPatternMatcher]: ...
+    def get_matcher(cls) -> type[AbstractPatternMatcher]:
+        """Return the appropriate matcher for the step."""
 
 
 class RegexBasePattern(AbstractPatternMatcher):
+    """Base class for pattern matcher that consume a regex."""
+
     re_pattern: re.Pattern[str]
+    """The compiled version of the pattern."""
 
     def get_matches(
-        self, text: str, kwargs: Mapping[str, Any]
+        self, text: str, fixtures: Mapping[str, Any]
     ) -> Mapping[str, Any] | None:
+        """
+        Used to know if the gherkin step from a scenario has matched the step,
+
+        and return the associated paramters.
+
+        :param text: the text to match
+        :param fixtures: the fixtures provided trom the test function, that have
+                         to be passed to fill the parameters of the function
+                         not provided by the matcher.
+        """
+
         matches = self.re_pattern.match(text)
         if matches:
             res = {}
@@ -136,8 +202,8 @@ class RegexBasePattern(AbstractPatternMatcher):
                     # transform the annotation to call the constructror with the value
                     typ = self.signature.parameters[key].annotation
                     res[key] = cast_to_annotation(matchdict[key], typ)
-                elif key in kwargs:
-                    res[key] = kwargs[key]
+                elif key in fixtures:
+                    res[key] = fixtures[key]
                 elif val.default and val.default != val.empty:
                     res[key] = val.default
             return res
@@ -145,6 +211,7 @@ class RegexBasePattern(AbstractPatternMatcher):
         return None
 
     def extract_fixtures(self, text: str) -> Mapping[str, Any] | None:
+        """Get the fixtures list to use from the text."""
         matches = self.re_pattern.match(text)
         if matches:
             res = {}
@@ -165,7 +232,15 @@ class RegexBasePattern(AbstractPatternMatcher):
 
 
 class DefaultPatternMatcher(RegexBasePattern):
+    """
+    The pattern matcher that look like the python format.
+    """
+
     def __init__(self, pattern: str, signature: Signature) -> None:
+        """
+        :param pattern: Step decorator text.
+        :param signature: Signature of the decorated method.
+        """
         super().__init__(pattern, signature)
         re_pattern = pattern
         for key, val in signature.parameters.items():
@@ -183,6 +258,13 @@ class DefaultPatternMatcher(RegexBasePattern):
         self.re_pattern = re.compile(f"^{re_pattern}$")
 
     def hightlight(self, matches: Mapping[str, Any]) -> str:
+        """
+        Return a text representation of the step with the matched text highlighted
+        for the terminal.
+
+        :param matched: the list of matched step to consume.
+        :return: the highlighted version.
+        """
         colored_matches = {
             key: f"\033[36m{value}\033[0m" for key, value in matches.items()
         }
@@ -190,7 +272,15 @@ class DefaultPatternMatcher(RegexBasePattern):
 
 
 class RegExPatternMatcher(RegexBasePattern):
+    """
+    The pattern matcher that look like the python regular expression.
+    """
+
     def __init__(self, pattern: str, signature: Signature) -> None:
+        """
+        :param pattern: Step decorator text that contain the regex.
+        :param signature: Signature of the decorated method.
+        """
         super().__init__(pattern, signature)
         try:
             self.re_pattern = re.compile(f"^{pattern}$")
@@ -198,6 +288,13 @@ class RegExPatternMatcher(RegexBasePattern):
             raise PatternError(f"Can't compile to regex: {pattern}: {exc}") from exc
 
     def hightlight(self, matches: Mapping[str, Any]) -> str:
+        """
+        Return a text representation of the step with the matched text highlighted
+        for the terminal.
+
+        :param matched: the list of matched step to consume.
+        :return: the highlighted version.
+        """
         colored_matches = {
             key: f"\033[36m{value}\033[0m" for key, value in matches.items()
         }
@@ -208,8 +305,11 @@ class RegExPatternMatcher(RegexBasePattern):
 
 
 class RegEx(AbstractPattern):
+    """Marker for regex in a step decorator."""
+
     @classmethod
     def get_matcher(cls) -> type[AbstractPatternMatcher]:
+        """Return the appropriate matcher for the step."""
         return RegExPatternMatcher
 
     def __repr__(self) -> str:
