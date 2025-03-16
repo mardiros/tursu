@@ -1,3 +1,5 @@
+"""Represent a gherkin hook."""
+
 import inspect
 from collections.abc import Mapping
 from typing import Any, Callable, Literal

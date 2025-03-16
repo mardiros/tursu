@@ -6,7 +6,14 @@ from typing import Any, Literal
 
 import pytest
 
-from tursu.pattern_matcher import DefaultPatternMatcher, cast_to_annotation
+from tursu.pattern_matcher import (
+    AbstractPatternMatcher,
+    DefaultPatternMatcher,
+    PatternError,
+    RegEx,
+    RegExPatternMatcher,
+    cast_to_annotation,
+)
 
 
 def dummy_str_pattern(param: str): ...
@@ -211,6 +218,67 @@ def test_default_pattern_matcher_match(
 
 
 @pytest.mark.parametrize(
+    "pattern,signature,text,expected",
+    [
+        pytest.param(
+            "I have no params",
+            inspect.signature(no_param),
+            "I have no params",
+            {},
+            id="no params",
+        ),
+        pytest.param(
+            "I have no params",
+            inspect.signature(no_param),
+            "unexpected",
+            None,
+            id="no params don't match",
+        ),
+        pytest.param(
+            "I have {param} eggs",
+            inspect.signature(dummy_str_pattern),
+            "I have three eggs",
+            {},
+            id="text",
+        ),
+        pytest.param(
+            "I have no name",
+            inspect.signature(mix_param),
+            "I have no name",
+            {"name": str},
+            id="fixture",
+        ),
+    ],
+)
+def test_extract_fixtures(
+    pattern: str,
+    signature: inspect.Signature,
+    text: str,
+    expected: Mapping[str, str] | None,
+):
+    matcher = DefaultPatternMatcher(pattern, signature)
+    assert matcher.extract_fixtures(text) == expected
+
+
+def test_pattern_python_magics():
+    matcher = DefaultPatternMatcher(
+        "I have {param}", inspect.signature(dummy_str_pattern)
+    )
+    matcher2 = DefaultPatternMatcher(
+        "I have {param}", inspect.signature(dummy_str_pattern)
+    )
+    matcher3 = RegExPatternMatcher(
+        r"I have (?P<param>[^\s]+)", inspect.signature(dummy_str_pattern)
+    )
+    assert matcher == matcher2
+    assert matcher != matcher3
+    assert str(matcher) == "I have {param}"
+    assert str(matcher3) == r"I have (?P<param>[^\s]+)"
+
+    assert repr(matcher) == '"I have {param}"'
+
+
+@pytest.mark.parametrize(
     "pattern,signature,text,fixtures,expected",
     [
         pytest.param(
@@ -240,3 +308,82 @@ def test_fixtures_pattern_matcher_match(
 ):
     matcher = DefaultPatternMatcher(pattern, signature)
     assert matcher.get_matches(text, fixtures) == expected
+
+
+@pytest.mark.parametrize(
+    "pattern,signature,text,fixtures,expected",
+    [
+        pytest.param(
+            "I have fixtures",
+            inspect.signature(dummy_str_pattern),
+            "I have fixtures",
+            {"param": "foo"},
+            {"param": "foo"},
+            id="fixtures",
+        ),
+        pytest.param(
+            r"I have (?P<name>[^\s]+) and fixtures",
+            inspect.signature(mix_param),
+            "I have blaz and fixtures",
+            {"age": 42},
+            {"name": "blaz", "age": 42},
+            id="fixtures",
+        ),
+    ],
+)
+def test_regex_pattern_matcher_match(
+    pattern: str,
+    signature: inspect.Signature,
+    text: str,
+    fixtures: Mapping[str, str],
+    expected: Mapping[str, str] | None,
+):
+    matcher = RegExPatternMatcher(pattern, signature)
+    assert matcher.get_matches(text, fixtures) == expected
+
+
+@pytest.mark.parametrize(
+    "pattern,matches,expected",
+    [
+        pytest.param(
+            DefaultPatternMatcher(
+                r"I have {param} yo", inspect.signature(dummy_str_pattern)
+            ),
+            {"param": "blaz"},
+            "I have \033[36mblaz\033[0m yo",
+            id="fixtures",
+        ),
+        pytest.param(
+            RegExPatternMatcher(
+                r"I have (?P<param>[^\s]+) yo", inspect.signature(dummy_str_pattern)
+            ),
+            {"param": "blaz"},
+            "I have \033[36mblaz\033[0m yo",
+            id="fixtures",
+        ),
+    ],
+)
+def test_regex_pattern_highlight(
+    pattern: AbstractPatternMatcher,
+    matches: Mapping[str, str],
+    expected: str,
+):
+    assert pattern.hightlight(matches) == expected
+
+
+def test_regex_invalid():
+    with pytest.raises(PatternError) as exc:
+        RegExPatternMatcher(
+            r"I have error <?P<param>[^\s+)", inspect.signature(dummy_str_pattern)
+        )
+
+    assert (
+        str(exc.value) == r"Can't compile to regex: I have error <?P<param>[^\s+): "
+        "unterminated character set at position 24"
+    )
+
+
+def test_regex():
+    regex = RegEx("pattern")
+    assert regex.get_matcher() is RegExPatternMatcher
+    assert repr(regex) == 'r"pattern"'

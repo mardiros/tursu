@@ -35,7 +35,7 @@
 
 ### API
 
-````{py:function} given(pattern: str) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
+````{py:function} given(pattern: str | tursu.pattern_matcher.AbstractPattern) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
 :canonical: tursu.registry.given
 
 ```{autodoc2-docstring} tursu.registry.given
@@ -43,7 +43,7 @@
 ```
 ````
 
-````{py:function} then(pattern: str) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
+````{py:function} then(pattern: str | tursu.pattern_matcher.AbstractPattern) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
 :canonical: tursu.registry.then
 
 ```{autodoc2-docstring} tursu.registry.then
@@ -51,7 +51,7 @@
 ```
 ````
 
-````{py:function} when(pattern: str) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
+````{py:function} when(pattern: str | tursu.pattern_matcher.AbstractPattern) -> typing.Callable[[tursu.steps.Handler], tursu.steps.Handler]
 :canonical: tursu.registry.when
 
 ```{autodoc2-docstring} tursu.registry.when

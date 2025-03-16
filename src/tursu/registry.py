@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Callable
 import venusian
 from typing_extensions import Any
 
+from tursu.pattern_matcher import AbstractPattern
+
 if TYPE_CHECKING:
     from tursu.runner import TursuRunner
 
@@ -15,7 +17,9 @@ from .steps import Handler, Step, StepKeyword
 VENUSIAN_CATEGORY = "tursu"
 
 
-def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
+def _step(
+    step_name: str, step_pattern: str | AbstractPattern
+) -> Callable[[Handler], Handler]:
     def wrapper(wrapped: Handler) -> Handler:
         def callback(scanner: venusian.Scanner, name: str, ob: Handler) -> None:
             if not hasattr(scanner, "registry"):
@@ -25,13 +29,13 @@ def _step(step_name: str, step_pattern: str) -> Callable[[Handler], Handler]:
                 step_name, step_pattern, wrapped
             )
 
-        venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)  # type: ignore
+        venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)
         return wrapped
 
     return wrapper
 
 
-def given(pattern: str) -> Callable[[Handler], Handler]:
+def given(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     """
     Decorator to listen for the `Given` Gherkin keyword.
 
@@ -44,7 +48,7 @@ def given(pattern: str) -> Callable[[Handler], Handler]:
     return _step("given", pattern)
 
 
-def when(pattern: str) -> Callable[[Handler], Handler]:
+def when(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     """
     Decorator to listen for the `When` gherkin keyword.
 
@@ -57,7 +61,7 @@ def when(pattern: str) -> Callable[[Handler], Handler]:
     return _step("when", pattern)
 
 
-def then(pattern: str) -> Callable[[Handler], Handler]:
+def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     """
     Decorator to listen for the `Then` gherkin keyword.
 
@@ -82,7 +86,7 @@ class Tursu:
         }
 
     def register_handler(
-        self, type: StepKeyword, pattern: str, handler: Handler
+        self, type: StepKeyword, pattern: str | AbstractPattern, handler: Handler
     ) -> None:
         self._handlers[type].append(Step(pattern, handler))
 
@@ -103,7 +107,7 @@ class Tursu:
                     tursu_runner.emit_success(step, handler, matches)
                 break
         else:
-            raise Unregistered(f"{step.capitalize()} {text}")
+            raise Unregistered(self, step, text)
 
     def extract_fixtures(
         self, step: StepKeyword, text: str, **kwargs: Any
@@ -115,7 +119,7 @@ class Tursu:
                 return fixtures
                 break
         else:
-            raise Unregistered(f"{step.capitalize()} {text}")
+            raise Unregistered(self, step, text)
 
     def scan(self, mod: ModuleType | None = None) -> "Tursu":
         """
@@ -135,5 +139,5 @@ class Tursu:
         if mod not in self.scanned:
             self.scanned.add(mod)
             scanner = venusian.Scanner(registry=self)
-            scanner.scan(mod, categories=[VENUSIAN_CATEGORY])  # type: ignore
+            scanner.scan(mod, categories=[VENUSIAN_CATEGORY])
         return self
