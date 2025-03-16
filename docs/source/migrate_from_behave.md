@@ -30,7 +30,6 @@ cat << 'EOF' > tests/functionals/conftest.py
 from tursu.plugin import tursu_collect_file
 
 tursu_collect_file()
-```
 EOF
 ```
 
@@ -232,7 +231,7 @@ markers = [
 ]
 ```
 
-## Step 6 - Run the test, enable tracing!
+## Step 6 - Run the test, enable tracing, if necessary
 
 It's hard to run a debugger in behave, remote debugging is mandatory,
 in pytest, you can use start a debugger in your test by a
