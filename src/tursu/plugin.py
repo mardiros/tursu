@@ -27,17 +27,21 @@ class GherkinTestModule(pytest.Module):
         compiler = GherkinCompiler(doc, tursu)
         case = compiler.to_module()
 
-        test_casefile = path.parent / case.filename
-        test_casefile.write_text(str(case))
-        atexit.register(lambda: test_casefile.unlink(missing_ok=True))
+        self.test_casefile = path.parent / case.filename
+        self.test_casefile.write_text(str(case))
+        atexit.register(lambda: self.test_casefile.unlink(missing_ok=True))
 
-        super().__init__(path=test_casefile, **kwargs)
+        super().__init__(path=self.test_casefile, **kwargs)
+        self._nodeid = self.nodeid.replace(case.filename, path.name)
+        self.path = path
 
     def __repr__(self) -> str:
         return f"<GherkinDocument {self.gherkin_doc}>"
 
     def collect(self) -> Iterable[pytest.Item | pytest.Collector]:
+        path, self.path = self.path, self.test_casefile  # collect from the ast file
         ret = super().collect()
+        self.path = path  # restore the scenario path to have a per path
         return ret
 
 
