@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Callable
 import venusian
 from typing_extensions import Any
 
+from tursu.pattern_matcher import AbstractPattern
+
 if TYPE_CHECKING:
-    from tursu.pattern_matcher import AbstractPattern
     from tursu.runner import TursuRunner
 
 from .exceptions import Unregistered

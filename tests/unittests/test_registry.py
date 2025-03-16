@@ -1,6 +1,17 @@
+import textwrap
+
 import pytest
 
-from tests.unittests.fixtures.steps import DummyApp, DummyMail
+from tests.unittests.fixtures.steps import (
+    DummyApp,
+    DummyMail,
+    assert_api_response,
+    assert_dataset,
+    assert_mailbox_contains,
+    assert_user_has_mailbox,
+    create_mailbox,
+    give_user,
+)
 from tursu.registry import Tursu, Unregistered
 from tursu.runner import TursuRunner
 from tursu.steps import Step
@@ -14,15 +25,6 @@ def tursu_runner(
 
 
 def test_registry_handler(tursu: Tursu):
-    from tests.unittests.fixtures.steps import (
-        assert_api_response,
-        assert_dataset,
-        assert_mailbox_contains,
-        assert_user_has_mailbox,
-        create_mailbox,
-        give_user,
-    )
-
     assert tursu._handlers == {
         "given": [Step("a user {username}", give_user)],
         "when": [
@@ -88,4 +90,20 @@ Available steps:
 │ ✅ Then the API for Bob respond               │
 └───────────────────────────────────────────────┘
 """
+    )
+
+
+def test_registry_step_unregistered_extract_fixtures(
+    tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tursu
+):
+    with pytest.raises(Unregistered) as ctx:
+        tursu.extract_fixtures("given", "a nickname Bob", dummy_app=dummy_app)
+    assert (
+        str(ctx.value)
+        == textwrap.dedent("""
+            Unregister step:
+              - Given a nickname Bob
+            Available steps:
+              - Given a user {username}
+            """).strip()
     )
