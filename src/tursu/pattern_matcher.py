@@ -11,6 +11,9 @@ from inspect import Signature
 from typing import Any, Literal, get_args, get_origin
 
 
+class PatternError(RuntimeError): ...
+
+
 def cast_to_annotation(
     value: str, annotation: type[int | float | bool | str | date | datetime | Enum]
 ) -> int | float | bool | str | date | datetime | Enum:
@@ -118,23 +121,8 @@ class AbstractPattern(abc.ABC):
     def get_matcher(cls) -> type[AbstractPatternMatcher]: ...
 
 
-class DefaultPatternMatcher(AbstractPatternMatcher):
-    def __init__(self, pattern: str, signature: Signature) -> None:
-        super().__init__(pattern, signature)
-        re_pattern = pattern
-        for key, val in signature.parameters.items():
-            match val.annotation:
-                case type() if val.annotation is int:
-                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>\d+)")
-                case _:
-                    # if enclosed by double quote, use double quote as escaper
-                    # not a gherkin spec.
-                    re_pattern = re_pattern.replace(
-                        f'"{{{key}}}"', rf'"(?P<{key}>[^"]+)"'
-                    )
-                    # otherwise, match one word
-                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>[^\s]+)")
-        self.re_pattern = re.compile(f"^{re_pattern}$")
+class RegexBasePattern(AbstractPatternMatcher):
+    re_pattern: re.Pattern[str]
 
     def get_matches(
         self, text: str, kwargs: Mapping[str, Any]
@@ -175,8 +163,54 @@ class DefaultPatternMatcher(AbstractPatternMatcher):
 
         return None
 
+
+class DefaultPatternMatcher(RegexBasePattern):
+    def __init__(self, pattern: str, signature: Signature) -> None:
+        super().__init__(pattern, signature)
+        re_pattern = pattern
+        for key, val in signature.parameters.items():
+            match val.annotation:
+                case type() if val.annotation is int:
+                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>\d+)")
+                case _:
+                    # if enclosed by double quote, use double quote as escaper
+                    # not a gherkin spec.
+                    re_pattern = re_pattern.replace(
+                        f'"{{{key}}}"', rf'"(?P<{key}>[^"]+)"'
+                    )
+                    # otherwise, match one word
+                    re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>[^\s]+)")
+        self.re_pattern = re.compile(f"^{re_pattern}$")
+
     def hightlight(self, matches: Mapping[str, Any]) -> str:
         colored_matches = {
             key: f"\033[36m{value}\033[0m" for key, value in matches.items()
         }
         return self.pattern.format(**colored_matches)
+
+
+class RegExPatternMatcher(RegexBasePattern):
+    def __init__(self, pattern: str, signature: Signature) -> None:
+        super().__init__(pattern, signature)
+        try:
+            self.re_pattern = re.compile(f"^{pattern}$")
+        except re.PatternError as exc:
+            raise PatternError(f"Can't compile to regex: {pattern}: {exc}") from exc
+
+    def hightlight(self, matches: Mapping[str, Any]) -> str:
+        colored_matches = {
+            key: f"\033[36m{value}\033[0m" for key, value in matches.items()
+        }
+        ret = self.pattern
+        for key, val in colored_matches.items():
+            ret = re.sub(rf"\(\?P<{key}>[^\)]+\)", val, ret)
+        return ret
+
+
+class RegEx(AbstractPattern):
+    @classmethod
+    def get_matcher(cls) -> type[AbstractPatternMatcher]:
+        return RegExPatternMatcher
+
+    def __repr__(self) -> str:
+        return f'r"{self.pattern}"'

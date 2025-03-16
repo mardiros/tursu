@@ -68,7 +68,14 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tu
     with pytest.raises(Unregistered) as ctx:
         tursu.run_step(tursu_runner, "when", "I see a mailbox bob@alice.net for Bob")
 
-    assert str(ctx.value) == "When I see a mailbox bob@alice.net for Bob"
+    assert str(ctx.value) == (
+        """\
+Unregister step:
+  - When I see a mailbox bob@alice.net for Bob
+Available steps:
+  - When {username} create a mailbox {email}
+""".strip()
+    )
 
     assert (
         tursu_runner.remove_ansi_escape_sequences(tursu_runner.fancy())
