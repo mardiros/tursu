@@ -12,6 +12,7 @@ matching_steps
 using_tags
 working_with_playwright
 migrate_from_behave
+migrate_from_pytest_bdd
 changelog
 ```
 
