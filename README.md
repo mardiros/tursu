@@ -1,5 +1,10 @@
 # Turşu
 
+[![Documentation](https://github.com/mardiros/tursu/actions/workflows/release.yml/badge.svg)](https://mardiros.github.io/tursu/)
+[![Continuous Integration](https://github.com/mardiros/tursu/actions/workflows/tests.yml/badge.svg)](https://github.com/mardiros/tursu/actions/workflows/tests.yml)
+[![Coverage Report](https://codecov.io/gh/mardiros/tursu/graph/badge.svg?token=DTpi73d7mf)](https://codecov.io/gh/mardiros/tursu)
+
+
 This project allows you to write **Gherkin**-based behavior-driven development (BDD) tests
 and execute them using **pytest**.
 
