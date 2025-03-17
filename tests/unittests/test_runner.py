@@ -1,10 +1,13 @@
 import contextlib
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from typing_extensions import Generator
 
 from tests.unittests.fixtures.steps import DummyApp
+from tursu.domain.model.gherkin import GherkinDocument
+from tursu.plugin import tursu_collect_file
 from tursu.registry import Tursu
 from tursu.runner import ScenarioFailed, TursuRunner
 
@@ -20,10 +23,10 @@ class TursuRunnerNoLog(TursuRunner):
         self,
         request: pytest.FixtureRequest,
         capsys: pytest.CaptureFixture[str],
-        tursu: Tursu,
+        registry: Tursu,
     ) -> None:
         self.logged_lines: list[str] = []
-        super().__init__(request, capsys, tursu, ["📄 Document: ..."])
+        super().__init__(request, capsys, registry, ["📄 Document: ..."])
 
     def log(
         self, text: str, replace_previous_line: bool = False, end: str = "\n"
@@ -35,11 +38,11 @@ class TursuRunnerNoLog(TursuRunner):
 
 @pytest.fixture()
 def tursu_runner(
-    tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+    registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
 ) -> Iterator[TursuRunnerNoLog]:
     old_verbose = request.config.option.verbose
     request.config.option.verbose = max(request.config.option.verbose, 1)
-    with TursuRunnerNoLog(request, capsys, tursu) as runner:
+    with TursuRunnerNoLog(request, capsys, registry) as runner:
         yield runner
     request.config.option.verbose = old_verbose
 
@@ -117,11 +120,11 @@ def test_format_example_step(tursu_runner: TursuRunner):
 def test_emit_running(
     verbose: bool,
     tursu_runner: TursuRunner,
-    tursu: Tursu,
+    registry: Tursu,
 ):
     tursu_runner.verbose = verbose
     tursu_runner.emit_running(
-        "given", tursu._handlers["given"][0], matches={"username": "bob"}
+        "given", registry._handlers["given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -138,12 +141,12 @@ def test_emit_running(
 def test_emit_error(
     verbose: bool,
     tursu_runner: TursuRunner,
-    tursu: Tursu,
+    registry: Tursu,
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_error(
-        "given", tursu._handlers["given"][0], matches={"username": "bob"}
+        "given", registry._handlers["given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[91m❌ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -160,13 +163,47 @@ def test_emit_error(
 def test_emit_success(
     verbose: bool,
     tursu_runner: TursuRunner,
-    tursu: Tursu,
+    registry: Tursu,
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_success(
-        "given", tursu._handlers["given"][0], matches={"username": "bob"}
+        "given", registry._handlers["given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
     ]
+
+
+def test_tursu_collect_file(
+    tursu: Tursu, doc: GherkinDocument, request: pytest.FixtureRequest
+):
+    old_handlers = tursu._handlers
+    tursu._handlers = {"given": [], "then": [], "when": []}
+    tursu_collect_file()
+    assert "pytest_collect_file" in globals()
+    pkg = pytest.Package.from_parent(request.session, path=doc.filepath.parent)
+    globals()["pytest_collect_file"](pkg, doc.filepath)
+    repr_handlers = {
+        "given": [repr(h) for h in tursu._handlers["given"]],
+        "then": [repr(h) for h in tursu._handlers["then"]],
+        "when": [repr(h) for h in tursu._handlers["when"]],
+    }
+    assert repr_handlers == {
+        "given": [
+            'Step("a user {username}", give_user)',
+        ],
+        "then": [
+            'Step("the API for {username} respond", assert_api_response)',
+            'Step("the users dataset is", assert_dataset)',
+            'Step("the mailbox {email} "{subject}" message is", '
+            "assert_mailbox_contains)",
+            'Step("I see a mailbox {email} for {username}", assert_user_has_mailbox)',
+        ],
+        "when": [
+            'Step("{username} create a mailbox {email}", create_mailbox)',
+        ],
+    }
+
+    # we restore the tursu global registry has its previous step.
+    tursu._handlers = old_handlers

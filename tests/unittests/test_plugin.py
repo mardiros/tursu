@@ -2,8 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from tursu.plugin import GherkinTestModule
+from tursu.plugin import GherkinTestModule, _tursu
 from tursu.registry import Tursu
+
+
+def test_fixture(tursu: Tursu):
+    assert tursu is _tursu
 
 
 @pytest.fixture()

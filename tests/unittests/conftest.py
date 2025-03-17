@@ -24,7 +24,7 @@ def outline_doc(docs_dir: Path):
 
 
 @pytest.fixture(scope="session")
-def tursu():
+def registry():
     return Tursu().scan()
 
 

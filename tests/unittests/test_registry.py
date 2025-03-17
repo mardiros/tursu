@@ -19,13 +19,13 @@ from tursu.steps import Step
 
 @pytest.fixture()
 def tursu_runner(
-    tursu: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+    registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
 ) -> TursuRunner:
-    return TursuRunner(request, capsys, tursu, ["📄 Document: ..."])
+    return TursuRunner(request, capsys, registry, ["📄 Document: ..."])
 
 
-def test_registry_handler(tursu: Tursu):
-    assert tursu._handlers == {
+def test_registry_handler(registry: Tursu):
+    assert registry._handlers == {
         "given": [Step("a user {username}", give_user)],
         "when": [
             Step("{username} create a mailbox {email}", create_mailbox),
@@ -39,19 +39,19 @@ def test_registry_handler(tursu: Tursu):
     }
 
 
-def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tursu):
-    tursu.run_step(tursu_runner, "given", "a user Bob", dummy_app=dummy_app)
-    tursu.run_step(
+def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
+    registry.run_step(tursu_runner, "given", "a user Bob", dummy_app=dummy_app)
+    registry.run_step(
         tursu_runner, "when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
     )
-    tursu.run_step(
+    registry.run_step(
         tursu_runner,
         "then",
         "I see a mailbox bob@alice.net for Bob",
         dummy_app=dummy_app,
     )
 
-    tursu.run_step(
+    registry.run_step(
         tursu_runner,
         "then",
         "the API for Bob respond",
@@ -68,7 +68,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tu
     }
 
     with pytest.raises(Unregistered) as ctx:
-        tursu.run_step(tursu_runner, "when", "I see a mailbox bob@alice.net for Bob")
+        registry.run_step(tursu_runner, "when", "I see a mailbox bob@alice.net for Bob")
 
     assert str(ctx.value) == (
         """\
@@ -94,10 +94,10 @@ Available steps:
 
 
 def test_registry_step_unregistered_extract_fixtures(
-    tursu_runner: TursuRunner, dummy_app: DummyApp, tursu: Tursu
+    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
 ):
     with pytest.raises(Unregistered) as ctx:
-        tursu.extract_fixtures("given", "a nickname Bob", dummy_app=dummy_app)
+        registry.extract_fixtures("given", "a nickname Bob", dummy_app=dummy_app)
     assert (
         str(ctx.value)
         == textwrap.dedent("""
