@@ -48,9 +48,6 @@ class GherkinComment(BaseModel):
     location: GherkinLocation
     text: str
 
-    def __repr__(self) -> str:
-        return f"Comment: {self.text}"
-
 
 class GherkinTag(BaseModel):
     id: str
@@ -60,16 +57,10 @@ class GherkinTag(BaseModel):
         BeforeValidator(lambda value: value.strip().lstrip("@") if value else value),
     ]
 
-    def __repr__(self) -> str:
-        return f"@{self.name}" or "@<notag>"
-
 
 class GherkinCell(BaseModel):
     location: GherkinLocation
     value: str
-
-    def __repr__(self) -> str:
-        return f"{self.value}" or "<novalue>"
 
 
 class GherkinTableRow(BaseModel):
@@ -77,16 +68,10 @@ class GherkinTableRow(BaseModel):
     location: GherkinLocation
     cells: Sequence[GherkinCell]
 
-    def __repr__(self) -> str:
-        return "\t|\t".join([repr(cell) for cell in self.cells])
-
 
 class GherkinDataTable(BaseModel):
     location: GherkinLocation
     rows: list[GherkinTableRow]
-
-    def __repr__(self) -> str:
-        return "\n".join(repr(self.rows))
 
 
 class GherkinDocString(BaseModel):
@@ -100,9 +85,6 @@ class GherkinDocString(BaseModel):
         if self.media_type == "json":
             self.content = json.loads(self.content)  # type: ignore
         return self
-
-    def __repr__(self) -> str:
-        return f"{self.delimiter}{self.content}{self.delimiter}"
 
 
 class GherkinStep(BaseModel):
@@ -140,9 +122,6 @@ class GherkinExamples(BaseModel):
     table_header: GherkinTableRow = Field(alias="tableHeader")
     table_body: Sequence[GherkinTableRow] = Field(alias="tableBody")
 
-    def __repr__(self) -> str:
-        return f"Example: {self.name}"
-
 
 class GherkinScenario(BaseModel):
     id: str
@@ -174,22 +153,13 @@ class GherkinScenarioOutline(BaseModel):
 class GherkinBackgroundEnvelope(BaseModel):
     background: GherkinBackground
 
-    def __repr__(self) -> str:
-        return "BackgroundEnvelope"
-
 
 class GherkinScenarioEnvelope(BaseModel):
     scenario: GherkinScenario | GherkinScenarioOutline
 
-    def __repr__(self) -> str:
-        return "ScenarioEnvelope"
-
 
 class GherkinRuleEnvelope(BaseModel):
     rule: "GherkinRule"
-
-    def __repr__(self) -> str:
-        return "RuleEnvelope"
 
 
 GherkinEnvelope = (

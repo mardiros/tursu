@@ -193,11 +193,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinBackgroundEnvelope.__repr__
-
-````
-
 ````{py:attribute} background
 :canonical: tursu.domain.model.gherkin.GherkinBackgroundEnvelope.background
 :type: tursu.domain.model.gherkin.GherkinBackground
@@ -216,11 +211,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinCell
 
 Bases: {py:obj}`pydantic.BaseModel`
-
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinCell.__repr__
-
-````
 
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinCell.location
@@ -253,11 +243,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinComment.__repr__
-
-````
-
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinComment.location
 :type: tursu.domain.model.gherkin.GherkinLocation
@@ -289,11 +274,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinDataTable.__repr__
-
-````
-
 ````{py:attribute} location
 :canonical: tursu.domain.model.gherkin.GherkinDataTable.location
 :type: tursu.domain.model.gherkin.GherkinLocation
@@ -324,11 +304,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinDocString
 
 Bases: {py:obj}`pydantic.BaseModel`
-
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinDocString.__repr__
-
-````
 
 ````{py:method} check_passwords_match() -> tursu.domain.model.gherkin.GherkinDocString
 :canonical: tursu.domain.model.gherkin.GherkinDocString.check_passwords_match
@@ -474,11 +449,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinExamples
 
 Bases: {py:obj}`pydantic.BaseModel`
-
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinExamples.__repr__
-
-````
 
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinExamples.description
@@ -817,11 +787,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinRuleEnvelope.__repr__
-
-````
-
 ````{py:attribute} rule
 :canonical: tursu.domain.model.gherkin.GherkinRuleEnvelope.rule
 :type: GherkinRule
@@ -936,11 +901,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinScenarioEnvelope
 
 Bases: {py:obj}`pydantic.BaseModel`
-
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinScenarioEnvelope.__repr__
-
-````
 
 ````{py:attribute} scenario
 :canonical: tursu.domain.model.gherkin.GherkinScenarioEnvelope.scenario
@@ -1187,11 +1147,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinTableRow.__repr__
-
-````
-
 ````{py:attribute} cells
 :canonical: tursu.domain.model.gherkin.GherkinTableRow.cells
 :type: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinCell]
@@ -1234,11 +1189,6 @@ Bases: {py:obj}`pydantic.BaseModel`
 :canonical: tursu.domain.model.gherkin.GherkinTag
 
 Bases: {py:obj}`pydantic.BaseModel`
-
-````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.gherkin.GherkinTag.__repr__
-
-````
 
 ````{py:attribute} id
 :canonical: tursu.domain.model.gherkin.GherkinTag.id
