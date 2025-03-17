@@ -1,20 +1,12 @@
-import contextlib
 from collections.abc import Iterator
 
 import pytest
-from typing_extensions import Generator
 
 from tests.unittests.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import GherkinDocument
 from tursu.plugin import tursu_collect_file
 from tursu.registry import Tursu
 from tursu.runner import ScenarioFailed, TursuRunner
-
-
-class CapsysMock(pytest.CaptureFixture[str]):
-    @contextlib.contextmanager
-    def disabled(self) -> Generator[None]:
-        yield
 
 
 class TursuRunnerNoLog(TursuRunner):
