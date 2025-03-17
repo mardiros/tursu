@@ -8,9 +8,17 @@ its also more verbose and the approach is different.
 pytest-bdd does not compile to AST, so while using pdb, it's harder to navigate
 and now in which step the scenario is currently. In case of failure, the context
 provided by pytest-bdd is minimal.
-We will see the reste of the diff
 
+Also note that in tursu, you can provide the scenario file in the cli command
+as a test, not a `test_*.py` file.
 
+```bash
+# using pytest-bdd
+uv run pytest --trace -sxv tests/functionals/test_scenario_binding_file.py
+
+# using tursu
+uv run pytest --trace -sxv tests/functionals/my_gherkin.scenario
+```
 
 ## Step 1 - Install tursu and configure it.
 
