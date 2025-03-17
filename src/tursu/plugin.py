@@ -33,6 +33,7 @@ class GherkinTestModule(pytest.Module):
 
         super().__init__(path=self.test_casefile, **kwargs)
         self._nodeid = self.nodeid.replace(case.filename, path.name)
+        self._obj = super().obj  # we load the module before patching the path
         self.path = path
 
     def __repr__(self) -> str:
