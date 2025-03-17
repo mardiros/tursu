@@ -1,4 +1,4 @@
-0.12.0 - Released on 2025-03-17
+0.12.1 - Released on 2025-03-17
 -------------------------------
 * Add a pattern matcher based on regular expression.
 * fix the cli command while choosing a .feature file directly from the cli.
