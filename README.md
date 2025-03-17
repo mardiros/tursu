@@ -57,6 +57,7 @@ collected 3 items
 
 ### Run the tests.
 
+## All the suite
 ```bash
 𝝿 uv run pytest tests/functionals
 ========================== test session starts ==========================
@@ -70,7 +71,7 @@ tests/functionals/test_login.py ...                               [ 33%]
 =========================== 3 passed in 0.02s ===========================
 ```
 
-Or run it with the details:
+## All the suite with details:
 
 ```bash
 𝝿 uv run pytest -v tests/functionals
@@ -108,7 +109,68 @@ collected 3 items
 ============================== 3 passed in 0.02s ==============================
 ```
 
-In case of error, the terminal will report all the context of the error.
+## Choose your scenario file to test:
+
+```bash
+𝝿 uv run pytest -vv tests/tests2/login.feature
+========================== test session starts ==========================
+platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
+configfile: pyproject.toml
+plugins: cov-6.0.0, tursu-0.11.1
+collected 3 items
+
+tests/tests2/login.feature::test_3_I_properly_logged_in <- tests/tests2/test_login.py
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I properly logged in
+⏳ Given a user Bob with password dumbsecret
+✅ Given a user Bob with password dumbsecret
+⏳ When Bob login with password dumbsecret
+✅ When Bob login with password dumbsecret
+⏳ Then I am connected with username Bob
+✅ Then I am connected with username Bob
+                                                         PASSED [ 33%]
+tests/tests2/login.feature::test_7_I_hit_the_wrong_password <- tests/tests2/test_login.py
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I hit the wrong password
+⏳ Given a user Bob with password dumbsecret
+✅ Given a user Bob with password dumbsecret
+⏳ When Bob login with password notthat
+✅ When Bob login with password notthat
+⏳ Then I am not connected
+✅ Then I am not connected
+                                                             PASSED [ 66%]
+tests/tests2/login.feature::test_14_I_user_another_login <- tests/tests2/test_login.py
+📄 Document: login.feature
+🥒 Feature: As a user I logged in with my password
+🎬 Scenario: I user another login
+⏳ Given a user Bob with password dumbsecret
+✅ Given a user Bob with password dumbsecret
+⏳ Given a user Alice with password anothersecret
+✅ Given a user Alice with password anothersecret
+⏳ When Alice login with password dumbsecret
+✅ When Alice login with password dumbsecret
+⏳ Then I am not connected
+✅ Then I am not connected
+⏳ When Bob login with password dumbsecret
+✅ When Bob login with password dumbsecret
+⏳ Then I am connected with username Bob
+✅ Then I am connected with username Bob
+                                                          PASSED [100%]
+
+=========================== 3 passed in 0.02s ===========================
+```
+
+```{note}
+
+You can choose the test name ( tests/tests2/login.feature::test_3_I_properly_logged_in )
+or even decorate with tag and use pytest markers (`pytest -m <tag>`).
+
+```
+
+
+## Get errors context
 
 ```bash
 $ uv run pytest tests/functionals
