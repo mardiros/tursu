@@ -88,7 +88,7 @@ ignore = ["RUF022"]
 
 [tool.pyright]
 ignore = ["examples"]
-include = ["src", "tepyteststs"]
+include = ["src", "tests"]
 reportPrivateUsage = false
 reportUnknownMemberType = false
 reportUnknownParameterType = false
