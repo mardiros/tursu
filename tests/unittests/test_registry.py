@@ -2,9 +2,8 @@ import textwrap
 
 import pytest
 
+from tests.unittests.conftest import DummyApp, DummyMail
 from tests.unittests.fixtures.steps import (
-    DummyApp,
-    DummyMail,
     assert_api_response,
     assert_dataset,
     assert_mailbox_contains,

@@ -104,7 +104,7 @@ def test_model(doc: GherkinDocument):
                 "keyword": "and",
                 "keyword_type": "Conjunction",
                 "location": {"column": 7, "line": 16},
-                "text": "the API for bob@alice.net respond",
+                "text": "the API for Bob respond",
             },
             {
                 "data_table": {

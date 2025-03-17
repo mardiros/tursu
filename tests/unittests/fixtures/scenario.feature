@@ -13,7 +13,7 @@ Feature: Discover Scenario
         """
         ...
         """
-      And the API for bob@alice.net respond
+      And the API for Bob respond
         """json
         [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]
         """

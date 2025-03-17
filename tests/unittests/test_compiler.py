@@ -64,7 +64,7 @@ def test_emit_items(doc: GherkinDocument):
         "🥒 Feature: Discover Scenario",
         "🔹 Rule: I write a wip test",
         "🎬 Scenario: I can find scenario based on tag",
-        "And the API for bob@alice.net respond",
+        "And the API for Bob respond",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: scenario.feature",
@@ -102,7 +102,7 @@ def test_compiler(doc: GherkinDocument, registry: Tursu, dummy_app: DummyApp) ->
                 tursu_runner.run_step('when', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
                 tursu_runner.run_step('then', 'I see a mailbox bob@alice.net for Bob', dummy_app=dummy_app)
                 tursu_runner.run_step('then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-                tursu_runner.run_step('then', 'the API for bob@alice.net respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+                tursu_runner.run_step('then', 'the API for Bob respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
                 tursu_runner.run_step('then', 'the users dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
             '''
         ).strip()
