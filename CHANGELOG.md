@@ -1,3 +1,7 @@
+0.12.2 - Released on 2025-03-17
+-------------------------------
+* Fix collect of tests if the module is not loaded.
+
 0.12.1 - Released on 2025-03-17
 -------------------------------
 * Add a pattern matcher based on regular expression.
