@@ -275,7 +275,7 @@ configfile: pyproject.toml
 plugins: cov-6.0.0, playwright-0.7.0, base-url-2.1.0
 collected 1 item
 
-tests/using_playwright/test_1_Basic_Test.py::test_2_Hello_world[chromium]
+tests/using_playwright/01_basic.feature::test_2_Hello_world[chromium]
 >>>>>>>>>>>>>> PDB runcall (IO-capturing turned off for fixture capsys) >>>>>>>>>>>>>>>
 > ~/git/tursu/tests/using_playwright/test_1_Basic_Test.py(10)test_2_Hello_world()
 -> with TursuRunner(request, capsys, tursu, ['📄 Document: 01_basic.feature', '🥒 Feature: Basic Test', '🎬 Scenario: Hello world']) as tursu_runner:
