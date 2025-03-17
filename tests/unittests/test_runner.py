@@ -1,6 +1,5 @@
 import contextlib
 from collections.abc import Iterator
-from pathlib import Path
 
 import pytest
 from typing_extensions import Generator
