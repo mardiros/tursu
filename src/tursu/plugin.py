@@ -29,10 +29,15 @@ class GherkinTestModule(pytest.Module):
         self.test_mod = case = compiler.to_module()
 
         self.test_casefile = path.parent / case.filename
-        self.test_casefile.write_text(str(case))  # sould be done only if traced
-        atexit.register(lambda: self.test_casefile.unlink(missing_ok=True))
-
         super().__init__(path=self.test_casefile, **kwargs)
+        if (
+            self.session.config.getoption("--trace")
+            or self.session.config.option.verbose == 3
+        ):
+            self.test_casefile.write_text(str(case))
+            atexit.register(lambda: self.test_casefile.unlink(missing_ok=True))
+            self._obj = super()._getobj()  # we preload before updating the path
+
         self._nodeid = self.nodeid.replace(case.filename, path.name)
         self.path = path
 
