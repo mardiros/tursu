@@ -1,3 +1,9 @@
+0.12.4 - Released on 2025-03-19
+-------------------------------
+* Write the test module on disk only if --trace or -vvv is used.
+  This allows to have the full traceback when a test failed with the AST generated code
+  displayed.
+
 0.12.3 - Released on 2025-03-19
 -------------------------------
 * Refactor collect of tests if the module is not loaded.
