@@ -1,3 +1,7 @@
+0.12.3 - Released on 2025-03-19
+-------------------------------
+* Refactor collect of tests if the module is not loaded.
+
 0.12.2 - Released on 2025-03-17
 -------------------------------
 * Fix collect of tests if the module is not loaded.
