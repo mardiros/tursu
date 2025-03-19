@@ -3,6 +3,7 @@ import inspect
 import sys
 from collections.abc import Iterable
 from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 import pytest
@@ -25,16 +26,18 @@ class GherkinTestModule(pytest.Module):
         doc = GherkinDocument.from_file(path)
         self.gherkin_doc = path.name
         compiler = GherkinCompiler(doc, tursu)
-        case = compiler.to_module()
+        self.test_mod = case = compiler.to_module()
 
         self.test_casefile = path.parent / case.filename
-        self.test_casefile.write_text(str(case))
+        self.test_casefile.write_text(str(case))  # sould be done only if traced
         atexit.register(lambda: self.test_casefile.unlink(missing_ok=True))
 
         super().__init__(path=self.test_casefile, **kwargs)
         self._nodeid = self.nodeid.replace(case.filename, path.name)
-        self._obj = super().obj  # we load the module before patching the path
         self.path = path
+
+    def _getobj(self) -> ModuleType:
+        return self.test_mod.to_python_module()
 
     def __repr__(self) -> str:
         return f"<GherkinDocument {self.gherkin_doc}>"
