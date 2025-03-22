@@ -54,11 +54,11 @@ def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
 
-@then("I am connected with username {username}")
+@then("the user is connected with username {username}")
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 
-@then("I am not connected")
+@then("the user is not connected")
 def assert_not_connected(app: DummyApp):
     assert app.connected_user is None
 """
@@ -66,23 +66,23 @@ def assert_not_connected(app: DummyApp):
 DEFAULT_FEATURE = """\
 Feature: As a user I logged in with my password
 
-  Scenario: I properly logged in
+  Scenario: User can login
     Given a user Bob with password dumbsecret
     When Bob login with password dumbsecret
-    Then I am connected with username Bob
+    Then the user is connected with username Bob
 
-  Scenario: I hit the wrong password
+  Scenario: User can't login with wrong password
     Given a user Bob with password dumbsecret
     When Bob login with password notthat
-    Then I am not connected
+    Then the user is not connected
 
-  Scenario: I user another login
+  Scenario: User can't login with someone else username
     Given a user Bob with password dumbsecret
     And a user Alice with password anothersecret
     When Alice login with password dumbsecret
-    Then I am not connected
+    Then the user is not connected
     When Bob login with password dumbsecret
-    Then I am connected with username Bob
+    Then the user is connected with username Bob
 """
 
 

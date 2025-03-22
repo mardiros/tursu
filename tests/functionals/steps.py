@@ -13,7 +13,7 @@ def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
 
-@then("I am connected with username {username}")
+@then("the user {username} is connected")
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 

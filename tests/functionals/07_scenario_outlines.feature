@@ -6,7 +6,7 @@ Feature: Scenario outlines
 
   Scenario Outline: Successful login with valid credentials
     When <username> login with password <password>
-    Then I am connected with username <username>
+    Then the user <username> is connected
 
     Examples:
       | username | password   |
