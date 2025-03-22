@@ -1,7 +1,7 @@
 import sys
 from collections.abc import Mapping
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, get_args, get_origin
 
 import venusian
 from typing_extensions import Any
@@ -84,11 +84,33 @@ class Tursu:
             "When": [],
             "Then": [],
         }
+        self._data_tables: dict[type, str] = {}
+
+    @property
+    def data_tables_types(self) -> dict[type, str]:
+        return self._data_tables
 
     def register_handler(
         self, type: StepKeyword, pattern: str | AbstractPattern, handler: Handler
     ) -> None:
-        self._handlers[type].append(Step(pattern, handler))
+        step = Step(pattern, handler)
+        self._handlers[type].append(step)
+        self.register_data_table(step)
+
+    def register_data_table(self, step: Step) -> None:
+        parameter = step.pattern.signature.parameters.get("data_table")
+        if parameter and parameter.annotation:
+            typ = get_args(parameter.annotation)[0]
+            if get_origin(typ) is not dict:
+                if typ not in self._data_tables:
+                    self._data_tables[typ] = f"{typ.__name__}{len(self._data_tables)}"
+
+    def get_step(self, step: StepKeyword, text: str, **kwargs: Any) -> Step | None:
+        handlers = self._handlers[step]
+        for handler in handlers:
+            if handler.pattern.match(text):
+                return handler
+        return None
 
     def run_step(
         self, tursu_runner: "TursuRunner", step: StepKeyword, text: str, **kwargs: Any

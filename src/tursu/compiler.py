@@ -1,7 +1,7 @@
 import ast
 import re
 from collections.abc import Iterator, Sequence
-from typing import Any, TypeGuard, get_args
+from typing import Any, TypeGuard, get_args, get_origin
 
 from tursu.domain.model.gherkin import (
     GherkinBackground,
@@ -184,15 +184,54 @@ class GherkinCompiler:
             )
 
         if stp.data_table:
-            tabl = []
-            hdr = [c.value for c in stp.data_table.rows[0].cells]
-            for row in stp.data_table.rows[1:]:
-                vals = [c.value for c in row.cells]
-                tabl.append(dict(zip(hdr, vals)))
+            registry_step = self.registry.get_step(keyword, stp.text)
 
-            keywords.append(
-                ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
-            )
+            assert registry_step, "Step not found"
+            typ: type | None = None
+            anon = registry_step.pattern.signature.parameters["data_table"].annotation
+            if anon:
+                typ = get_args(anon)[0]
+                if get_origin(typ) is dict:
+                    typ = None
+
+            if typ is None:
+                tabl = []
+                hdr = [c.value for c in stp.data_table.rows[0].cells]
+                for row in stp.data_table.rows[1:]:
+                    vals = [c.value for c in row.cells]
+                    tabl.append(dict(zip(hdr, vals)))
+
+                keywords.append(
+                    ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+                )
+            else:
+                # we have to parse the value
+                tabl = []
+                hdr = [c.value for c in stp.data_table.rows[0].cells]
+                call_datatable_node: list[ast.expr] = []
+                for row in stp.data_table.rows[1:]:
+                    vals = [c.value for c in row.cells]
+                    datatable_keywords = []
+                    for key, val in zip(hdr, vals):
+                        datatable_keywords.append(
+                            ast.keyword(arg=key, value=ast.Constant(value=val))
+                        )
+
+                    call_datatable_node.append(
+                        ast.Call(
+                            func=ast.Name(
+                                id=self.registry.data_tables_types[typ],
+                                ctx=ast.Load(),
+                            ),
+                            keywords=datatable_keywords,
+                        )
+                    )
+                keywords.append(
+                    ast.keyword(
+                        arg="data_table",
+                        value=ast.List(elts=call_datatable_node, ctx=ast.Load()),
+                    )
+                )
 
         call_format_node = None
         text = ast.Constant(value=stp.text)
@@ -369,37 +408,56 @@ class GherkinCompiler:
                     children=_,
                 ):
                     assert module_node is None
-                    docstring = f"{name}\n\n{description}".strip()
-                    import_any = ast.ImportFrom(
-                        module="typing",
-                        names=[ast.alias(name="Any", asname=None)],
-                        level=0,
+
+                    import_mods: list[ast.stmt] = []
+                    import_mods.append(
+                        ast.Expr(
+                            value=ast.Constant(
+                                f"{name}\n\n{description}".strip(), lineno=1
+                            )
+                        )
                     )
-                    import_pytest = ast.Import(
-                        names=[ast.alias(name="pytest", asname=None)]
+                    import_mods.append(
+                        ast.ImportFrom(
+                            module="typing",
+                            names=[ast.alias(name="Any", asname=None)],
+                            level=0,
+                        )
                     )
-                    import_tursu = ast.ImportFrom(
-                        module="tursu.registry",
-                        names=[
-                            ast.alias(name="Tursu", asname=None),
-                        ],
-                        level=0,
+                    import_mods.append(
+                        ast.Import(names=[ast.alias(name="pytest", asname=None)])
                     )
-                    import_tursu_runner = ast.ImportFrom(
-                        module="tursu.runner",
-                        names=[
-                            ast.alias(name="TursuRunner", asname=None),
-                        ],
-                        level=0,
+                    import_mods.append(
+                        ast.ImportFrom(
+                            module="tursu.registry",
+                            names=[
+                                ast.alias(name="Tursu", asname=None),
+                            ],
+                            level=0,
+                        )
                     )
+                    import_mods.append(
+                        ast.ImportFrom(
+                            module="tursu.runner",
+                            names=[
+                                ast.alias(name="TursuRunner", asname=None),
+                            ],
+                            level=0,
+                        )
+                    )
+                    for typ, alias in self.registry.data_tables_types.items():
+                        import_mods.append(
+                            ast.ImportFrom(
+                                module=typ.__module__,
+                                names=[
+                                    ast.alias(name=typ.__qualname__, asname=alias),
+                                ],
+                                level=0,
+                            )
+                        )
+
                     module_node = ast.Module(
-                        body=[
-                            ast.Expr(value=ast.Constant(docstring), lineno=1),
-                            import_any,
-                            import_pytest,
-                            import_tursu,
-                            import_tursu_runner,
-                        ],
+                        body=import_mods,
                         type_ignores=[],
                     )
                     module_name = stack[0].name
