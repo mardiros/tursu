@@ -25,11 +25,11 @@ def tursu_runner(
 
 def test_registry_handler(registry: Tursu):
     assert registry._handlers == {
-        "given": [Step("a user {username}", give_user)],
-        "when": [
+        "Given": [Step("a user {username}", give_user)],
+        "When": [
             Step("{username} create a mailbox {email}", create_mailbox),
         ],
-        "then": [
+        "Then": [
             Step("the API for {username} respond", assert_api_response),
             Step("the users dataset is", assert_dataset),
             Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
@@ -39,20 +39,20 @@ def test_registry_handler(registry: Tursu):
 
 
 def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
-    registry.run_step(tursu_runner, "given", "a user Bob", dummy_app=dummy_app)
+    registry.run_step(tursu_runner, "Given", "a user Bob", dummy_app=dummy_app)
     registry.run_step(
-        tursu_runner, "when", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
+        tursu_runner, "When", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
     )
     registry.run_step(
         tursu_runner,
-        "then",
+        "Then",
         "I see a mailbox bob@alice.net for Bob",
         dummy_app=dummy_app,
     )
 
     registry.run_step(
         tursu_runner,
-        "then",
+        "Then",
         "the API for Bob respond",
         dummy_app=dummy_app,
         doc_string=[
@@ -67,7 +67,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(tursu_runner, "when", "I see a mailbox bob@alice.net for Bob")
+        registry.run_step(tursu_runner, "When", "I see a mailbox bob@alice.net for Bob")
 
     assert str(ctx.value) == (
         """\
@@ -96,7 +96,7 @@ def test_registry_step_unregistered_extract_fixtures(
     tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
 ):
     with pytest.raises(Unregistered) as ctx:
-        registry.extract_fixtures("given", "a nickname Bob", dummy_app=dummy_app)
+        registry.extract_fixtures("Given", "a nickname Bob", dummy_app=dummy_app)
     assert (
         str(ctx.value)
         == textwrap.dedent("""

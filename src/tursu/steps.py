@@ -10,7 +10,7 @@ from .pattern_matcher import (
     DefaultPatternMatcher,
 )
 
-StepKeyword = Literal["given", "when", "then"]
+StepKeyword = Literal["Given", "When", "Then"]
 Handler = Callable[..., None]
 
 

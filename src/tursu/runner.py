@@ -88,7 +88,7 @@ class TursuRunner:
     def emit_running(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
     ) -> None:
-        text = f"\033[90m⏳ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
+        text = f"\033[90m⏳ {keyword} {step.highlight(matches)}\033[0m"
         self.runned.append(text)
         self.log(text)
 
@@ -98,7 +98,7 @@ class TursuRunner:
         step: Step,
         matches: Mapping[str, Any],
     ) -> None:
-        text = f"\033[91m❌ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
+        text = f"\033[91m❌ {keyword} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
@@ -107,7 +107,7 @@ class TursuRunner:
     def emit_success(
         self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
     ) -> None:
-        text = f"\033[92m✅ {keyword.capitalize()} {step.highlight(matches)}\033[0m"
+        text = f"\033[92m✅ {keyword} {step.highlight(matches)}\033[0m"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)

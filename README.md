@@ -225,9 +225,9 @@ app = <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>
     def test_3_I_properly_logged_in(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
         """I properly logged in"""
         with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', '🎬 Scenario: I properly logged in']) as tursu_runner:
-            tursu_runner.run_step('given', 'a user Bob with password dumbsecret', app=app)
-            tursu_runner.run_step('when', 'Bob login with password dumbsecret', app=app)
->           tursu_runner.run_step('then', 'I am connected with username Bobby', app=app)
+            tursu_runner.run_step('Given', 'a user Bob with password dumbsecret', app=app)
+            tursu_runner.run_step('When', 'Bob login with password dumbsecret', app=app)
+>           tursu_runner.run_step('Then', 'I am connected with username Bobby', app=app)
 
 tests/functionals/test_login.py:12:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _

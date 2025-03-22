@@ -77,7 +77,7 @@ def test_fancy_scenario(tursu_runner: TursuRunner):
 
 def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
-    tursu_runner.run_step("given", "a user Bob", dummy_app=dummy_app)
+    tursu_runner.run_step("Given", "a user Bob", dummy_app=dummy_app)
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mBob\x1b[0m\x1b[0m",
     ]
@@ -86,7 +86,7 @@ def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
 def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
     with pytest.raises(ScenarioFailed):
-        tursu_runner.run_step("then", "I see a mailbox X for X", dummy_app=dummy_app)
+        tursu_runner.run_step("Then", "I see a mailbox X for X", dummy_app=dummy_app)
     assert tursu_runner.runned == [
         "\x1b[91m❌ Then I see a mailbox \x1b[36mX\x1b[0m for \x1b[36mX\x1b[0m\x1b[0m",
     ]
@@ -115,7 +115,7 @@ def test_emit_running(
 ):
     tursu_runner.verbose = verbose
     tursu_runner.emit_running(
-        "given", registry._handlers["given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -137,7 +137,7 @@ def test_emit_error(
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_error(
-        "given", registry._handlers["given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[91m❌ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -159,7 +159,7 @@ def test_emit_success(
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_success(
-        "given", registry._handlers["given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -170,28 +170,28 @@ def test_tursu_collect_file(
     tursu: Tursu, doc: GherkinDocument, request: pytest.FixtureRequest
 ):
     old_handlers = tursu._handlers
-    tursu._handlers = {"given": [], "then": [], "when": []}
+    tursu._handlers = {"Given": [], "Then": [], "When": []}
     tursu_collect_file()
     assert "pytest_collect_file" in globals()
     pkg = pytest.Package.from_parent(request.session, path=doc.filepath.parent)
     globals()["pytest_collect_file"](pkg, doc.filepath)
     repr_handlers = {
-        "given": [repr(h) for h in tursu._handlers["given"]],
-        "then": [repr(h) for h in tursu._handlers["then"]],
-        "when": [repr(h) for h in tursu._handlers["when"]],
+        "Given": [repr(h) for h in tursu._handlers["Given"]],
+        "Then": [repr(h) for h in tursu._handlers["Then"]],
+        "When": [repr(h) for h in tursu._handlers["When"]],
     }
     assert repr_handlers == {
-        "given": [
+        "Given": [
             'Step("a user {username}", give_user)',
         ],
-        "then": [
+        "Then": [
             'Step("the API for {username} respond", assert_api_response)',
             'Step("the users dataset is", assert_dataset)',
             'Step("the mailbox {email} "{subject}" message is", '
             "assert_mailbox_contains)",
             'Step("I see a mailbox {email} for {username}", assert_user_has_mailbox)',
         ],
-        "when": [
+        "When": [
             'Step("{username} create a mailbox {email}", create_mailbox)',
         ],
     }

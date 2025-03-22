@@ -165,7 +165,7 @@ class OrderStatus(Enum):
     REFUNDED = "Refunded"
     COMPLETED = "Completed"
 
-@given("Given the order status is {order_status}")
+@given("the order status is {order_status}")
 def toggle_feature_flag(order_status: OrderSatus):
     ...
 ```
