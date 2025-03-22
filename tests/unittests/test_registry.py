@@ -33,7 +33,7 @@ def test_registry_handler(registry: Tursu):
             Step("the API for {username} respond", assert_api_response),
             Step("the users dataset is", assert_dataset),
             Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
-            Step("I see a mailbox {email} for {username}", assert_user_has_mailbox),
+            Step("{username} see a mailbox {email}", assert_user_has_mailbox),
         ],
     }
 
@@ -46,7 +46,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     registry.run_step(
         tursu_runner,
         "Then",
-        "I see a mailbox bob@alice.net for Bob",
+        "Bob see a mailbox bob@alice.net",
         dummy_app=dummy_app,
     )
 
@@ -67,12 +67,12 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(tursu_runner, "When", "I see a mailbox bob@alice.net for Bob")
+        registry.run_step(tursu_runner, "When", "Bob see a mailbox bob@alice.net")
 
     assert str(ctx.value) == (
         """\
 Unregister step:
-  - When I see a mailbox bob@alice.net for Bob
+  - When Bob see a mailbox bob@alice.net
 Available steps:
   - When {username} create a mailbox {email}
 """.strip()
@@ -81,13 +81,13 @@ Available steps:
     assert (
         tursu_runner.remove_ansi_escape_sequences(tursu_runner.fancy())
         == """
-┌───────────────────────────────────────────────┐
-│ 📄 Document: ...                              │
-│ ✅ Given a user Bob                           │
-│ ✅ When Bob create a mailbox bob@alice.net    │
-│ ✅ Then I see a mailbox bob@alice.net for Bob │
-│ ✅ Then the API for Bob respond               │
-└───────────────────────────────────────────────┘
+┌────────────────────────────────────────────┐
+│ 📄 Document: ...                           │
+│ ✅ Given a user Bob                        │
+│ ✅ When Bob create a mailbox bob@alice.net │
+│ ✅ Then Bob see a mailbox bob@alice.net    │
+│ ✅ Then the API for Bob respond            │
+└────────────────────────────────────────────┘
 """
     )
 

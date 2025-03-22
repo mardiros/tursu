@@ -86,9 +86,9 @@ def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
 def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
     with pytest.raises(ScenarioFailed):
-        tursu_runner.run_step("Then", "I see a mailbox X for X", dummy_app=dummy_app)
+        tursu_runner.run_step("Then", "X see a mailbox X", dummy_app=dummy_app)
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Then I see a mailbox \x1b[36mX\x1b[0m for \x1b[36mX\x1b[0m\x1b[0m",
+        "\x1b[91m❌ Then \x1b[36mX\x1b[0m see a mailbox \x1b[36mX\x1b[0m\x1b[0m",
     ]
 
 
@@ -189,7 +189,7 @@ def test_tursu_collect_file(
             'Step("the users dataset is", assert_dataset)',
             'Step("the mailbox {email} "{subject}" message is", '
             "assert_mailbox_contains)",
-            'Step("I see a mailbox {email} for {username}", assert_user_has_mailbox)',
+            'Step("{username} see a mailbox {email}", assert_user_has_mailbox)',
         ],
         "When": [
             'Step("{username} create a mailbox {email}", create_mailbox)',
