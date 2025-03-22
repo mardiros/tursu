@@ -1,6 +1,7 @@
 # Turşu
 
-[![Documentation](https://github.com/mardiros/tursu/actions/workflows/release.yml/badge.svg)](https://mardiros.github.io/tursu/)
+[![PyPI](https://github.com/mardiros/tursu/actions/workflows/release.yml/badge.svg)](https://pypi.org/project/tursu/)
+[![Documentation](https://github.com/mardiros/tursu/actions/workflows/publish-doc/badge.svg)](https://mardiros.github.io/tursu/)
 [![Continuous Integration](https://github.com/mardiros/tursu/actions/workflows/tests.yml/badge.svg)](https://github.com/mardiros/tursu/actions/workflows/tests.yml)
 [![Coverage Report](https://codecov.io/gh/mardiros/tursu/graph/badge.svg?token=DTpi73d7mf)](https://codecov.io/gh/mardiros/tursu)
 
