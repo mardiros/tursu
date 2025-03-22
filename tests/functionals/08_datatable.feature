@@ -10,9 +10,9 @@ Feature: data table
 
   Scenario: parse a datatable
     Given a set of users:
-      | username | password   |
-      | Alice    | yolo5      |
-      | Bob      | dumbsecret |
+      | username | password   | created_at |
+      | Alice    | yolo5      | 2025-01-01 |
+      | Bob      | dumbsecret |            |
     Then I see the data_table
       | username | password   |
       | Alice    | yolo5      |

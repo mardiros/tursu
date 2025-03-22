@@ -77,6 +77,16 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
 class Tursu:
     """Store all the handlers for gherkin action."""
 
+    DATA_TABLE_EMPTY_CELL = ""
+    """
+    This value is used only in case of data_table types usage.
+    If the table contains this value, then, it is ommited by the constructor in order
+    to let the type default value works.
+
+    In case of list[dict[str,str]], then this is ignored, empty cells exists with
+    an empty string value.
+    """
+
     def __init__(self) -> None:
         self.scanned: set[ModuleType] = set()
         self._handlers: dict[StepKeyword, list[Step]] = {
@@ -88,6 +98,7 @@ class Tursu:
 
     @property
     def data_tables_types(self) -> dict[type, str]:
+        """"Registered data types, used in order to build imports on tests."""
         return self._data_tables
 
     def register_handler(

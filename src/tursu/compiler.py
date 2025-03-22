@@ -213,6 +213,9 @@ class GherkinCompiler:
                     vals = [c.value for c in row.cells]
                     datatable_keywords = []
                     for key, val in zip(hdr, vals):
+                        if val == self.registry.DATA_TABLE_EMPTY_CELL:
+                            # empty string are our null value
+                            continue
                         datatable_keywords.append(
                             ast.keyword(arg=key, value=ast.Constant(value=val))
                         )
