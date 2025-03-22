@@ -1,7 +1,7 @@
 import sys
 from collections.abc import Mapping
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
 
 import venusian
 from typing_extensions import Any
@@ -98,7 +98,7 @@ class Tursu:
 
     @property
     def data_tables_types(self) -> dict[type, str]:
-        """"Registered data types, used in order to build imports on tests."""
+        """ "Registered data types, used in order to build imports on tests."""
         return self._data_tables
 
     def register_handler(
@@ -112,7 +112,10 @@ class Tursu:
         parameter = step.pattern.signature.parameters.get("data_table")
         if parameter and parameter.annotation:
             typ = get_args(parameter.annotation)[0]
-            if get_origin(typ) is not dict:
+            orig = get_origin(typ)
+            if orig is not dict:
+                if orig is Annotated:
+                    typ = get_args(typ)[-1]
                 if typ not in self._data_tables:
                     self._data_tables[typ] = f"{typ.__name__}{len(self._data_tables)}"
 

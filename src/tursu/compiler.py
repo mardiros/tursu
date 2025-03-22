@@ -1,7 +1,7 @@
 import ast
 import re
 from collections.abc import Iterator, Sequence
-from typing import Any, TypeGuard, get_args, get_origin
+from typing import Annotated, Any, TypeGuard, get_args, get_origin
 
 from tursu.domain.model.gherkin import (
     GherkinBackground,
@@ -191,8 +191,11 @@ class GherkinCompiler:
             anon = registry_step.pattern.signature.parameters["data_table"].annotation
             if anon:
                 typ = get_args(anon)[0]
-                if get_origin(typ) is dict:
+                orig = get_origin(typ)
+                if orig is dict:
                     typ = None
+                elif orig is Annotated:
+                    typ = get_args(typ)[-1]
 
             if typ is None:
                 tabl = []
