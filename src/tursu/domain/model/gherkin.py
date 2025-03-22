@@ -97,7 +97,7 @@ class GherkinStep(BaseModel):
     doc_string: GherkinDocString | None = Field(default=None, alias="docString")
 
     def __repr__(self) -> str:
-        return f"{self.keyword.capitalize()} {self.text}"
+        return f"{self.keyword} {self.text}"
 
 
 class GherkinBackground(BaseModel):
