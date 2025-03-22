@@ -13,8 +13,9 @@ class Unregistered(RuntimeError):
             for hdl in registry._handlers[step]
         ]
         CR = "\n"
+        registered_list_str = '\n  - '.join(registered_list)
         super().__init__(
             f"Unregister step:{CR}"
             f"  - {step} {text}{CR}Available steps:{CR}"
-            f"  - {'{CR}  - '.join(registered_list)}"
+            f"  - {registered_list_str}"
         )
