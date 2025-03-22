@@ -8,7 +8,7 @@ Feature: Discover Scenario
     @wip
     Scenario: I can find scenario based on tag
       When Bob create a mailbox bob@alice.net
-      Then I see a mailbox bob@alice.net for Bob
+      Then Bob see a mailbox bob@alice.net
       And the mailbox bob@alice.net "Welcome Bob" message is
         """
         ...

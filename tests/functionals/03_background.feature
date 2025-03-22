@@ -3,10 +3,10 @@ Feature: As a user I logged in with my password
   Background:
     Given a user Bob with password dumbsecret
 
-  Scenario: I properly logged in
+  Scenario: User can login
     When Bob login with password dumbsecret
-    Then I am connected with username Bob
+    Then the user Bob is connected
 
-  Scenario: I hit the wrong password
+  Scenario: User can't login with wrong password
     When Bob login with password notthat
     Then I am not connected

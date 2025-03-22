@@ -45,12 +45,12 @@ plugins: cov-6.0.0
 collected 3 items
 
 <Dir tursu>
-  <Dir tests>
+  <Package tests>
     <Package functionals>
       <GherkinDocument login.feature>
-        <Function test_3_I_properly_logged_in>
-        <Function test_7_I_hit_the_wrong_password>
-        <Function test_14_I_user_another_login>
+        <Function test_3_User_can_login>
+        <Function test_7_User_can_t_login_with_wrong_password>
+        <Function test_12_User_can_t_login_with_someone_else_username>
 
 ====================== 3 tests collected in 0.01s =======================
 ```
@@ -83,27 +83,25 @@ collected 3 items
 
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I properly logged in
+🎬 Scenario: User can login
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password dumbsecret
-✅ Then I am connected with username Bob
+✅ Then the user is connected with username Bob
 
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I hit the wrong password
+🎬 Scenario: User can't login with wrong password
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password notthat
-✅ Then I am not connected
+✅ Then the user is not connected
 
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I user another login
-✅ Given a user Bob with password dumbsecret
-✅ Given a user Alice with password anothersecret
-✅ When Alice login with password dumbsecret
-✅ Then I am not connected
-✅ When Bob login with password dumbsecret
-✅ Then I am connected with username Bob
+🎬 Scenario: User can't login with someone else username
+✅ Given a user Bob with password bobsecret
+✅ Given a user Alice with password alicesecret
+✅ When Alice login with password bobsecret
+✅ Then the user is not connected
                                                                          PASSED
 
 ============================== 3 passed in 0.02s ==============================
@@ -119,52 +117,48 @@ configfile: pyproject.toml
 plugins: cov-6.0.0, tursu-0.11.1
 collected 3 items
 
-tests/tests2/login.feature::test_3_I_properly_logged_in <- tests/tests2/test_login.py
+tests/functionals/login.feature::test_3_User_can_login <- test_login.py
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I properly logged in
+🎬 Scenario: User can login
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
 ⏳ When Bob login with password dumbsecret
 ✅ When Bob login with password dumbsecret
-⏳ Then I am connected with username Bob
-✅ Then I am connected with username Bob
-                                                         PASSED [ 33%]
-tests/tests2/login.feature::test_7_I_hit_the_wrong_password <- tests/tests2/test_login.py
+⏳ Then the user is connected with username Bob
+✅ Then the user is connected with username Bob
+                                                            PASSED [ 33%]
+tests/functionals/login.feature::test_7_User_can_t_login_with_wrong_password <- test_login.py
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I hit the wrong password
+🎬 Scenario: User can't login with wrong password
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
 ⏳ When Bob login with password notthat
 ✅ When Bob login with password notthat
-⏳ Then I am not connected
-✅ Then I am not connected
-                                                             PASSED [ 66%]
-tests/tests2/login.feature::test_14_I_user_another_login <- tests/tests2/test_login.py
+⏳ Then the user is not connected
+✅ Then the user is not connected
+                                                            PASSED [ 66%]
+tests/functionals/login.feature::test_12_User_can_t_login_with_someone_else_username <- test_login.py
 📄 Document: login.feature
 🥒 Feature: As a user I logged in with my password
-🎬 Scenario: I user another login
-⏳ Given a user Bob with password dumbsecret
-✅ Given a user Bob with password dumbsecret
-⏳ Given a user Alice with password anothersecret
-✅ Given a user Alice with password anothersecret
-⏳ When Alice login with password dumbsecret
-✅ When Alice login with password dumbsecret
-⏳ Then I am not connected
-✅ Then I am not connected
-⏳ When Bob login with password dumbsecret
-✅ When Bob login with password dumbsecret
-⏳ Then I am connected with username Bob
-✅ Then I am connected with username Bob
-                                                          PASSED [100%]
+🎬 Scenario: User can't login with someone else username
+⏳ Given a user Bob with password bobsecret
+✅ Given a user Bob with password bobsecret
+⏳ Given a user Alice with password alicesecret
+✅ Given a user Alice with password alicesecret
+⏳ When Alice login with password bobsecret
+✅ When Alice login with password bobsecret
+⏳ Then the user is not connected
+✅ Then the user is not connected
 
+                                                            PASSED [100%]
 =========================== 3 passed in 0.02s ===========================
 ```
 
 ```{note}
 
-You can choose the test name ( tests/tests2/login.feature::test_3_I_properly_logged_in )
+You can choose the test name ( tests/tests2/login.feature::test_3_User_can_login )
 or even decorate with tag and use pytest markers (`pytest -m <tag>`).
 
 ```
@@ -173,21 +167,22 @@ or even decorate with tag and use pytest markers (`pytest -m <tag>`).
 ## Get errors context
 
 ```bash
-$ uv run pytest tests/functionals
-============================ test session starts ==============================
+𝝿 uv run pytest tests/functionals
+========================== test session starts ===========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
+rootdir: /home/guillaume/workspace/git/tursu
 configfile: pyproject.toml
-plugins: cov-6.0.0, base-url-2.1.0, playwright-0.7.0, tursu-0.10.1
+plugins: cov-6.0.0, tursu-0.12.4, playwright-0.7.0, base-url-2.1.0
 collected 3 items
 
-tests/functionals/test_login.py F..                                      [100%]
+tests/functionals/login.feature F..                                      [100%]
 
-================================== FAILURES ===================================
-_________________________ test_3_I_properly_logged_in _________________________
+================================ FAILURES ================================
+_________________________ test_3_User_can_login __________________________
 
-self = <tursu.runner.TursuRunner object at 0x775de9b49e80>, step = 'then'
-text = 'I am connected with username Bobby'
-kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>}
+self = <tursu.runner.TursuRunner object at 0x76103daadbe0>, step = 'Then'
+text = 'the user is connected with username Bobby'
+kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x76103daad940>}
 
     def run_step(
         self,
@@ -199,16 +194,17 @@ kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>}
 >           self.tursu.run_step(self, step, text, **kwargs)
 
 src/tursu/runner.py:79:
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-src/tursu/registry.py:98: in run_step
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/tursu/registry.py:102: in run_step
     handler(**matches)
-src/tursu/steps.py:36: in __call__
+src/tursu/steps.py:38: in __call__
     self.hook(**kwargs)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-app = <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>, username = 'Bobby'
+app = <tests.functionals.conftest.DummyApp object at 0x76103daad940>
+username = 'Bobby'
 
-    @then("I am connected with username {username}")
+    @then("the user is connected with username {username}")
     def assert_connected(app: DummyApp, username: str):
 >       assert app.connected_user == username
 E       AssertionError
@@ -217,24 +213,19 @@ tests/functionals/steps.py:18: AssertionError
 
 The above exception was the direct cause of the following exception:
 
-request = <FixtureRequest for <Function test_3_I_properly_logged_in>>
-capsys = <_pytest.capture.CaptureFixture object at 0x775de9b4a510>
-tursu = <tursu.registry.Tursu object at 0x775dea9ffb60>
-app = <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>
+request = <FixtureRequest for <Function test_3_User_can_login>>
+capsys = <_pytest.capture.CaptureFixture object at 0x76103daae270>
+tursu = <tursu.registry.Tursu object at 0x76103f107230>
+app = <tests.functionals.conftest.DummyApp object at 0x76103daad940>
 
-    def test_3_I_properly_logged_in(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
-        """I properly logged in"""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', '🎬 Scenario: I properly logged in']) as tursu_runner:
-            tursu_runner.run_step('Given', 'a user Bob with password dumbsecret', app=app)
-            tursu_runner.run_step('When', 'Bob login with password dumbsecret', app=app)
->           tursu_runner.run_step('Then', 'I am connected with username Bobby', app=app)
+>   ???
 
-tests/functionals/test_login.py:12:
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test_login.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <tursu.runner.TursuRunner object at 0x775de9b49e80>, step = 'then'
-text = 'I am connected with username Bobby'
-kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x775de9b49be0>}
+self = <tursu.runner.TursuRunner object at 0x76103daadbe0>, step = 'Then'
+text = 'the user is connected with username Bobby'
+kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x76103daad940>}
 
     def run_step(
         self,
@@ -250,16 +241,23 @@ E           tursu.runner.ScenarioFailed:
 E           ┌────────────────────────────────────────────────────┐
 E           │ 📄 Document: login.feature                         │
 E           │ 🥒 Feature: As a user I logged in with my password │
-E           │ 🎬 Scenario: I properly logged in                  │
+E           │ 🎬 Scenario: User can login                        │
 E           │ ✅ Given a user Bob with password dumbsecret       │
 E           │ ✅ When Bob login with password dumbsecret         │
-E           │ ❌ Then I am connected with username Bobby         │
+E           │ ❌ Then the user is connected with username Bobby  │
 E           └────────────────────────────────────────────────────┘
 
 src/tursu/runner.py:81: ScenarioFailed
-=========================== short test summary info ===========================
-FAILED tests/functionals/test_login.py::test_3_I_properly_logged_in - tursu.runner.ScenarioFailed:
-========================= 1 failed, 2 passed in 0.07s =========================
+======================== short test summary info =========================
+FAILED tests/functionals/login.feature::test_3_User_can_login - tursu.runner.ScenarioFailed:
+```
+
+```{note}
+
+If --trace is used, or -vvv, the tests files are written on the disk, and
+the `???` in the context are replaced by the generated python test function.
+
+This my be usefull in case of hard time debugging.
 ```
 
 

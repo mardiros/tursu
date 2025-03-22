@@ -123,7 +123,7 @@ def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
 
-@then(parsers.parse("I am connected with username {username}"))
+@then(parsers.parse("the user {username} is connected"))
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 ```
@@ -144,7 +144,7 @@ def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
 
-@then("I am connected with username {username}")
+@then("the user {username} is connected")
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 ```

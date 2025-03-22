@@ -14,7 +14,7 @@ def create_mailbox(dummy_app: DummyApp, username: str, email: str):
     dummy_app.add_mailbox(username, email)
 
 
-@then("I see a mailbox {email} for {username}")
+@then("{username} see a mailbox {email}")
 def assert_user_has_mailbox(dummy_app: DummyApp, email: str, username: str):
     assert username in dummy_app.mailboxes
 

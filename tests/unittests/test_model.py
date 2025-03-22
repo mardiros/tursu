@@ -73,7 +73,7 @@ def test_model(doc: GherkinDocument):
                 "keyword": "Then",
                 "keyword_type": "Outcome",
                 "location": {"column": 7, "line": 11},
-                "text": "I see a mailbox bob@alice.net for Bob",
+                "text": "Bob see a mailbox bob@alice.net",
             },
             {
                 "doc_string": {
@@ -227,7 +227,7 @@ def test_model_outlined(outline_doc: GherkinDocument):
             "keyword": "Then",
             "keyword_type": "Outcome",
             "location": {"column": 5, "line": 13},
-            "text": "I see a mailbox <email> for <username>",
+            "text": "<username> see a mailbox <email>",
         },
     ]
 

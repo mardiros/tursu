@@ -41,11 +41,11 @@ An example will be written:
 # tests/functionals/login.feature
 Feature: As a user I logged in with my password
 
-  Scenario: I properly logged in
+  Scenario: User can login
 
     Given a user Bob with password dumbsecret
     When Bob login with password dumbsecret
-    Then I am connected with username Bob
+    Then the user Bob is connected
 ```
 
 We can match it in a python method:
@@ -67,7 +67,7 @@ def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
 
-@then("I am connected with username {username}")
+@then("the user {username} is connected")
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 ```
@@ -90,7 +90,7 @@ def test_3_I_properly_logged_in(
     tursu: Tursu,
     app: Any,
 ):
-    """I properly logged in"""
+    """User can login"""
     with TursuRunner(
         request,
         capsys,
@@ -98,12 +98,12 @@ def test_3_I_properly_logged_in(
         [
             "📄 Document: login.feature",
             "🥒 Feature: As a user I logged in with my password",
-            "🎬 Scenario: I properly logged in",
+            "🎬 Scenario: User can login",
         ],
     ) as tursu_runner:
         tursu_runner.run_step("Given", "a user Bob with password dumbsecret", app=app)
         tursu_runner.run_step("When", "Bob login with password dumbsecret", app=app)
-        tursu_runner.run_step("Then", "I am connected with username Bob", app=app)
+        tursu_runner.run_step("Then", "the user Bob is connected", app=app)
 ```
 
 ```{note}

@@ -32,7 +32,7 @@ def create_mailbox(username: str, email: str):
     app.add_mailbox(username, email)
 
 
-@then("I see a mailbox {email} for {username}")
+@then("{username} see a mailbox {email}")
 def assert_user_has_mailbox(email: str, username: str):
     assert username in app.mailboxes
     assert email in app.mailboxes[username]

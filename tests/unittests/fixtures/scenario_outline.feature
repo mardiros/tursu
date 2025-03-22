@@ -10,7 +10,7 @@ Feature: Discover Scenario Outline
 
     Given a user <username>
     When <username> create a mailbox <email>
-    Then I see a mailbox <email> for <username>
+    Then <username> see a mailbox <email>
 
     Examples:
       | username | email           |
