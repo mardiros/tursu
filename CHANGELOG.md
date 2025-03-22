@@ -1,3 +1,9 @@
+0.12.5 - Released on 2025-03-22
+-------------------------------
+* Internal refactor without new feature.
+* Update the documentation.
+* Update gherkin step to follow some good gherkin rules.
+
 0.12.4 - Released on 2025-03-19
 -------------------------------
 * Write the test module on disk only if --trace or -vvv is used.
