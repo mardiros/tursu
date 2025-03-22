@@ -124,6 +124,10 @@ class AbstractPatternMatcher(abc.ABC):
         return f'"{self.pattern}"'
 
     @abc.abstractmethod
+    def match(self, text: str) -> bool:
+        """Return true if its a match"""
+
+    @abc.abstractmethod
     def get_matches(
         self, text: str, fixtures: Mapping[str, Any]
     ) -> Mapping[str, Any] | None:
@@ -178,6 +182,10 @@ class RegexBasePattern(AbstractPatternMatcher):
 
     re_pattern: re.Pattern[str]
     """The compiled version of the pattern."""
+
+    def match(self, text: str) -> bool:
+        matches = self.re_pattern.match(text)
+        return bool(matches)
 
     def get_matches(
         self, text: str, fixtures: Mapping[str, Any]
