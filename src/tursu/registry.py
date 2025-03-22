@@ -45,7 +45,7 @@ def given(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
     """
-    return _step("given", pattern)
+    return _step("Given", pattern)
 
 
 def when(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
@@ -58,7 +58,7 @@ def when(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
     """
-    return _step("when", pattern)
+    return _step("When", pattern)
 
 
 def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
@@ -71,7 +71,7 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
     """
-    return _step("then", pattern)
+    return _step("Then", pattern)
 
 
 class Tursu:
@@ -80,9 +80,9 @@ class Tursu:
     def __init__(self) -> None:
         self.scanned: set[ModuleType] = set()
         self._handlers: dict[StepKeyword, list[Step]] = {
-            "given": [],
-            "when": [],
-            "then": [],
+            "Given": [],
+            "When": [],
+            "Then": [],
         }
 
     def register_handler(

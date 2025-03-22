@@ -7,7 +7,7 @@ def test_model(doc: GherkinDocument):
     childrens = docdict["feature"].pop("children")
     assert docdict["feature"] == {
         "description": "",
-        "keyword": "feature",
+        "keyword": "Feature",
         "language": "en",
         "location": {
             "column": 1,
@@ -21,7 +21,7 @@ def test_model(doc: GherkinDocument):
         "background": {
             "description": "",
             "id": "1",
-            "keyword": "background",
+            "keyword": "Background",
             "location": {
                 "column": 3,
                 "line": 3,
@@ -30,7 +30,7 @@ def test_model(doc: GherkinDocument):
             "steps": [
                 {
                     "id": "0",
-                    "keyword": "given",
+                    "keyword": "Given",
                     "keyword_type": "Context",
                     "location": {
                         "column": 5,
@@ -47,7 +47,7 @@ def test_model(doc: GherkinDocument):
     assert childrens[1]["rule"] == {
         "description": "",
         "id": "11",
-        "keyword": "rule",
+        "keyword": "Rule",
         "location": {"column": 3, "line": 6},
         "name": "I write a wip test",
         "tags": [],
@@ -57,20 +57,20 @@ def test_model(doc: GherkinDocument):
     assert rules_children[0]["scenario"] == {
         "description": "",
         "id": "10",
-        "keyword": "scenario",
+        "keyword": "Scenario",
         "location": {"column": 5, "line": 9},
         "name": "I can find scenario based on tag",
         "steps": [
             {
                 "id": "2",
-                "keyword": "when",
+                "keyword": "When",
                 "keyword_type": "Action",
                 "location": {"column": 7, "line": 10},
                 "text": "Bob create a mailbox bob@alice.net",
             },
             {
                 "id": "3",
-                "keyword": "then",
+                "keyword": "Then",
                 "keyword_type": "Outcome",
                 "location": {"column": 7, "line": 11},
                 "text": "I see a mailbox bob@alice.net for Bob",
@@ -82,7 +82,7 @@ def test_model(doc: GherkinDocument):
                     "location": {"column": 9, "line": 13},
                 },
                 "id": "4",
-                "keyword": "and",
+                "keyword": "And",
                 "keyword_type": "Conjunction",
                 "location": {"column": 7, "line": 12},
                 "text": 'the mailbox bob@alice.net "Welcome Bob" message is',
@@ -101,7 +101,7 @@ def test_model(doc: GherkinDocument):
                     "media_type": "json",
                 },
                 "id": "5",
-                "keyword": "and",
+                "keyword": "And",
                 "keyword_type": "Conjunction",
                 "location": {"column": 7, "line": 16},
                 "text": "the API for Bob respond",
@@ -141,7 +141,7 @@ def test_model(doc: GherkinDocument):
                     ],
                 },
                 "id": "8",
-                "keyword": "and",
+                "keyword": "And",
                 "keyword_type": "Conjunction",
                 "location": {
                     "column": 7,
@@ -166,7 +166,7 @@ def test_model_outlined(outline_doc: GherkinDocument):
     childrens = docdict["feature"].pop("children")
     assert docdict["feature"] == {
         "description": "This feature is complex and require a comment.",
-        "keyword": "feature",
+        "keyword": "Feature",
         "language": "en",
         "location": {
             "column": 1,
@@ -181,7 +181,7 @@ def test_model_outlined(outline_doc: GherkinDocument):
         "background": {
             "description": "",
             "id": "1",
-            "keyword": "background",
+            "keyword": "Background",
             "location": {
                 "column": 3,
                 "line": 4,
@@ -190,7 +190,7 @@ def test_model_outlined(outline_doc: GherkinDocument):
             "steps": [
                 {
                     "id": "0",
-                    "keyword": "given",
+                    "keyword": "Given",
                     "keyword_type": "Context",
                     "location": {
                         "column": 5,
@@ -210,21 +210,21 @@ def test_model_outlined(outline_doc: GherkinDocument):
     assert childrens[1]["scenario"]["steps"] == [
         {
             "id": "2",
-            "keyword": "given",
+            "keyword": "Given",
             "keyword_type": "Context",
             "location": {"column": 5, "line": 11},
             "text": "a user <username>",
         },
         {
             "id": "3",
-            "keyword": "when",
+            "keyword": "When",
             "keyword_type": "Action",
             "location": {"column": 5, "line": 12},
             "text": "<username> create a mailbox <email>",
         },
         {
             "id": "4",
-            "keyword": "then",
+            "keyword": "Then",
             "keyword_type": "Outcome",
             "location": {"column": 5, "line": 13},
             "text": "I see a mailbox <email> for <username>",
@@ -235,7 +235,7 @@ def test_model_outlined(outline_doc: GherkinDocument):
         {
             "description": "",
             "id": "8",
-            "keyword": "examples",
+            "keyword": "Examples",
             "location": {"column": 5, "line": 15},
             "name": "",
             "table_body": [

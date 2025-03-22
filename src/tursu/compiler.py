@@ -453,7 +453,6 @@ class GherkinCompiler:
                     examples=examples,
                 ):
                     decorator_list = self.build_tags_decorators(stack)
-
                     examples_keys = [c.value for c in examples[0].table_header.cells]
                     params = ",".join(examples_keys)
                     params_name = ast.Constant(params)
@@ -523,7 +522,7 @@ class GherkinCompiler:
                 ):
                     assert test_function is not None
                     expls: Any = None
-                    if stack[-2].keyword == "scenario outline":
+                    if stack[-2].keyword == "Scenario Outline":
                         expls = stack[-2].examples
                     last_keyword = self._handle_step(
                         step_list, el, stack, last_keyword, expls

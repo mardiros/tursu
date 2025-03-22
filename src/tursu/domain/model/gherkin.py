@@ -9,29 +9,29 @@ from pydantic.functional_validators import BeforeValidator
 
 
 def sanitize(value: Any) -> str:
-    return value.strip().lower() if isinstance(value, str) else value
+    return value.strip().title() if isinstance(value, str) else value
 
 
 GherkinKeyword = Annotated[
     Literal[
-        "feature",
-        "scenario",
-        "scenario outline",
-        "examples",
-        "background",
-        "rule",
-        "given",
-        "when",
-        "then",
-        "and",
-        "but",
+        "Feature",
+        "Scenario",
+        "Scenario Outline",
+        "Examples",
+        "Background",
+        "Rule",
+        "Given",
+        "When",
+        "Then",
+        "And",
+        "But",
     ],
     BeforeValidator(sanitize),
 ]
 
-GherkinScenarioKeyword = Annotated[Literal["scenario"], BeforeValidator(sanitize)]
+GherkinScenarioKeyword = Annotated[Literal["Scenario"], BeforeValidator(sanitize)]
 GherkinScenarioOutlineKeyword = Annotated[
-    Literal["scenario outline"], BeforeValidator(sanitize)
+    Literal["Scenario Outline"], BeforeValidator(sanitize)
 ]
 
 StrippedWhitespace = Annotated[
