@@ -43,7 +43,13 @@ tursu = "tursu.plugin"
 
 
 [dependency-groups]
-dev = ["mypy>=1.4.0,<2", "pytest>=8,<9", "pytest-cov>=6.0.0,<7"]
+dev = [
+    "factory-boy>=3.3.3",
+    "faker>=37.0.2",
+    "mypy>=1.4.0,<2",
+    "pytest>=8,<9",
+    "pytest-cov>=6.0.0,<7",
+]
 docs = [
   "sphinx>=7.0.0",
   "sphinx-autodoc2 >=0.5.0,<1",
