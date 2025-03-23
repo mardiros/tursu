@@ -45,7 +45,6 @@ tursu = "tursu.plugin"
 [dependency-groups]
 dev = [
     "factory-boy>=3.3.3",
-    "faker>=37.0.2",
     "mypy>=1.4.0,<2",
     "pytest>=8,<9",
     "pytest-cov>=6.0.0,<7",

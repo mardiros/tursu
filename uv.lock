@@ -996,7 +996,6 @@ docs = [
 [package.dev-dependencies]
 dev = [
     { name = "factory-boy" },
-    { name = "faker" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1031,7 +1030,6 @@ provides-extras = ["docs"]
 [package.metadata.requires-dev]
 dev = [
     { name = "factory-boy", specifier = ">=3.3.3" },
-    { name = "faker", specifier = ">=37.0.2" },
     { name = "mypy", specifier = ">=1.4.0,<2" },
     { name = "pytest", specifier = ">=8,<9" },
     { name = "pytest-cov", specifier = ">=6.0.0,<7" },
