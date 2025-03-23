@@ -75,10 +75,48 @@
 :parser: myst
 ```
 
+````{py:attribute} DATA_TABLE_EMPTY_CELL
+:canonical: tursu.registry.Tursu.DATA_TABLE_EMPTY_CELL
+:value: <Multiline-String>
+
+```{autodoc2-docstring} tursu.registry.Tursu.DATA_TABLE_EMPTY_CELL
+:parser: myst
+```
+
+````
+
+````{py:property} data_tables_types
+:canonical: tursu.registry.Tursu.data_tables_types
+:type: dict[type, str]
+
+```{autodoc2-docstring} tursu.registry.Tursu.data_tables_types
+:parser: myst
+```
+
+````
+
 ````{py:method} extract_fixtures(step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
 :canonical: tursu.registry.Tursu.extract_fixtures
 
 ```{autodoc2-docstring} tursu.registry.Tursu.extract_fixtures
+:parser: myst
+```
+
+````
+
+````{py:method} get_step(step: tursu.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> tursu.steps.Step | None
+:canonical: tursu.registry.Tursu.get_step
+
+```{autodoc2-docstring} tursu.registry.Tursu.get_step
+:parser: myst
+```
+
+````
+
+````{py:method} register_data_table(step: tursu.steps.Step) -> None
+:canonical: tursu.registry.Tursu.register_data_table
+
+```{autodoc2-docstring} tursu.registry.Tursu.register_data_table
 :parser: myst
 ```
 
