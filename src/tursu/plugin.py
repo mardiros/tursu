@@ -34,9 +34,12 @@ class GherkinTestModule(pytest.Module):
             self.session.config.getoption("--trace")
             or self.session.config.option.verbose == 3
         ):
-            self.test_casefile.write_text(str(case))
-            atexit.register(lambda: self.test_casefile.unlink(missing_ok=True))
-            self._obj = super()._getobj()  # we preload before updating the path
+            self.test_casefile.write_text(str(case))  # coverage: ignores
+            atexit.register(  # coverage: ignores
+                lambda: self.test_casefile.unlink(missing_ok=True)  # coverage: ignores
+            )  # coverage: ignores
+            # we preload before updating the path
+            self._obj = super()._getobj  # coverage: ignores
 
         self._nodeid = self.nodeid.replace(case.filename, path.name)
         self.path = path

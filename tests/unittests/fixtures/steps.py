@@ -32,5 +32,5 @@ def assert_api_response(
     assert [m.model_dump() for m in dummy_app.mailboxes[username]] == doc_string
 
 
-@then("the users dataset is")
-def assert_dataset(dummy_app: DummyApp, data_table: list[dict[str, str]]): ...
+@then("the users raw dataset is")
+def assert_dataset_raw(dummy_app: DummyApp, data_table: list[dict[str, str]]): ...

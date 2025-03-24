@@ -17,6 +17,9 @@ Feature: Discover Scenario
         """json
         [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]
         """
+      And the users raw dataset is
+        | username | mailbox       |
+        | Bob      | bob@alice.net |
       And the users dataset is
         | username | mailbox       |
         | Bob      | bob@alice.net |

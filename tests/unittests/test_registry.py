@@ -3,9 +3,14 @@ import textwrap
 import pytest
 
 from tests.unittests.conftest import DummyApp, DummyMail
+from tests.unittests.fixtures.dataset_factory import (
+    Dataset,
+    a_set_of_users,
+    assert_dataset,
+)
 from tests.unittests.fixtures.steps import (
     assert_api_response,
-    assert_dataset,
+    assert_dataset_raw,
     assert_mailbox_contains,
     assert_user_has_mailbox,
     create_mailbox,
@@ -25,17 +30,36 @@ def tursu_runner(
 
 def test_registry_handler(registry: Tursu):
     assert registry._handlers == {
-        "Given": [Step("a user {username}", give_user)],
+        "Given": [
+            Step("a set of users:", a_set_of_users),
+            Step("a user {username}", give_user),
+        ],
         "When": [
             Step("{username} create a mailbox {email}", create_mailbox),
         ],
         "Then": [
-            Step("the API for {username} respond", assert_api_response),
             Step("the users dataset is", assert_dataset),
+            Step("the API for {username} respond", assert_api_response),
+            Step("the users raw dataset is", assert_dataset_raw),
             Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
             Step("{username} see a mailbox {email}", assert_user_has_mailbox),
         ],
     }
+
+
+def test_registry_get_step(registry: Tursu):
+    step = registry.get_step("Given", "a user Bob")
+    assert step == Step("a user {username}", give_user)
+
+
+def test_registry_get_step_none(registry: Tursu):
+    step = registry.get_step("When", "a user Bob")
+    assert step is None
+
+
+def test_registry_datatable(registry: Tursu):
+    registry.register_data_table(Step("the users dataset is", assert_dataset))
+    assert registry._data_tables[Dataset] == "Dataset1"
 
 
 def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
@@ -103,6 +127,7 @@ def test_registry_step_unregistered_extract_fixtures(
             Unregister step:
               - Given a nickname Bob
             Available steps:
+              - Given a set of users:
               - Given a user {username}
             """).strip()
     )

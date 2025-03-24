@@ -46,7 +46,7 @@ def test_model(doc: GherkinDocument):
 
     assert childrens[1]["rule"] == {
         "description": "",
-        "id": "11",
+        "id": "14",
         "keyword": "Rule",
         "location": {"column": 3, "line": 6},
         "name": "I write a wip test",
@@ -56,7 +56,7 @@ def test_model(doc: GherkinDocument):
     assert len(rules_children) == 1
     assert rules_children[0]["scenario"] == {
         "description": "",
-        "id": "10",
+        "id": "13",
         "keyword": "Scenario",
         "location": {"column": 5, "line": 9},
         "name": "I can find scenario based on tag",
@@ -65,26 +65,38 @@ def test_model(doc: GherkinDocument):
                 "id": "2",
                 "keyword": "When",
                 "keyword_type": "Action",
-                "location": {"column": 7, "line": 10},
+                "location": {
+                    "column": 7,
+                    "line": 10,
+                },
                 "text": "Bob create a mailbox bob@alice.net",
             },
             {
                 "id": "3",
                 "keyword": "Then",
                 "keyword_type": "Outcome",
-                "location": {"column": 7, "line": 11},
+                "location": {
+                    "column": 7,
+                    "line": 11,
+                },
                 "text": "Bob see a mailbox bob@alice.net",
             },
             {
                 "doc_string": {
                     "content": "...",
                     "delimiter": '"""',
-                    "location": {"column": 9, "line": 13},
+                    "location": {
+                        "column": 9,
+                        "line": 13,
+                    },
                 },
                 "id": "4",
                 "keyword": "And",
                 "keyword_type": "Conjunction",
-                "location": {"column": 7, "line": 12},
+                "location": {
+                    "column": 7,
+                    "line": 12,
+                },
                 "text": 'the mailbox bob@alice.net "Welcome Bob" message is',
             },
             {
@@ -97,46 +109,73 @@ def test_model(doc: GherkinDocument):
                         },
                     ],
                     "delimiter": '"""',
-                    "location": {"column": 9, "line": 17},
+                    "location": {
+                        "column": 9,
+                        "line": 17,
+                    },
                     "media_type": "json",
                 },
                 "id": "5",
                 "keyword": "And",
                 "keyword_type": "Conjunction",
-                "location": {"column": 7, "line": 16},
+                "location": {
+                    "column": 7,
+                    "line": 16,
+                },
                 "text": "the API for Bob respond",
             },
             {
                 "data_table": {
-                    "location": {"column": 9, "line": 21},
+                    "location": {
+                        "column": 9,
+                        "line": 21,
+                    },
                     "rows": [
                         {
                             "cells": [
                                 {
-                                    "location": {"column": 11, "line": 21},
+                                    "location": {
+                                        "column": 11,
+                                        "line": 21,
+                                    },
                                     "value": "username",
                                 },
                                 {
-                                    "location": {"column": 22, "line": 21},
+                                    "location": {
+                                        "column": 22,
+                                        "line": 21,
+                                    },
                                     "value": "mailbox",
                                 },
                             ],
                             "id": "6",
-                            "location": {"column": 9, "line": 21},
+                            "location": {
+                                "column": 9,
+                                "line": 21,
+                            },
                         },
                         {
                             "cells": [
                                 {
-                                    "location": {"column": 11, "line": 22},
+                                    "location": {
+                                        "column": 11,
+                                        "line": 22,
+                                    },
                                     "value": "Bob",
                                 },
                                 {
-                                    "location": {"column": 22, "line": 22},
+                                    "location": {
+                                        "column": 22,
+                                        "line": 22,
+                                    },
                                     "value": "bob@alice.net",
                                 },
                             ],
                             "id": "7",
-                            "location": {"column": 9, "line": 22},
+                            "location": {
+                                "column": 9,
+                                "line": 22,
+                            },
                         },
                     ],
                 },
@@ -147,12 +186,76 @@ def test_model(doc: GherkinDocument):
                     "column": 7,
                     "line": 20,
                 },
+                "text": "the users raw dataset is",
+            },
+            {
+                "data_table": {
+                    "location": {
+                        "column": 9,
+                        "line": 24,
+                    },
+                    "rows": [
+                        {
+                            "cells": [
+                                {
+                                    "location": {
+                                        "column": 11,
+                                        "line": 24,
+                                    },
+                                    "value": "username",
+                                },
+                                {
+                                    "location": {
+                                        "column": 22,
+                                        "line": 24,
+                                    },
+                                    "value": "mailbox",
+                                },
+                            ],
+                            "id": "9",
+                            "location": {
+                                "column": 9,
+                                "line": 24,
+                            },
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "location": {
+                                        "column": 11,
+                                        "line": 25,
+                                    },
+                                    "value": "Bob",
+                                },
+                                {
+                                    "location": {
+                                        "column": 22,
+                                        "line": 25,
+                                    },
+                                    "value": "bob@alice.net",
+                                },
+                            ],
+                            "id": "10",
+                            "location": {
+                                "column": 9,
+                                "line": 25,
+                            },
+                        },
+                    ],
+                },
+                "id": "11",
+                "keyword": "And",
+                "keyword_type": "Conjunction",
+                "location": {
+                    "column": 7,
+                    "line": 23,
+                },
                 "text": "the users dataset is",
             },
         ],
         "tags": [
             {
-                "id": "9",
+                "id": "12",
                 "location": {"column": 5, "line": 8},
                 "name": "wip",
             },
