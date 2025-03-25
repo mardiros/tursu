@@ -11,8 +11,9 @@ from tursu.pattern_matcher import AbstractPattern
 if TYPE_CHECKING:
     from tursu.runner import TursuRunner
 
+from tursu.domain.model.steps import Handler, Step, StepKeyword
+
 from .exceptions import Unregistered
-from .steps import Handler, Step, StepKeyword
 
 VENUSIAN_CATEGORY = "tursu"
 

@@ -19,9 +19,9 @@ from tursu.domain.model.gherkin import (
     GherkinScenarioOutline,
     GherkinStep,
 )
+from tursu.domain.model.steps import StepKeyword
 from tursu.domain.model.testmod import TestModule
 from tursu.registry import Tursu
-from tursu.steps import StepKeyword
 
 
 def repr_stack(stack: list[Any]) -> list[str]:

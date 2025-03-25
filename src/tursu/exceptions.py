@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from tursu.steps import StepKeyword
+from tursu.domain.model.steps import StepKeyword
 
 if TYPE_CHECKING:
     from .registry import Tursu
