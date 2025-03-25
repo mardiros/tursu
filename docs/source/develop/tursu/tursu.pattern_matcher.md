@@ -165,6 +165,16 @@ Bases: {py:obj}`abc.ABC`
 
 ````
 
+````{py:method} match(text: str) -> bool
+:canonical: tursu.pattern_matcher.AbstractPatternMatcher.match
+:abstractmethod:
+
+```{autodoc2-docstring} tursu.pattern_matcher.AbstractPatternMatcher.match
+:parser: myst
+```
+
+````
+
 ````{py:attribute} pattern
 :canonical: tursu.pattern_matcher.AbstractPatternMatcher.pattern
 :type: str
@@ -327,6 +337,11 @@ Bases: {py:obj}`tursu.pattern_matcher.AbstractPatternMatcher`
 ```{autodoc2-docstring} tursu.pattern_matcher.RegexBasePattern.get_matches
 :parser: myst
 ```
+
+````
+
+````{py:method} match(text: str) -> bool
+:canonical: tursu.pattern_matcher.RegexBasePattern.match
 
 ````
 

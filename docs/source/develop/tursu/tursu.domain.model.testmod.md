@@ -55,11 +55,39 @@
 
 ````
 
+````{py:method} compile() -> types.CodeType
+:canonical: tursu.domain.model.testmod.TestModule.compile
+
+```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.compile
+:parser: myst
+```
+
+````
+
 ````{py:property} filename
 :canonical: tursu.domain.model.testmod.TestModule.filename
 :type: str
 
 ```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.filename
+:parser: myst
+```
+
+````
+
+````{py:property} modname
+:canonical: tursu.domain.model.testmod.TestModule.modname
+:type: str
+
+```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.modname
+:parser: myst
+```
+
+````
+
+````{py:method} to_python_module() -> types.ModuleType
+:canonical: tursu.domain.model.testmod.TestModule.to_python_module
+
+```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.to_python_module
 :parser: myst
 ```
 

@@ -15,9 +15,7 @@ def create_mailbox_with_fixture(app: DummyApp, username: str, email: str):
     app.add_mailbox(username, email)
 
 
-@then(
-    RegEx(r"(?P<username>[^\s]+) see a mailbox (?P<email>[^\s]+) using a regex")
-)
+@then(RegEx(r"(?P<username>[^\s]+) see a mailbox (?P<email>[^\s]+) using a regex"))
 def assert_user_has_mailbox_with_fixture(app: DummyApp, email: str, username: str):
     assert username in app.mailboxes
     assert email in app.mailboxes[username]

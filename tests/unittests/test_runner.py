@@ -115,7 +115,7 @@ def test_emit_running(
 ):
     tursu_runner.verbose = verbose
     tursu_runner.emit_running(
-        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -137,7 +137,7 @@ def test_emit_error(
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_error(
-        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[91m❌ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -159,7 +159,7 @@ def test_emit_success(
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.emit_success(
-        "Given", registry._handlers["Given"][0], matches={"username": "bob"}
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
@@ -182,11 +182,13 @@ def test_tursu_collect_file(
     }
     assert repr_handlers == {
         "Given": [
+            'Step("a set of users:", a_set_of_users)',
             'Step("a user {username}", give_user)',
         ],
         "Then": [
-            'Step("the API for {username} respond", assert_api_response)',
             'Step("the users dataset is", assert_dataset)',
+            'Step("the API for {username} respond", assert_api_response)',
+            'Step("the users raw dataset is", assert_dataset_raw)',
             'Step("the mailbox {email} "{subject}" message is", '
             "assert_mailbox_contains)",
             'Step("{username} see a mailbox {email}", assert_user_has_mailbox)',

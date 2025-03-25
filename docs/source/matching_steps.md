@@ -248,9 +248,9 @@ def fill_user_table(data_table: list[dict[str, str]]):
 
 ```Gherkin
 Given the user provides the following login credentials:
-  | username  | password   |
-  | johndoe   | secret123  |
-  | janedoe   | password1  |
+  | username | password  |
+  | johndoe  | secret123 |
+  | janedoe  | password1 |
 ```
 
 ````{note}
@@ -259,6 +259,86 @@ data_table looks like
 [
     {"username": "johndoe", "password": "secret123"},
     {"username": "janedoe", "password": "password1"},
+]
+```
+````
+
+### Arbitrary type from a data table
+
+
+```python
+
+from pydantic import BaseModel
+
+
+class User(BaseModel):
+    username: str
+    password: str
+
+
+@given("the user provides the following login credentials:")
+def fill_user_table(data_table: list[User]):
+    ...
+```
+
+```Gherkin
+Given the user provides the following login credentials:
+  | username | password  |
+  | johndoe  | secret123 |
+  | janedoe  | password1 |
+```
+
+````{note}
+data_table looks like
+```python
+[
+    User(username="johndoe", password="secret123"),
+    User(username="janedoe", password="password1"),
+]
+```
+````
+
+### Arbitrary type from a data table, with a faked values
+
+```python
+import factory
+from pydantic import BaseModel
+
+
+class User(BaseModel):
+    username: str
+    password: str
+
+
+class UserFactory(factory.Factory[User]):
+    class Meta:
+        model = User
+
+    username = factory.Faker("user_name")
+    password = factory.Faker("password")
+
+
+
+@given("the user provides the following login credentials:")
+def a_set_of_users(app: DummyApp, data_table: list[Annotated[User, UserFactory]]):
+    ...
+```
+
+```Gherkin
+Given the user provides the following login credentials:
+  | username  | password   |
+  | johndoe   | secret123  |
+  | janedoe   |            |
+  |           |            |
+```
+
+````{note}
+data_table looks like
+```python
+[
+    User(username="johndoe", password="secret123"),
+    User(username="janedoe", password="<random value>"),
+    User(username="<random value>", password="<random value>"),
 ]
 ```
 ````
