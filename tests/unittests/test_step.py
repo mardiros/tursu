@@ -1,5 +1,5 @@
+from tursu.domain.model.steps import Step
 from tursu.pattern_matcher import DefaultPatternMatcher, RegEx, RegExPatternMatcher
-from tursu.steps import Step
 
 
 def dummy_hook(): ...
