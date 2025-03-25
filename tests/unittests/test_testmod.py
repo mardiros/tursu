@@ -1,5 +1,6 @@
 import ast
 import textwrap
+from pathlib import Path
 
 from tursu.domain.model.testmod import TestModule
 
@@ -27,15 +28,12 @@ module = ast.Module(
 )
 
 
-def test_testmodule():
+def test_testmodule(tmpdir: Path):
     tmod = TestModule("dummy", module)
-    assert tmod.filename == "test_dummy.py"
-    assert (
-        str(tmod)
-        == textwrap.dedent(
-            """\
+    tmod.write_temporary(tmpdir)
+    assert (tmpdir / tmod.filename).read_text(encoding="utf-8") == textwrap.dedent(
+        """\
         def hello_world():
             print('Hello, World!')
         """
-        ).strip()
-    )
+    ).strip()

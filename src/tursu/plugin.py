@@ -1,4 +1,3 @@
-import atexit
 import inspect
 import sys
 from collections.abc import Iterable
@@ -34,12 +33,9 @@ class GherkinTestModule(pytest.Module):
             self.session.config.getoption("--trace")
             or self.session.config.option.verbose == 3
         ):
-            self.test_casefile.write_text(str(case))  # coverage: ignores
-            atexit.register(  # coverage: ignores
-                lambda: self.test_casefile.unlink(missing_ok=True)  # coverage: ignores
-            )  # coverage: ignores
+            case.write_temporary(path.parent)  # coverage: ignore
             # we preload before updating the path
-            self._obj = super()._getobj  # coverage: ignores
+            self._obj = super()._getobj  # coverage: ignore
 
         self._nodeid = self.nodeid.replace(case.filename, path.name)
         self.path = path

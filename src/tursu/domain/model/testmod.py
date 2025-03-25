@@ -1,4 +1,6 @@
 import ast
+import atexit
+from pathlib import Path
 from types import CodeType, ModuleType
 
 
@@ -29,3 +31,11 @@ class TestModule:
         mod = ModuleType(self.modname)
         exec(self.compile(), mod.__dict__)
         return mod
+
+    def write_temporary(self, parent: Path) -> None:
+        """
+        Temporary write the module on the disk. used while tracing to get debug step.
+        """
+        test_casefile = parent / self.filename
+        test_casefile.write_text(str(self), encoding="utf-8")
+        atexit.register(lambda: test_casefile.unlink(missing_ok=True))
