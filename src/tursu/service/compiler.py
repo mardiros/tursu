@@ -2,8 +2,6 @@ import ast
 from collections.abc import Iterator, Sequence
 from typing import Annotated, Any, get_args, get_origin
 
-from tursu.domain.model.ast.astfunction import AstFunction, is_step_keyword
-from tursu.domain.model.ast.astmodule import AstModule
 from tursu.domain.model.gherkin import (
     GherkinBackground,
     GherkinBackgroundEnvelope,
@@ -20,6 +18,8 @@ from tursu.domain.model.gherkin import (
 from tursu.domain.model.steps import StepKeyword
 from tursu.domain.model.testmod import TestModule
 from tursu.registry import Tursu
+from tursu.service.ast.astfunction import TestFunctionWriter, is_step_keyword
+from tursu.service.ast.astmodule import TestModuleWriter
 
 
 class GherkinIterator:
@@ -222,7 +222,7 @@ class GherkinCompiler:
                     children=_,
                 ):
                     assert module_node is None
-                    module_node = AstModule(el, self.registry, stack)
+                    module_node = TestModuleWriter(el, self.registry, stack)
 
                 case GherkinBackground(
                     id=_,
@@ -243,7 +243,7 @@ class GherkinCompiler:
                     description=_,
                     steps=steps,
                 ):
-                    test_function = AstFunction(
+                    test_function = TestFunctionWriter(
                         el, self.registry, [*background_steps, *steps], stack
                     )
                     assert module_node is not None
@@ -265,7 +265,7 @@ class GherkinCompiler:
                     steps=steps,
                     examples=_,
                 ):
-                    test_function = AstFunction(
+                    test_function = TestFunctionWriter(
                         el, self.registry, [*background_steps, *steps], stack
                     )
                     assert module_node is not None

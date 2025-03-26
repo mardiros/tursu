@@ -31,7 +31,7 @@ def sanitize(name: str) -> str:
     return re.sub(r"\W+", "_", name)[:100]
 
 
-class AstFunction:
+class TestFunctionWriter:
     def __init__(
         self,
         scenario: GherkinScenario | GherkinScenarioOutline,

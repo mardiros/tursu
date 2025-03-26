@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from tursu.compiler import GherkinCompiler
 from tursu.domain.model.gherkin import GherkinDocument
 from tursu.registry import Tursu
+from tursu.service.compiler import GherkinCompiler
 
 _tursu = Tursu()
 

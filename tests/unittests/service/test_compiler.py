@@ -2,11 +2,10 @@ import textwrap
 
 import pytest
 
-from tursu.compiler import GherkinCompiler, GherkinIterator
+from tests.unittests.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import GherkinDocument
 from tursu.registry import Tursu
-
-from .fixtures.steps import DummyApp
+from tursu.service.compiler import GherkinCompiler, GherkinIterator
 
 
 def test_emit_items(doc: GherkinDocument):
