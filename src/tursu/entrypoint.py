@@ -39,14 +39,23 @@ def app() -> DummyApp:
 '''
 
 DEFAULT_STEPS = """\
+from dataclasses import dataclass
+
 from tursu import given, then, when
 
 from .conftest import DummyApp
 
 
-@given("a user {username} with password {password}")
-def give_user(app: DummyApp, username: str, password: str):
-    app.users[username] = password
+@dataclass
+class User:
+    username: str
+    password: str
+
+
+@given("a set of users:")
+def a_set_of_users(app: DummyApp, data_table: list[User]):
+    for user in data_table:
+        app.users[user.username] = user.password
 
 
 @when("{username} login with password {password}")
@@ -58,31 +67,39 @@ def login(app: DummyApp, username: str, password: str):
 def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 
+
 @then("the user is not connected")
 def assert_not_connected(app: DummyApp):
     assert app.connected_user is None
+
 """
 
 DEFAULT_FEATURE = """\
 Feature: As a user I logged in with my password
 
+  Background:
+    Given a set of users:
+      | username | password      |
+      | Bob      | dumbsecret    |
+      | Alice    | anothersecret |
+
   Scenario: User can login
-    Given a user Bob with password dumbsecret
     When Bob login with password dumbsecret
     Then the user is connected with username Bob
 
   Scenario: User can't login with wrong password
-    Given a user Bob with password dumbsecret
     When Bob login with password notthat
     Then the user is not connected
 
-  Scenario: User can't login with someone else username
-    Given a user Bob with password dumbsecret
-    And a user Alice with password anothersecret
-    When Alice login with password dumbsecret
+  Scenario Outline: User can't login with someone else username
+    When <username> login with password <password>
     Then the user is not connected
-    When Bob login with password dumbsecret
-    Then the user is connected with username Bob
+
+    Examples:
+      | username | password      |
+      | Bob      | anothersecret |
+      | Alice    | dumbsecret    |
+
 """
 
 
