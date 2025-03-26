@@ -1,6 +1,6 @@
 import pytest
 
-from tursu.plugin import tursu_collect_file
+from tursu.entrypoints.plugin import tursu_collect_file
 
 tursu_collect_file()
 

@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from tursu.entrypoint import main
+from tursu.entrypoints.cli import main
 
 
 def test_main_exists(tmp_path: Path, capsys: Any):

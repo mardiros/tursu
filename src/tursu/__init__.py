@@ -5,8 +5,7 @@ Easily run Gherkin tests.
 from importlib import metadata
 
 from tursu.runtime.pattern_matcher import RegEx
-
-from .runtime.registry import given, then, when
+from tursu.runtime.registry import given, then, when
 
 __version__ = metadata.version("tursu")
 

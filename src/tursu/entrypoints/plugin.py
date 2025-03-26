@@ -43,7 +43,7 @@ class GherkinTestModule(pytest.Module):
         ):
             case.write_temporary(path.parent)  # coverage: ignore
             # we preload before updating the path
-            self._obj = super()._getobj  # coverage: ignore
+            self._obj = super()._getobj()  # coverage: ignore
 
         self._nodeid = self.nodeid.replace(case.filename, path.name)
         self.path = path
@@ -71,7 +71,6 @@ def tursu_collect_file() -> None:
         module_name = conftest_mod.__name__
         parent_name = module_name.rsplit(".", 1)[0]  # Remove the last part
         mod = sys.modules.get(parent_name)
-
         _tursu.scan(mod)  # load steps before the scenarios
 
         if file_path.suffix == ".feature":

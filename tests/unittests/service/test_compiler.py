@@ -15,64 +15,64 @@ def test_emit_items(doc: GherkinDocument):
 
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "Background: ",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can login",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can login",
         "When Bob login with password dumbsecret",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can login",
         "Then the user is connected with username Bob",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can't login with wrong password",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can't login with wrong password",
         "When Bob login with password notthat",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario: User can't login with wrong password",
         "Then the user is not connected",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario Outline: User can't login with someone else username",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario Outline: User can't login with someone else username",
         "When <username> login with password <password>",
     ]
     assert [repr(i) for i in next(iter_step)] == [
         "📄 Document: login.feature",
-        "🥒 Feature: As a user I logged in with my password",
+        "🥒 Feature: User login with their own password",
         "🎬 Scenario Outline: User can't login with someone else username",
         "Then the user is not connected",
     ]
@@ -91,7 +91,7 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
         str(code)
         == textwrap.dedent(
             '''
-    """As a user I logged in with my password"""
+    """User login with their own password"""
     from typing import Any
     import pytest
     from tursu.runtime.registry import Tursu
@@ -100,14 +100,14 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
 
     def test_7_User_can_login(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
         """User can login"""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', '🎬 Scenario: User can login']) as tursu_runner:
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User login with their own password', '🎬 Scenario: User can login']) as tursu_runner:
             tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
             tursu_runner.run_step('When', 'Bob login with password dumbsecret', app=app)
             tursu_runner.run_step('Then', 'the user is connected with username Bob', app=app)
 
     def test_10_User_can_t_login_with_wrong_password(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
         """User can't login with wrong password"""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', "🎬 Scenario: User can't login with wrong password"]) as tursu_runner:
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User login with their own password', "🎬 Scenario: User can't login with wrong password"]) as tursu_runner:
             tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
             tursu_runner.run_step('When', 'Bob login with password notthat', app=app)
             tursu_runner.run_step('Then', 'the user is not connected', app=app)
@@ -115,7 +115,7 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
     @pytest.mark.parametrize('username,password', [pytest.param('Bob', 'anothersecret', id='Examples'), pytest.param('Alice', 'dumbsecret', id='Examples')])
     def test_17_User_can_t_login_with_someone_else_username(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str):
         """User can't login with someone else username"""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', "🎬 Scenario Outline: User can't login with someone else username"]) as tursu_runner:
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User login with their own password', "🎬 Scenario Outline: User can't login with someone else username"]) as tursu_runner:
             tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
             tursu_runner.run_step('When', tursu_runner.format_example_step('<username> login with password <password>', username=username, password=password), app=app)
             tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password), app=app)

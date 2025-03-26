@@ -39,7 +39,7 @@ An example will be written:
 
 ```gherkin
 # tests/functionals/login.feature
-Feature: As a user I logged in with my password
+Feature: User login with their own password
 
   Scenario: User can login
 
@@ -97,7 +97,7 @@ def test_3_I_properly_logged_in(
         tursu,
         [
             "📄 Document: login.feature",
-            "🥒 Feature: As a user I logged in with my password",
+            "🥒 Feature: User login with their own password",
             "🎬 Scenario: User can login",
         ],
     ) as tursu_runner:

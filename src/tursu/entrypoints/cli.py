@@ -12,7 +12,7 @@ Documentation: https://mardiros.github.io/tursu/
 '''
 
 DEFAULT_CONFTEST = """\
-from tursu.plugin import tursu_collect_file
+from tursu.entrypoints.plugin import tursu_collect_file
 
 tursu_collect_file()
 """
@@ -75,7 +75,7 @@ def assert_not_connected(app: DummyApp):
 """
 
 DEFAULT_FEATURE = """\
-Feature: As a user I logged in with my password
+Feature: User login with their own password
 
   Background:
     Given a set of users:

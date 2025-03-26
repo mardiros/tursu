@@ -36,18 +36,18 @@ Issues = "https://github.com/mardiros/tursu/issues"
 Changelog = "https://mardiros.github.io/tursu/user/changelog.html"
 
 [project.scripts]
-tursu = "tursu.entrypoint:main"
+tursu = "tursu.entrypoints.cli:main"
 
 [project.entry-points.pytest11]
-tursu = "tursu.plugin"
+tursu = "tursu.entrypoints.plugin"
 
 
 [dependency-groups]
 dev = [
-    "factory-boy>=3.3.3",
-    "mypy>=1.4.0,<2",
-    "pytest>=8,<9",
-    "pytest-cov>=6.0.0,<7",
+  "factory-boy>=3.3.3",
+  "mypy>=1.4.0,<2",
+  "pytest>=8,<9",
+  "pytest-cov>=6.0.0,<7",
 ]
 docs = [
   "sphinx>=7.0.0",
