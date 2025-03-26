@@ -15,7 +15,7 @@ module = ast.Module(
                 ast.Expr(
                     value=ast.Call(
                         func=ast.Name(id="print", ctx=ast.Load()),
-                        args=[ast.Str(s="Hello, World!")],
+                        args=[ast.Constant(value="Hello, World!")],
                         keywords=[],
                     )
                 )
