@@ -16,9 +16,9 @@ from tests.unittests.fixtures.steps import (
     create_mailbox,
     give_user,
 )
+from tursu.domain.model.steps import Step
 from tursu.registry import Tursu, Unregistered
 from tursu.runner import TursuRunner
-from tursu.steps import Step
 
 
 @pytest.fixture()
