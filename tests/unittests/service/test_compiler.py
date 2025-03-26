@@ -2,87 +2,79 @@ import textwrap
 
 import pytest
 
-from tests.unittests.service.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import GherkinDocument
 from tursu.runtime.registry import Tursu
 from tursu.service.compiler import GherkinCompiler, GherkinIterator
-
-
-@pytest.fixture()
-def dummy_app() -> DummyApp:
-    return DummyApp()
 
 
 def test_emit_items(doc: GherkinDocument):
     gherkin_iter = GherkinIterator(doc)
 
     iter_step = gherkin_iter.emit()
-    assert [repr(i) for i in next(iter_step)] == ["📄 Document: scenario.feature"]
+    assert [repr(i) for i in next(iter_step)] == ["📄 Document: login.feature"]
 
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
         "Background: ",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can login",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can login",
+        "When Bob login with password dumbsecret",
     ]
 
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        "When Bob create a mailbox bob@alice.net",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can login",
+        "Then the user is connected with username Bob",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        "Then Bob see a mailbox bob@alice.net",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can't login with wrong password",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        'And the mailbox bob@alice.net "Welcome Bob" message is',
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can't login with wrong password",
+        "When Bob login with password notthat",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        "And the API for Bob respond",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario: User can't login with wrong password",
+        "Then the user is not connected",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        "And the users raw dataset is",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario Outline: User can't login with someone else username",
     ]
     assert [repr(i) for i in next(iter_step)] == [
-        "📄 Document: scenario.feature",
-        "🥒 Feature: Discover Scenario",
-        "🔹 Rule: I write a wip test",
-        "🎬 Scenario: I can find scenario based on tag",
-        "And the users dataset is",
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario Outline: User can't login with someone else username",
+        "When <username> login with password <password>",
+    ]
+    assert [repr(i) for i in next(iter_step)] == [
+        "📄 Document: login.feature",
+        "🥒 Feature: As a user I logged in with my password",
+        "🎬 Scenario Outline: User can't login with someone else username",
+        "Then the user is not connected",
     ]
 
     with pytest.raises(StopIteration):
@@ -91,7 +83,7 @@ def test_emit_items(doc: GherkinDocument):
     assert gherkin_iter.stack == []
 
 
-def test_compiler(doc: GherkinDocument, registry: Tursu, dummy_app: DummyApp) -> None:
+def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
     compiler = GherkinCompiler(doc, registry)
     code = compiler.to_module()
 
@@ -99,61 +91,34 @@ def test_compiler(doc: GherkinDocument, registry: Tursu, dummy_app: DummyApp) ->
         str(code)
         == textwrap.dedent(
             '''
-    """Discover Scenario"""
+    """As a user I logged in with my password"""
     from typing import Any
     import pytest
     from tursu.runtime.registry import Tursu
     from tursu.runtime.runner import TursuRunner
-    from tests.unittests.runtime.fixtures.dataset_factory import UserFactory as UserFactory0
-    from tests.unittests.runtime.fixtures.dataset_factory import Dataset as Dataset1
+    from tests.unittests.service.fixtures.steps import User as User0
 
-    @pytest.mark.wip
-    def test_13_I_can_find_scenario_based_on_tag(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, dummy_app: Any):
-        """I can find scenario based on tag"""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: scenario.feature', '🥒 Feature: Discover Scenario', '🔹 Rule: I write a wip test', '🎬 Scenario: I can find scenario based on tag']) as tursu_runner:
-            tursu_runner.run_step('Given', 'a user Bob', dummy_app=dummy_app)
-            tursu_runner.run_step('When', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-            tursu_runner.run_step('Then', 'Bob see a mailbox bob@alice.net', dummy_app=dummy_app)
-            tursu_runner.run_step('Then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-            tursu_runner.run_step('Then', 'the API for Bob respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
-            tursu_runner.run_step('Then', 'the users raw dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
-            tursu_runner.run_step('Then', 'the users dataset is', dummy_app=dummy_app, data_table=[Dataset1(username='Bob', mailbox='bob@alice.net')])
-            '''
-        ).strip()
-    )
+    def test_7_User_can_login(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
+        """User can login"""
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', '🎬 Scenario: User can login']) as tursu_runner:
+            tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
+            tursu_runner.run_step('When', 'Bob login with password dumbsecret', app=app)
+            tursu_runner.run_step('Then', 'the user is connected with username Bob', app=app)
 
+    def test_10_User_can_t_login_with_wrong_password(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
+        """User can't login with wrong password"""
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', "🎬 Scenario: User can't login with wrong password"]) as tursu_runner:
+            tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
+            tursu_runner.run_step('When', 'Bob login with password notthat', app=app)
+            tursu_runner.run_step('Then', 'the user is not connected', app=app)
 
-def test_compiler_compile_outline(
-    outline_doc: GherkinDocument, registry: Tursu, dummy_app: DummyApp
-) -> None:
-    compiler = GherkinCompiler(outline_doc, registry)
-    code = compiler.to_module()
-
-    assert (
-        str(code)
-        == textwrap.dedent(
-            '''
-    """Discover Scenario Outline
-
-    This feature is complex and require a comment."""
-    from typing import Any
-    import pytest
-    from tursu.runtime.registry import Tursu
-    from tursu.runtime.runner import TursuRunner
-    from tests.unittests.runtime.fixtures.dataset_factory import UserFactory as UserFactory0
-    from tests.unittests.runtime.fixtures.dataset_factory import Dataset as Dataset1
-
-    @pytest.mark.oulined
-    @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='Examples'), pytest.param('Bob', 'bob@bob.net', id='Examples')])
-    def test_10_I_can_load_scenario_outline(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, dummy_app: Any, username: str, email: str):
-        """I can load scenario outline
-
-        This scenario is complex and require a comment."""
-        with TursuRunner(request, capsys, tursu, ['📄 Document: scenario_outline.feature', '🥒 Feature: Discover Scenario Outline', '🎬 Scenario Outline: I can load scenario outline']) as tursu_runner:
-            tursu_runner.run_step('Given', 'a user momo', dummy_app=dummy_app)
-            tursu_runner.run_step('Given', tursu_runner.format_example_step('a user <username>', username=username, email=email), dummy_app=dummy_app)
-            tursu_runner.run_step('When', tursu_runner.format_example_step('<username> create a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
-            tursu_runner.run_step('Then', tursu_runner.format_example_step('<username> see a mailbox <email>', username=username, email=email), dummy_app=dummy_app)
-     '''
+    @pytest.mark.parametrize('username,password', [pytest.param('Bob', 'anothersecret', id='Examples'), pytest.param('Alice', 'dumbsecret', id='Examples')])
+    def test_17_User_can_t_login_with_someone_else_username(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str):
+        """User can't login with someone else username"""
+        with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: As a user I logged in with my password', "🎬 Scenario Outline: User can't login with someone else username"]) as tursu_runner:
+            tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
+            tursu_runner.run_step('When', tursu_runner.format_example_step('<username> login with password <password>', username=username, password=password), app=app)
+            tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password), app=app)
+             '''
         ).strip()
     )

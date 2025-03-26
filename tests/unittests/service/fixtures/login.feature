@@ -15,7 +15,7 @@ Feature: As a user I logged in with my password
     Then the user is not connected
 
   Scenario Outline: User can't login with someone else username
-    When <user> login with password <password>
+    When <username> login with password <password>
     Then the user is not connected
 
     Examples:
