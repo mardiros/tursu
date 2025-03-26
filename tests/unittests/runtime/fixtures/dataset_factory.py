@@ -31,7 +31,6 @@ def assert_dataset(dummy_app: DummyApp, data_table: list[Dataset]): ...
 
 
 @given("a set of users:")
-def a_set_of_users(dummy_app: DummyApp, data_table: list[Annotated[User, UserFactory]]):
-    for user in data_table:
-        dummy_app.create_user(user.username)
-        dummy_app.add_mailbox(user.username, user.mailbox)
+def a_set_of_users(
+    dummy_app: DummyApp, data_table: list[Annotated[User, UserFactory]]
+): ...

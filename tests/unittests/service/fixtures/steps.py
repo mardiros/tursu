@@ -12,21 +12,16 @@ class User:
 
 
 @given("a set of users:")
-def a_set_of_users(app: DummyApp, data_table: list[User]):
-    for user in data_table:
-        app.users[user.username] = user.password
+def a_set_of_users(app: DummyApp, data_table: list[User]): ...
 
 
 @when("{username} login with password {password}")
-def login(app: DummyApp, username: str, password: str):
-    app.login(username, password)
+def login(app: DummyApp, username: str, password: str): ...
 
 
 @then("the user is connected with username {username}")
-def assert_connected(app: DummyApp, username: str):
-    assert app.connected_user == username
+def assert_connected(app: DummyApp, username: str): ...
 
 
 @then("the user is not connected")
-def assert_not_connected(app: DummyApp):
-    assert app.connected_user is None
+def assert_not_connected(app: DummyApp): ...

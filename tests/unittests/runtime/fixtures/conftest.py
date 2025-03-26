@@ -1,6 +1,3 @@
-from collections.abc import Iterator
-
-import pytest
 from pydantic import BaseModel
 
 
@@ -23,8 +20,3 @@ class DummyApp:
         self.mailboxes[username] = [
             DummyMail(email=mailbox, subject=f"Welcome {username}", body="...")
         ]
-
-
-@pytest.fixture()
-def dummy_app() -> Iterator[DummyApp]:
-    yield DummyApp()

@@ -31,6 +31,12 @@ def default_param(name: str = "Alice", age: int = 42): ...
 def mix_param(name: str, age: int = 42): ...
 
 
+def using_data_table(data_table: list[dict[str, str]]): ...
+
+
+def using_doc_string(doc_string: dict[str, str]): ...
+
+
 x = [
     {"username": "johndoe", "password": "secret123"},
     {"username": "janedoe", "password": "password1"},
@@ -205,6 +211,20 @@ def test_cast_to_annotation_type_error() -> None:
             {"age": 42},
             id="mix parameter",
         ),
+        pytest.param(
+            "I use data table",
+            inspect.signature(using_data_table),
+            "I use data table",
+            {},
+            id="data_table",
+        ),
+        pytest.param(
+            "I use doc string",
+            inspect.signature(using_doc_string),
+            "I use doc string",
+            {},
+            id="doc_string",
+        ),
     ],
 )
 def test_default_pattern_matcher_match(
@@ -247,6 +267,20 @@ def test_default_pattern_matcher_match(
             "I have no name",
             {"name": str},
             id="fixture",
+        ),
+        pytest.param(
+            "I use data table",
+            inspect.signature(using_data_table),
+            "I use data table",
+            {},
+            id="data_table",
+        ),
+        pytest.param(
+            "I use doc string",
+            inspect.signature(using_doc_string),
+            "I use doc string",
+            {},
+            id="doc_string",
         ),
     ],
 )
