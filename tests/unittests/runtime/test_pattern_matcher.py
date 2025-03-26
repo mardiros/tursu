@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 import pytest
 
-from tursu.pattern_matcher import (
+from tursu.runtime.pattern_matcher import (
     AbstractPatternMatcher,
     DefaultPatternMatcher,
     PatternError,

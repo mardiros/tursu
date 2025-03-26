@@ -1,7 +1,8 @@
 from typing import Any
 
-from tests.unittests.conftest import DummyApp
 from tursu import given, then, when
+
+from .conftest import DummyApp
 
 
 @given("a user {username}")

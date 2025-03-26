@@ -8,7 +8,7 @@ import pytest
 from typing_extensions import Any
 
 from tursu.domain.model.steps import Step, StepKeyword
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 
 # Set up the logger
 logger = logging.getLogger("tursu")

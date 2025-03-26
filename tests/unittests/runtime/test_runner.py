@@ -2,11 +2,14 @@ from collections.abc import Iterator
 
 import pytest
 
-from tests.unittests.fixtures.steps import DummyApp
-from tursu.domain.model.gherkin import GherkinDocument
-from tursu.plugin import tursu_collect_file
-from tursu.registry import Tursu
-from tursu.runner import ScenarioFailed, TursuRunner
+from tests.unittests.runtime.fixtures.steps import DummyApp
+from tursu.runtime.registry import Tursu
+from tursu.runtime.runner import ScenarioFailed, TursuRunner
+
+
+@pytest.fixture()
+def dummy_app() -> DummyApp:
+    return DummyApp()
 
 
 class TursuRunnerNoLog(TursuRunner):
@@ -164,39 +167,3 @@ def test_emit_success(
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
     ]
-
-
-def test_tursu_collect_file(
-    tursu: Tursu, doc: GherkinDocument, request: pytest.FixtureRequest
-):
-    old_handlers = tursu._handlers
-    tursu._handlers = {"Given": [], "Then": [], "When": []}
-    tursu_collect_file()
-    assert "pytest_collect_file" in globals()
-    pkg = pytest.Package.from_parent(request.session, path=doc.filepath.parent)
-    globals()["pytest_collect_file"](pkg, doc.filepath)
-    repr_handlers = {
-        "Given": [repr(h) for h in tursu._handlers["Given"]],
-        "Then": [repr(h) for h in tursu._handlers["Then"]],
-        "When": [repr(h) for h in tursu._handlers["When"]],
-    }
-    assert repr_handlers == {
-        "Given": [
-            'Step("a set of users:", a_set_of_users)',
-            'Step("a user {username}", give_user)',
-        ],
-        "Then": [
-            'Step("the users dataset is", assert_dataset)',
-            'Step("the API for {username} respond", assert_api_response)',
-            'Step("the users raw dataset is", assert_dataset_raw)',
-            'Step("the mailbox {email} "{subject}" message is", '
-            "assert_mailbox_contains)",
-            'Step("{username} see a mailbox {email}", assert_user_has_mailbox)',
-        ],
-        "When": [
-            'Step("{username} create a mailbox {email}", create_mailbox)',
-        ],
-    }
-
-    # we restore the tursu global registry has its previous step.
-    tursu._handlers = old_handlers

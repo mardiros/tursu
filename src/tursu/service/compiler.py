@@ -17,7 +17,7 @@ from tursu.domain.model.gherkin import (
 )
 from tursu.domain.model.steps import StepKeyword
 from tursu.domain.model.testmod import TestModule
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 from tursu.service.ast.astfunction import TestFunctionWriter, is_step_keyword
 from tursu.service.ast.astmodule import TestModuleWriter
 

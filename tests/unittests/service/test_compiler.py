@@ -2,10 +2,15 @@ import textwrap
 
 import pytest
 
-from tests.unittests.fixtures.steps import DummyApp
+from tests.unittests.service.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 from tursu.service.compiler import GherkinCompiler, GherkinIterator
+
+
+@pytest.fixture()
+def dummy_app() -> DummyApp:
+    return DummyApp()
 
 
 def test_emit_items(doc: GherkinDocument):
@@ -94,25 +99,25 @@ def test_compiler(doc: GherkinDocument, registry: Tursu, dummy_app: DummyApp) ->
         str(code)
         == textwrap.dedent(
             '''
-        """Discover Scenario"""
-        from typing import Any
-        import pytest
-        from tursu.registry import Tursu
-        from tursu.runner import TursuRunner
-        from tests.unittests.fixtures.dataset_factory import UserFactory as UserFactory0
-        from tests.unittests.fixtures.dataset_factory import Dataset as Dataset1
+    """Discover Scenario"""
+    from typing import Any
+    import pytest
+    from tursu.runtime.registry import Tursu
+    from tursu.runtime.runner import TursuRunner
+    from tests.unittests.runtime.fixtures.dataset_factory import UserFactory as UserFactory0
+    from tests.unittests.runtime.fixtures.dataset_factory import Dataset as Dataset1
 
-        @pytest.mark.wip
-        def test_13_I_can_find_scenario_based_on_tag(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, dummy_app: Any):
-            """I can find scenario based on tag"""
-            with TursuRunner(request, capsys, tursu, ['📄 Document: scenario.feature', '🥒 Feature: Discover Scenario', '🔹 Rule: I write a wip test', '🎬 Scenario: I can find scenario based on tag']) as tursu_runner:
-                tursu_runner.run_step('Given', 'a user Bob', dummy_app=dummy_app)
-                tursu_runner.run_step('When', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
-                tursu_runner.run_step('Then', 'Bob see a mailbox bob@alice.net', dummy_app=dummy_app)
-                tursu_runner.run_step('Then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
-                tursu_runner.run_step('Then', 'the API for Bob respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
-                tursu_runner.run_step('Then', 'the users raw dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
-                tursu_runner.run_step('Then', 'the users dataset is', dummy_app=dummy_app, data_table=[Dataset1(username='Bob', mailbox='bob@alice.net')])
+    @pytest.mark.wip
+    def test_13_I_can_find_scenario_based_on_tag(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, dummy_app: Any):
+        """I can find scenario based on tag"""
+        with TursuRunner(request, capsys, tursu, ['📄 Document: scenario.feature', '🥒 Feature: Discover Scenario', '🔹 Rule: I write a wip test', '🎬 Scenario: I can find scenario based on tag']) as tursu_runner:
+            tursu_runner.run_step('Given', 'a user Bob', dummy_app=dummy_app)
+            tursu_runner.run_step('When', 'Bob create a mailbox bob@alice.net', dummy_app=dummy_app)
+            tursu_runner.run_step('Then', 'Bob see a mailbox bob@alice.net', dummy_app=dummy_app)
+            tursu_runner.run_step('Then', 'the mailbox bob@alice.net "Welcome Bob" message is', dummy_app=dummy_app, doc_string='...')
+            tursu_runner.run_step('Then', 'the API for Bob respond', dummy_app=dummy_app, doc_string=[{'email': 'bob@alice.net', 'subject': 'Welcome Bob', 'body': '...'}])
+            tursu_runner.run_step('Then', 'the users raw dataset is', dummy_app=dummy_app, data_table=[{'username': 'Bob', 'mailbox': 'bob@alice.net'}])
+            tursu_runner.run_step('Then', 'the users dataset is', dummy_app=dummy_app, data_table=[Dataset1(username='Bob', mailbox='bob@alice.net')])
             '''
         ).strip()
     )
@@ -133,10 +138,10 @@ def test_compiler_compile_outline(
     This feature is complex and require a comment."""
     from typing import Any
     import pytest
-    from tursu.registry import Tursu
-    from tursu.runner import TursuRunner
-    from tests.unittests.fixtures.dataset_factory import UserFactory as UserFactory0
-    from tests.unittests.fixtures.dataset_factory import Dataset as Dataset1
+    from tursu.runtime.registry import Tursu
+    from tursu.runtime.runner import TursuRunner
+    from tests.unittests.runtime.fixtures.dataset_factory import UserFactory as UserFactory0
+    from tests.unittests.runtime.fixtures.dataset_factory import Dataset as Dataset1
 
     @pytest.mark.oulined
     @pytest.mark.parametrize('username,email', [pytest.param('Alice', 'alice@alice.net', id='Examples'), pytest.param('Bob', 'bob@bob.net', id='Examples')])

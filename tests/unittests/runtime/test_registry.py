@@ -2,13 +2,13 @@ import textwrap
 
 import pytest
 
-from tests.unittests.conftest import DummyApp, DummyMail
-from tests.unittests.fixtures.dataset_factory import (
+from tests.unittests.runtime.fixtures.conftest import DummyApp, DummyMail
+from tests.unittests.runtime.fixtures.dataset_factory import (
     Dataset,
     a_set_of_users,
     assert_dataset,
 )
-from tests.unittests.fixtures.steps import (
+from tests.unittests.runtime.fixtures.steps import (
     assert_api_response,
     assert_dataset_raw,
     assert_mailbox_contains,
@@ -17,8 +17,8 @@ from tests.unittests.fixtures.steps import (
     give_user,
 )
 from tursu.domain.model.steps import Step
-from tursu.registry import Tursu, Unregistered
-from tursu.runner import TursuRunner
+from tursu.runtime.registry import Tursu, Unregistered
+from tursu.runtime.runner import TursuRunner
 
 
 @pytest.fixture()
@@ -26,6 +26,11 @@ def tursu_runner(
     registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
 ) -> TursuRunner:
     return TursuRunner(request, capsys, registry, ["📄 Document: ..."])
+
+
+@pytest.fixture()
+def dummy_app() -> DummyApp:
+    return DummyApp()
 
 
 def test_registry_handler(registry: Tursu):

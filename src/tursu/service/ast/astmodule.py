@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from tursu.domain.model.gherkin import GherkinFeature
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 from tursu.service.ast.astfunction import TestFunctionWriter
 
 
@@ -24,14 +24,14 @@ class TestModuleWriter:
             ),
             ast.Import(names=[ast.alias(name="pytest", asname=None)]),
             ast.ImportFrom(
-                module="tursu.registry",
+                module="tursu.runtime.registry",
                 names=[
                     ast.alias(name="Tursu", asname=None),
                 ],
                 level=0,
             ),
             ast.ImportFrom(
-                module="tursu.runner",
+                module="tursu.runtime.runner",
                 names=[
                     ast.alias(name="TursuRunner", asname=None),
                 ],

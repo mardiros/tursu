@@ -13,7 +13,7 @@ from tursu.domain.model.gherkin import (
     GherkinStep,
 )
 from tursu.domain.model.steps import StepKeyword
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 
 
 def repr_stack(stack: list[Any]) -> list[str]:

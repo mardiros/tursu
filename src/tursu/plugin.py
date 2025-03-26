@@ -1,3 +1,5 @@
+"""Pytest plugin"""
+
 import inspect
 import sys
 from collections.abc import Iterable
@@ -8,7 +10,7 @@ from typing import Any
 import pytest
 
 from tursu.domain.model.gherkin import GherkinDocument
-from tursu.registry import Tursu
+from tursu.runtime.registry import Tursu
 from tursu.service.compiler import GherkinCompiler
 
 _tursu = Tursu()
@@ -21,6 +23,12 @@ def tursu() -> Tursu:
 
 
 class GherkinTestModule(pytest.Module):
+    """
+    A pytest collector made for gherkin .scenario files.
+
+    While collecting, it generate ast code to run tests using the python runtime.
+    """
+
     def __init__(self, path: Path, tursu: Tursu, **kwargs: Any) -> None:
         doc = GherkinDocument.from_file(path)
         self.gherkin_doc = path.name
