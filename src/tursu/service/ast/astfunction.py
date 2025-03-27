@@ -1,7 +1,7 @@
 import ast
 import re
 from collections.abc import Sequence
-from typing import Any, TypeGuard, get_args
+from typing import Annotated, Any, TypeGuard, get_args, get_origin
 
 from tursu.domain.model.gherkin import (
     GherkinExamples,
@@ -39,6 +39,9 @@ class TestFunctionWriter:
         steps: Sequence[GherkinStep],
         stack: list[Any],
     ) -> None:
+        self.registry = registry
+        self.current_keyword: StepKeyword | None = None
+
         fixtures = self.build_fixtures(steps, registry)
         decorator_list = self.build_tags_decorators(stack)
         examples_keys = None
@@ -249,6 +252,130 @@ class TestFunctionWriter:
                 case _:
                     ...
         return ret
+
+    def add_step(
+        self,
+        stp: GherkinStep,
+        stack: list[Any],
+        examples: Sequence[GherkinExamples] | None = None,
+    ) -> None:
+        keyword = stp.keyword
+        if stp.keyword_type == "Conjunction":
+            assert self.current_keyword is not None, (
+                f"Using {stp.keyword} without context"
+            )
+            keyword = self.current_keyword
+        assert is_step_keyword(keyword)
+        self.current_keyword = keyword
+
+        keywords = []
+        step_fixtures = self.registry.extract_fixtures(self.current_keyword, stp.text)
+        for key, _val in step_fixtures.items():
+            keywords.append(
+                ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
+            )
+
+        if stp.doc_string:
+            keywords.append(
+                ast.keyword(
+                    arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
+                )
+            )
+
+        if stp.data_table:
+            registry_step = self.registry.get_step(keyword, stp.text)
+
+            assert registry_step, "Step not found"
+            typ: type | None = None
+            anon = registry_step.pattern.signature.parameters["data_table"].annotation
+            if anon:
+                typ = get_args(anon)[0]
+                orig = get_origin(typ)
+                if orig is dict:
+                    typ = None
+                elif orig is Annotated:
+                    typ = get_args(typ)[-1]
+
+            if typ is None:
+                tabl = []
+                hdr = [c.value for c in stp.data_table.rows[0].cells]
+                for row in stp.data_table.rows[1:]:
+                    vals = [c.value for c in row.cells]
+                    tabl.append(dict(zip(hdr, vals)))
+
+                keywords.append(
+                    ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+                )
+            else:
+                # we have to parse the value
+                tabl = []
+                hdr = [c.value for c in stp.data_table.rows[0].cells]
+                call_datatable_node: list[ast.expr] = []
+                for row in stp.data_table.rows[1:]:
+                    vals = [c.value for c in row.cells]
+                    datatable_keywords = []
+                    for key, val in zip(hdr, vals):
+                        if val == self.registry.DATA_TABLE_EMPTY_CELL:
+                            # empty string are our null value
+                            continue
+                        datatable_keywords.append(
+                            ast.keyword(arg=key, value=ast.Constant(value=val))
+                        )
+
+                    call_datatable_node.append(
+                        ast.Call(
+                            func=ast.Name(
+                                id=self.registry.data_tables_types[typ],
+                                ctx=ast.Load(),
+                            ),
+                            keywords=datatable_keywords,
+                        )
+                    )
+                keywords.append(
+                    ast.keyword(
+                        arg="data_table",
+                        value=ast.List(elts=call_datatable_node, ctx=ast.Load()),
+                    )
+                )
+
+        call_format_node = None
+        text = ast.Constant(value=stp.text)
+        if examples:
+            format_keywords = []
+            ex = examples[0]
+            for cell in ex.table_header.cells:
+                format_keywords.append(
+                    ast.keyword(
+                        arg=cell.value, value=ast.Name(id=cell.value, ctx=ast.Load())
+                    )
+                )
+            call_format_node = ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                    attr="format_example_step",
+                    ctx=ast.Load(),
+                ),  # tursu.run_step
+                args=[
+                    text,
+                ],
+                keywords=format_keywords,
+            )
+
+        call_node = ast.Call(
+            func=ast.Attribute(
+                value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                attr="run_step",
+                ctx=ast.Load(),
+            ),  # tursu.run_step
+            args=[
+                ast.Constant(value=self.current_keyword),
+                call_format_node if call_format_node else text,
+            ],
+            keywords=keywords,
+        )
+
+        # Add the call node to the body of the function
+        self.step_list.append(ast.Expr(value=call_node, lineno=stp.location.line))
 
     def to_ast(self) -> ast.FunctionDef:
         return self.funcdef
