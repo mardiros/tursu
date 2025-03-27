@@ -40,7 +40,7 @@ class TestFunctionWriter:
         stack: list[Any],
     ) -> None:
         self.registry = registry
-        self.current_keyword: StepKeyword | None = None
+        self.gherkin_keyword: StepKeyword | None = None
 
         fixtures = self.build_fixtures(steps, registry)
         decorator_list = self.build_tags_decorators(stack)
@@ -211,37 +211,41 @@ class TestFunctionWriter:
                     ...
         return ret
 
+    def get_keyword(self, stp: GherkinStep) -> StepKeyword:
+        keyword = stp.keyword
+        if stp.keyword_type == "Conjunction":
+            assert self.gherkin_keyword is not None, (
+                f"Using {stp.keyword} without context"
+            )
+            keyword = self.gherkin_keyword
+        assert is_step_keyword(keyword)
+        self.gherkin_keyword = keyword
+        return keyword
+
     def add_step(
         self,
         stp: GherkinStep,
         stack: list[Any],
         examples: Sequence[GherkinExamples] | None = None,
     ) -> None:
-        keyword = stp.keyword
-        if stp.keyword_type == "Conjunction":
-            assert self.current_keyword is not None, (
-                f"Using {stp.keyword} without context"
-            )
-            keyword = self.current_keyword
-        assert is_step_keyword(keyword)
-        self.current_keyword = keyword
+        step_keyword = self.get_keyword(stp)
 
-        keywords = []
-        step_fixtures = self.registry.extract_fixtures(self.current_keyword, stp.text)
+        py_kwargs = []
+        step_fixtures = self.registry.extract_fixtures(step_keyword, stp.text)
         for key, _val in step_fixtures.items():
-            keywords.append(
+            py_kwargs.append(
                 ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
             )
 
         if stp.doc_string:
-            keywords.append(
+            py_kwargs.append(
                 ast.keyword(
                     arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
                 )
             )
 
         if stp.data_table:
-            registry_step = self.registry.get_step(keyword, stp.text)
+            registry_step = self.registry.get_step(step_keyword, stp.text)
 
             assert registry_step, "Step not found"
             typ: type | None = None
@@ -261,7 +265,7 @@ class TestFunctionWriter:
                     vals = [c.value for c in row.cells]
                     tabl.append(dict(zip(hdr, vals)))
 
-                keywords.append(
+                py_kwargs.append(
                     ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
                 )
             else:
@@ -289,7 +293,7 @@ class TestFunctionWriter:
                             keywords=datatable_keywords,
                         )
                     )
-                keywords.append(
+                py_kwargs.append(
                     ast.keyword(
                         arg="data_table",
                         value=ast.List(elts=call_datatable_node, ctx=ast.Load()),
@@ -326,10 +330,10 @@ class TestFunctionWriter:
                 ctx=ast.Load(),
             ),  # tursu.run_step
             args=[
-                ast.Constant(value=self.current_keyword),
+                ast.Constant(value=step_keyword),
                 call_format_node if call_format_node else text,
             ],
-            keywords=keywords,
+            keywords=py_kwargs,
         )
 
         # Add the call node to the body of the function
