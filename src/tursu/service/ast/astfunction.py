@@ -16,7 +16,7 @@ from tursu.domain.model.steps import StepKeyword
 from tursu.runtime.registry import Tursu
 
 
-def repr_stack(stack: list[Any]) -> list[str]:
+def repr_stack(stack: Sequence[Any]) -> Sequence[str]:
     ret = []
     for el in stack:
         ret.append(repr(el))
@@ -37,7 +37,7 @@ class TestFunctionWriter:
         scenario: GherkinScenario | GherkinScenarioOutline,
         registry: Tursu,
         steps: Sequence[GherkinStep],
-        stack: list[Any],
+        stack: Sequence[Any],
     ) -> None:
         self.registry = registry
         self.gherkin_keyword: StepKeyword | None = None
@@ -170,9 +170,8 @@ class TestFunctionWriter:
         step_last_keyword = None
         for step in steps:
             if step.keyword_type == "Conjunction":
-                assert step_last_keyword is not None, (
-                    f"Using {step.keyword} without context"
-                )
+                if step_last_keyword is None:
+                    raise ValueError(f'Using "{step.keyword}" keyword without context')
             else:
                 step_last_keyword = step.keyword
             assert is_step_keyword(step_last_keyword)
