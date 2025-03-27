@@ -82,8 +82,8 @@ class GherkinDocString(BaseModel):
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> "GherkinDocString":
-        if self.media_type == "json":
-            self.content = json.loads(self.content)  # type: ignore
+        if self.media_type == "json" and isinstance(self.content, str):
+            self.content = json.loads(self.content)
         return self
 
 

@@ -38,4 +38,9 @@ class TestModule:
         """
         test_casefile = parent / self.filename
         test_casefile.write_text(str(self), encoding="utf-8")
-        atexit.register(lambda: test_casefile.unlink(missing_ok=True))
+
+        def delete_temporary_files() -> None:
+            if hasattr(test_casefile, "unlink"):  # coverage: ignore
+                test_casefile.unlink(missing_ok=True)  # coverage: ignore
+
+        atexit.register(delete_temporary_files)
