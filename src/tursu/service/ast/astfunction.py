@@ -222,14 +222,42 @@ class TestFunctionWriter:
         self.gherkin_keyword = keyword
         return keyword
 
-    def add_step(
+    def build_step_args(
         self,
+        step_keyword: StepKeyword,
         stp: GherkinStep,
-        stack: list[Any],
         examples: Sequence[GherkinExamples] | None = None,
-    ) -> None:
-        step_keyword = self.get_keyword(stp)
+    ) -> list[ast.expr]:
+        call_format_node = None
+        text = ast.Constant(value=stp.text)
+        if examples:
+            format_keywords = []
+            ex = examples[0]
+            for cell in ex.table_header.cells:
+                format_keywords.append(
+                    ast.keyword(
+                        arg=cell.value, value=ast.Name(id=cell.value, ctx=ast.Load())
+                    )
+                )
+            call_format_node = ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                    attr="format_example_step",
+                    ctx=ast.Load(),
+                ),  # tursu.run_step
+                args=[
+                    text,
+                ],
+                keywords=format_keywords,
+            )
+        return [
+            ast.Constant(value=step_keyword),
+            call_format_node if call_format_node else text,
+        ]
 
+    def build_step_kwargs(
+        self, step_keyword: StepKeyword, stp: GherkinStep
+    ) -> list[ast.keyword]:
         py_kwargs = []
         step_fixtures = self.registry.extract_fixtures(step_keyword, stp.text)
         for key, _val in step_fixtures.items():
@@ -300,39 +328,25 @@ class TestFunctionWriter:
                     )
                 )
 
-        call_format_node = None
-        text = ast.Constant(value=stp.text)
-        if examples:
-            format_keywords = []
-            ex = examples[0]
-            for cell in ex.table_header.cells:
-                format_keywords.append(
-                    ast.keyword(
-                        arg=cell.value, value=ast.Name(id=cell.value, ctx=ast.Load())
-                    )
-                )
-            call_format_node = ast.Call(
-                func=ast.Attribute(
-                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
-                    attr="format_example_step",
-                    ctx=ast.Load(),
-                ),  # tursu.run_step
-                args=[
-                    text,
-                ],
-                keywords=format_keywords,
-            )
+        return py_kwargs
+
+    def add_step(
+        self,
+        stp: GherkinStep,
+        stack: list[Any],
+        examples: Sequence[GherkinExamples] | None = None,
+    ) -> None:
+        step_keyword = self.get_keyword(stp)
+        py_args = self.build_step_args(step_keyword, stp, examples)
+        py_kwargs = self.build_step_kwargs(step_keyword, stp)
 
         call_node = ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="tursu_runner", ctx=ast.Load()),
                 attr="run_step",
                 ctx=ast.Load(),
-            ),  # tursu.run_step
-            args=[
-                ast.Constant(value=step_keyword),
-                call_format_node if call_format_node else text,
-            ],
+            ),
+            args=py_args,
             keywords=py_kwargs,
         )
 
