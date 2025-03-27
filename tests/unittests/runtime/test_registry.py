@@ -33,6 +33,27 @@ def dummy_app() -> DummyApp:
     return DummyApp()
 
 
+def test_scan():
+    registry = Tursu()
+    registry.scan()
+    assert registry._handlers == {
+        "Given": [
+            Step("a set of users:", a_set_of_users),
+            Step("a user {username}", give_user),
+        ],
+        "Then": [
+            Step("the users dataset is", assert_dataset),
+            Step("the API for {username} respond", assert_api_response),
+            Step("the users raw dataset is", assert_dataset_raw),
+            Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
+            Step("{username} see a mailbox {email}", assert_user_has_mailbox),
+        ],
+        "When": [
+            Step("{username} create a mailbox {email}", create_mailbox),
+        ],
+    }
+
+
 def test_registry_handler(registry: Tursu):
     assert registry._handlers == {
         "Given": [
