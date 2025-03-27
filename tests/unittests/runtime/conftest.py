@@ -8,7 +8,7 @@ from tursu.runtime.registry import Tursu
 
 @pytest.fixture
 def docs_dir():
-    return Path(__file__).parent / "runtime" / "fixtures"
+    return Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture
