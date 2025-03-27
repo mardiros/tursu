@@ -213,9 +213,8 @@ class TestFunctionWriter:
     def get_keyword(self, stp: GherkinStep) -> StepKeyword:
         keyword = stp.keyword
         if stp.keyword_type == "Conjunction":
-            assert self.gherkin_keyword is not None, (
-                f"Using {stp.keyword} without context"
-            )
+            if self.gherkin_keyword is None:
+                raise ValueError(f'Using "{stp.keyword}" keyword without context')
             keyword = self.gherkin_keyword
         assert is_step_keyword(keyword)
         self.gherkin_keyword = keyword

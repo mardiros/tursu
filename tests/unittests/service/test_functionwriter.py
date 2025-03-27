@@ -14,6 +14,7 @@ from tursu.domain.model.gherkin import (
     GherkinStep,
     GherkinTag,
 )
+from tursu.domain.model.steps import StepKeyword
 from tursu.domain.model.testmod import TestModule
 from tursu.runtime.registry import Tursu
 from tursu.service.ast.astfunction import TestFunctionWriter
@@ -153,3 +154,89 @@ def test_build_tags_decorators(
     tmod = TestModule("dummy", module)
     tmod.write_temporary(tmpdir)
     assert (tmpdir / tmod.filename).read_text(encoding="utf-8") == expected_result
+
+
+@pytest.mark.parametrize(
+    "steps,expected_keywords",
+    [
+        pytest.param([], [], id="empty"),
+        pytest.param(
+            [
+                GherkinStep(
+                    id="1",
+                    location=GherkinLocation(line=1, column=1),
+                    keyword="Given",
+                    text="a set of users:",
+                    keywordType="Context",
+                ),
+                GherkinStep(
+                    id="1",
+                    location=GherkinLocation(line=1, column=1),
+                    keyword="And",
+                    text="a set of users:",
+                    keywordType="Conjunction",
+                ),
+                GherkinStep(
+                    id="1",
+                    location=GherkinLocation(line=1, column=1),
+                    keyword="When",
+                    text="Alice login with password pwd",
+                    keywordType="Action",
+                ),
+                GherkinStep(
+                    id="1",
+                    location=GherkinLocation(line=1, column=1),
+                    keyword="Then",
+                    text="the user is not connected",
+                    keywordType="Outcome",
+                ),
+            ],
+            [
+                "Given",
+                "Given",
+                "When",
+                "Then",
+            ],
+            id="And becomes Given",
+        ),
+    ],
+)
+def test_get_keyword(
+    registry: Tursu,
+    scenario: GherkinScenario,
+    steps: Sequence[GherkinStep],
+    expected_keywords: Sequence[StepKeyword],
+):
+    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    keywords = [fn.get_keyword(step) for step in steps]
+    assert keywords == expected_keywords
+
+
+@pytest.mark.parametrize(
+    "steps,expected_error",
+    [
+        pytest.param(
+            [
+                GherkinStep(
+                    id="1",
+                    location=GherkinLocation(line=1, column=1),
+                    keyword="And",
+                    text="a set of users:",
+                    keywordType="Conjunction",
+                ),
+            ],
+            'Using "And" keyword without context',
+            id="And",
+        ),
+    ],
+)
+def test_get_keyword_error(
+    registry: Tursu,
+    scenario: GherkinScenario,
+    steps: Sequence[GherkinStep],
+    expected_error: str,
+):
+    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    with pytest.raises(ValueError) as ctx:
+        fn.get_keyword(steps[0])
+    assert str(ctx.value) == expected_error
