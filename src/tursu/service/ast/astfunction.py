@@ -199,53 +199,11 @@ class TestFunctionWriter:
         for el in stack:
             match el:
                 case (
-                    GherkinFeature(
-                        location=_,
-                        tags=tags,
-                        language=_,
-                        keyword=_,
-                        name=_,
-                        description=_,
-                        children=_,
-                    )
-                    | GherkinRule(
-                        id=_,
-                        location=_,
-                        tags=tags,
-                        keyword=_,
-                        name=_,
-                        description=_,
-                        children=_,
-                    )
-                    | GherkinScenario(
-                        id=_,
-                        location=_,
-                        tags=tags,
-                        keyword=_,
-                        name=_,
-                        description=_,
-                        steps=_,
-                    )
-                    | GherkinScenarioOutline(
-                        id=_,
-                        location=_,
-                        tags=tags,
-                        keyword=_,
-                        name=_,
-                        description=_,
-                        steps=_,
-                        examples=_,
-                    )
-                    | GherkinExamples(
-                        id=_,
-                        location=_,
-                        tags=tags,
-                        keyword=_,
-                        name=_,
-                        description=_,
-                        table_header=_,
-                        table_body=_,
-                    )
+                    GherkinFeature(tags=tags)
+                    | GherkinRule(tags=tags)
+                    | GherkinScenario(tags=tags)
+                    | GherkinScenarioOutline(tags=tags)
+                    | GherkinExamples(tags=tags)
                 ):
                     for tag in tags:
                         ret.add(tag.name)

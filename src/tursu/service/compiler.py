@@ -83,37 +83,14 @@ class GherkinCompiler:
         for stack in self.emmiter.emit():
             el = stack[-1]
             match el:
-                case GherkinFeature(
-                    location=_,
-                    tags=_,
-                    language=_,
-                    keyword=_,
-                    name=_,
-                    description=_,
-                    children=_,
-                ):
+                case GherkinFeature():
                     assert module_node is None
                     module_node = TestModuleWriter(el, self.registry, stack)
 
-                case GherkinBackground(
-                    id=_,
-                    location=_,
-                    keyword=_,
-                    name=_,
-                    description=_,
-                    steps=steps,
-                ):
+                case GherkinBackground(steps=steps):
                     background_steps = steps
 
-                case GherkinScenario(
-                    id=_,
-                    location=_,
-                    tags=_,
-                    keyword=_,
-                    name=_,
-                    description=_,
-                    steps=steps,
-                ):
+                case GherkinScenario(steps=steps):
                     test_function = TestFunctionWriter(
                         el, self.registry, [*background_steps, *steps], stack
                     )
@@ -125,16 +102,7 @@ class GherkinCompiler:
                     for step in steps:
                         test_function.add_step(step, stack)
 
-                case GherkinScenarioOutline(
-                    id=_,
-                    location=_,
-                    tags=_,
-                    keyword=_,
-                    name=_,
-                    description=_,
-                    steps=steps,
-                    examples=examples,
-                ):
+                case GherkinScenarioOutline(steps=steps, examples=examples):
                     test_function = TestFunctionWriter(
                         el, self.registry, [*background_steps, *steps], stack
                     )
