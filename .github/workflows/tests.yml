@@ -43,16 +43,21 @@ jobs:
         # https://github.com/pytest-dev/pytest-cov/issues/510
         run: |
           COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager \
-          uv run pytest tests/unittests tests/functionals \
+          uv run pytest tests/unittests \
             --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
             --cov --cov-append \
             --cov=tursu --cov-report=xml --cov-report=html
+
+      - name: Run functional tests
+        run: |
+          uv run pytest tests/functionals \
+            --junitxml=junit/functional-test-results-${{ matrix.python-version }}.xml
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
         with:
           name: pytest-results-${{ matrix.python-version }}
-          path: junit/test-results-${{ matrix.python-version }}.xml
+          path: junit
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }} && matrix.python-version == '3.12' && github.event_name != 'workflow_dispatch'
