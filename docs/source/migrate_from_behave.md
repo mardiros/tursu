@@ -27,7 +27,7 @@ touch tests/functionals/__init__.py
 
 ```bash
 cat << 'EOF' > tests/functionals/conftest.py
-from tursu.plugin import tursu_collect_file
+from tursu.entrypoints.plugin import tursu_collect_file
 
 tursu_collect_file()
 EOF

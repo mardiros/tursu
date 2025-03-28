@@ -1,8 +1,7 @@
 import pytest
 
 from tests.functionals.conftest import DummyApp
-from tursu import given, then, when
-from tursu.pattern_matcher import RegEx
+from tursu import RegEx, given, then, when
 
 
 @given(RegEx(r"a user (?P<username>[^\s]+) using a regex"))

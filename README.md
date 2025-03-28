@@ -83,21 +83,21 @@ collected 3 items
 
 
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can login
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password dumbsecret
 ✅ Then the user is connected with username Bob
 
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can't login with wrong password
 ✅ Given a user Bob with password dumbsecret
 ✅ When Bob login with password notthat
 ✅ Then the user is not connected
 
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can't login with someone else username
 ✅ Given a user Bob with password bobsecret
 ✅ Given a user Alice with password alicesecret
@@ -120,7 +120,7 @@ collected 3 items
 
 tests/functionals/login.feature::test_3_User_can_login <- test_login.py
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can login
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
@@ -131,7 +131,7 @@ tests/functionals/login.feature::test_3_User_can_login <- test_login.py
                                                             PASSED [ 33%]
 tests/functionals/login.feature::test_7_User_can_t_login_with_wrong_password <- test_login.py
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can't login with wrong password
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
@@ -142,7 +142,7 @@ tests/functionals/login.feature::test_7_User_can_t_login_with_wrong_password <- 
                                                             PASSED [ 66%]
 tests/functionals/login.feature::test_12_User_can_t_login_with_someone_else_username <- test_login.py
 📄 Document: login.feature
-🥒 Feature: As a user I logged in with my password
+🥒 Feature: User login with their own password
 🎬 Scenario: User can't login with someone else username
 ⏳ Given a user Bob with password bobsecret
 ✅ Given a user Bob with password bobsecret
@@ -241,7 +241,7 @@ kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x76103daad940>}
 E           tursu.runner.ScenarioFailed:
 E           ┌────────────────────────────────────────────────────┐
 E           │ 📄 Document: login.feature                         │
-E           │ 🥒 Feature: As a user I logged in with my password │
+E           │ 🥒 Feature: User login with their own password │
 E           │ 🎬 Scenario: User can login                        │
 E           │ ✅ Given a user Bob with password dumbsecret       │
 E           │ ✅ When Bob login with password dumbsecret         │

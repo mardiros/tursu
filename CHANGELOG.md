@@ -38,7 +38,7 @@
     The tursu fixture is registered by the plugin, and now, to register tests,
     the new command is:
     ```python
-    from tursu.plugin import tursu_collect_file
+    from tursu.entrypoints.plugin import tursu_collect_file
 
     tursu_collect_file()
     ```

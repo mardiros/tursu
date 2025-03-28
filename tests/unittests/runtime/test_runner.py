@@ -1,0 +1,169 @@
+from collections.abc import Iterator
+
+import pytest
+
+from tests.unittests.runtime.fixtures.steps import DummyApp
+from tursu.runtime.registry import Tursu
+from tursu.runtime.runner import ScenarioFailed, TursuRunner
+
+
+@pytest.fixture()
+def dummy_app() -> DummyApp:
+    return DummyApp()
+
+
+class TursuRunnerNoLog(TursuRunner):
+    def __init__(
+        self,
+        request: pytest.FixtureRequest,
+        capsys: pytest.CaptureFixture[str],
+        registry: Tursu,
+    ) -> None:
+        self.logged_lines: list[str] = []
+        super().__init__(request, capsys, registry, ["📄 Document: ..."])
+
+    def log(
+        self, text: str, replace_previous_line: bool = False, end: str = "\n"
+    ) -> None:
+        if replace_previous_line:
+            self.logged_lines.append("<UP>")
+        self.logged_lines.append(f"{text}{end}")
+
+
+@pytest.fixture()
+def tursu_runner(
+    registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+) -> Iterator[TursuRunnerNoLog]:
+    old_verbose = request.config.option.verbose
+    request.config.option.verbose = max(request.config.option.verbose, 1)
+    with TursuRunnerNoLog(request, capsys, registry) as runner:
+        yield runner
+    request.config.option.verbose = old_verbose
+
+
+def test_remove_ansi_escape_sequences(tursu_runner: TursuRunner):
+    assert tursu_runner.remove_ansi_escape_sequences("\033[91m│\033[0m") == "│"
+
+
+def test_log(tursu_runner: TursuRunnerNoLog):
+    assert tursu_runner.logged_lines == [
+        "<UP>",
+        "\n",
+        "📄 Document: ...\n",
+    ]
+
+
+def test_fancy_no_step_runned(tursu_runner: TursuRunner):
+    assert (
+        tursu_runner.fancy()
+        == """
+\x1b[91m┌───────────────────┐\033[0m
+\033[91m│\033[0m 📄 Document: ...  \033[91m│\033[0m
+\033[91m│\033[0m 🔥 no step runned \033[91m│\033[0m
+\033[91m└───────────────────┘\033[0m
+"""
+    )
+
+
+def test_fancy_scenario(tursu_runner: TursuRunner):
+    tursu_runner.runned = ["Given a user bob"]
+    assert (
+        tursu_runner.fancy()
+        == """
+\x1b[91m┌───────────────────┐\033[0m
+\033[91m│\033[0m 📄 Document: ...  \033[91m│\033[0m
+\033[91m│\033[0m Given a user bob \033[91m│\033[0m
+\033[91m└───────────────────┘\033[0m
+"""
+    )
+
+
+def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
+    tursu_runner.verbose = False
+    tursu_runner.run_step("Given", "a user Bob", dummy_app=dummy_app)
+    assert tursu_runner.runned == [
+        "\x1b[92m✅ Given a user \x1b[36mBob\x1b[0m\x1b[0m",
+    ]
+
+
+def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
+    tursu_runner.verbose = False
+    with pytest.raises(ScenarioFailed):
+        tursu_runner.run_step("Then", "X see a mailbox X", dummy_app=dummy_app)
+    assert tursu_runner.runned == [
+        "\x1b[91m❌ Then \x1b[36mX\x1b[0m see a mailbox \x1b[36mX\x1b[0m\x1b[0m",
+    ]
+
+
+def test_format_example_step(tursu_runner: TursuRunner):
+    assert (
+        tursu_runner.format_example_step(
+            "a username <user1> and a username <user2>", user1="Alice", user2="Bob"
+        )
+        == "a username Alice and a username Bob"
+    )
+
+
+@pytest.mark.parametrize(
+    "verbose",
+    [
+        pytest.param(False, id="false"),
+        pytest.param(True, id="true"),
+    ],
+)
+def test_emit_running(
+    verbose: bool,
+    tursu_runner: TursuRunner,
+    registry: Tursu,
+):
+    tursu_runner.verbose = verbose
+    tursu_runner.emit_running(
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+    )
+    assert tursu_runner.runned == [
+        "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+    ]
+
+
+@pytest.mark.parametrize(
+    "verbose",
+    [
+        pytest.param(False, id="false"),
+        pytest.param(True, id="true"),
+    ],
+)
+def test_emit_error(
+    verbose: bool,
+    tursu_runner: TursuRunner,
+    registry: Tursu,
+):
+    tursu_runner.runned.append("⏳")
+    tursu_runner.verbose = verbose
+    tursu_runner.emit_error(
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+    )
+    assert tursu_runner.runned == [
+        "\x1b[91m❌ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+    ]
+
+
+@pytest.mark.parametrize(
+    "verbose",
+    [
+        pytest.param(False, id="false"),
+        pytest.param(True, id="true"),
+    ],
+)
+def test_emit_success(
+    verbose: bool,
+    tursu_runner: TursuRunner,
+    registry: Tursu,
+):
+    tursu_runner.runned.append("⏳")
+    tursu_runner.verbose = verbose
+    tursu_runner.emit_success(
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+    )
+    assert tursu_runner.runned == [
+        "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+    ]

@@ -4,7 +4,7 @@ import inspect
 from collections.abc import Mapping
 from typing import Any, Callable, Literal
 
-from tursu.pattern_matcher import (
+from tursu.runtime.pattern_matcher import (
     AbstractPattern,
     AbstractPatternMatcher,
     DefaultPatternMatcher,

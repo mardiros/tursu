@@ -1,4 +1,4 @@
-Feature: As a user I logged in with my password
+Feature: User login with their own password
 
   Background:
     Given a user Bob with password dumbsecret
