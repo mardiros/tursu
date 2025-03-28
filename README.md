@@ -216,7 +216,7 @@ The above exception was the direct cause of the following exception:
 
 request = <FixtureRequest for <Function test_3_User_can_login>>
 capsys = <_pytest.capture.CaptureFixture object at 0x76103daae270>
-tursu = <tursu.registry.Tursu object at 0x76103f107230>
+tursu = <tursu.runtime.registry.Tursu object at 0x76103f107230>
 app = <tests.functionals.conftest.DummyApp object at 0x76103daad940>
 
 >   ???

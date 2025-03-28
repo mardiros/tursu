@@ -2,7 +2,7 @@
 
 # Matching Step Expression
 
-To match gherkin steps into python code, we used a [pattern matcher](#tursu.pattern_matcher).
+To match gherkin steps into python code, we used a [pattern matcher](#tursu.runtime.pattern_matcher).
 
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.
@@ -349,10 +349,10 @@ This is less readable, but, may be usefull in certain situation,
 
 Regular Expression can be used to match patterns.
 
-First you need to import the [RegEx](#tursu.pattern_matcher.RegEx) class:
+First you need to import the [RegEx](#tursu.RegEx) class:
 
 ```python
-from tursu.pattern_matcher import RegEx
+from tursu import RegEx
 ```
 
 Afterwhat, the named capturing group syntax has to be used `(?P<matched_name>regex_pattern)`:

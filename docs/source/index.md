@@ -8,6 +8,7 @@
 :caption: Users Documentation:
 
 introduction
+gherkin_in_a_nutchell
 matching_steps
 using_tags
 working_with_playwright

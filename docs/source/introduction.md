@@ -25,7 +25,9 @@ The full reference of the language is hosted at: https://cucumber.io/docs/gherki
 
 [cucumber.io](https://cucumber.io/docs/gherkin/reference/)
 
-## Bind code function to gherkin keyword.
+and is you're new to gherkin, we will reintroduce it in the next chapter.
+
+## Bind code function to gherkin keyword
 
 Using tursu, those keywords are bound to python decorators that will match the phrase.
 

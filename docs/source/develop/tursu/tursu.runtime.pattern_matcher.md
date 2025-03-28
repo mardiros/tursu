@@ -155,7 +155,7 @@ Bases: {py:obj}`abc.ABC`
 
 ````
 
-````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any], color: str = '\x1b[36m', reset: str = '\x1b[0m') -> str
 :canonical: tursu.runtime.pattern_matcher.AbstractPatternMatcher.hightlight
 :abstractmethod:
 
@@ -217,7 +217,7 @@ Bases: {py:obj}`tursu.runtime.pattern_matcher.RegexBasePattern`
 :parser: myst
 ```
 
-````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any], color: str = '\x1b[36m', reset: str = '\x1b[0m') -> str
 :canonical: tursu.runtime.pattern_matcher.DefaultPatternMatcher.hightlight
 
 ```{autodoc2-docstring} tursu.runtime.pattern_matcher.DefaultPatternMatcher.hightlight
@@ -295,7 +295,7 @@ Bases: {py:obj}`tursu.runtime.pattern_matcher.RegexBasePattern`
 :parser: myst
 ```
 
-````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+````{py:method} hightlight(matches: collections.abc.Mapping[str, typing.Any], color: str = '\x1b[36m', reset: str = '\x1b[0m') -> str
 :canonical: tursu.runtime.pattern_matcher.RegExPatternMatcher.hightlight
 
 ```{autodoc2-docstring} tursu.runtime.pattern_matcher.RegExPatternMatcher.hightlight

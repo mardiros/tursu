@@ -18,7 +18,7 @@ class PatternError(RuntimeError):
     """
     Raised if a pattern is invalid.
 
-    This exception happens during the log of the [step registry](#tursu.registry.Tursu).
+    This exception happens during the log of the [step registry](#tursu.runtime.registry.Tursu).
     """
 
 
@@ -167,7 +167,7 @@ class AbstractPattern(abc.ABC):
     Identifier of a pattern in a step.
 
     Technically its an
-    [AbstractPatternMatcher](#tursu.pattern_matcher.AbstractPatternMatcher) factory.
+    [AbstractPatternMatcher](#tursu.runtime.pattern_matcher.AbstractPatternMatcher) factory.
     """
 
     pattern: str

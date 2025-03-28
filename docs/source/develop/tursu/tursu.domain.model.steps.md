@@ -87,7 +87,7 @@
 
 ````
 
-````{py:method} highlight(matches: collections.abc.Mapping[str, typing.Any]) -> str
+````{py:method} highlight(matches: collections.abc.Mapping[str, typing.Any], color: str = '\x1b[36m', reset: str = '\x1b[0m') -> str
 :canonical: tursu.domain.model.steps.Step.highlight
 
 ```{autodoc2-docstring} tursu.domain.model.steps.Step.highlight
