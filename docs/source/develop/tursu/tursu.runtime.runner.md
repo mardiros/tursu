@@ -38,12 +38,23 @@
 
 ### API
 
-```{py:exception} ScenarioFailed()
+````{py:exception} ScenarioFailed()
 :canonical: tursu.runtime.runner.ScenarioFailed
 
 Bases: {py:obj}`Exception`
 
+```{autodoc2-docstring} tursu.runtime.runner.ScenarioFailed
+:parser: myst
 ```
+
+```{rubric} Initialization
+```
+
+```{autodoc2-docstring} tursu.runtime.runner.ScenarioFailed.__init__
+:parser: myst
+```
+
+````
 
 `````{py:class} TursuRunner(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: tursu.runtime.registry.Tursu, scenario: list[str])
 :canonical: tursu.runtime.runner.TursuRunner

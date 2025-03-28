@@ -67,6 +67,10 @@ Bases: {py:obj}`pytest.Module`
 ````{py:method} collect() -> collections.abc.Iterable[pytest.Item | pytest.Collector]
 :canonical: tursu.entrypoints.plugin.GherkinTestModule.collect
 
+```{autodoc2-docstring} tursu.entrypoints.plugin.GherkinTestModule.collect
+:parser: myst
+```
+
 ````
 
 `````
