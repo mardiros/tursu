@@ -2,6 +2,7 @@
 
 import logging
 import re
+import time
 from collections.abc import Mapping
 from types import TracebackType
 from typing import Self
@@ -15,6 +16,18 @@ from tursu.runtime.registry import Tursu
 # Set up the logger
 logger = logging.getLogger("tursu")
 logger.setLevel(logging.DEBUG)
+
+
+# ANSI color codes
+GREEN = "\033[92m"
+GREY = "\033[90m"
+ORANGE = "\033[93m"
+RED = "\033[91m"
+CYAN = "\033[36m"
+
+RESET = "\033[0m"  # Reset color
+UP = "\033[F"  # Cursor Previous Line
+EL = "\033[K"  # Erase in line
 
 
 class ScenarioFailed(Exception):
@@ -31,6 +44,10 @@ class TursuRunner:
     :param scenario: the stack list of gherkin sentence run for display purpose.
     """
 
+    IGNORE_TIMING_MS = 200
+    OK_TIMING_MS = 700
+    WARN_TIMING_MS = 2100
+
     def __init__(
         self,
         request: pytest.FixtureRequest,
@@ -44,6 +61,9 @@ class TursuRunner:
         self.capsys = capsys
         self.runned: list[str] = []
         self.scenario = scenario
+        self.start_time = time.perf_counter()
+        self.end_time = time.perf_counter()
+
         if self.verbose:
             self.log("", replace_previous_line=True)
             for step in self.scenario:
@@ -65,11 +85,11 @@ class TursuRunner:
         max_line_length = max(line_lengthes)
 
         # Create the border based on the longest line
-        top_border = "\033[91m┌" + "─" * (max_line_length + 3) + "┐\033[0m"
-        bottom_border = "\033[91m└" + "─" * (max_line_length + 3) + "┘\033[0m"
+        top_border = f"{RED}┌" + "─" * (max_line_length + 3) + f"┐{RESET}"
+        bottom_border = f"{RED}└" + "─" * (max_line_length + 3) + f"┘{RESET}"
 
         middle_lines = []
-        sep = "\033[91m│\033[0m"
+        sep = f"{RED}│{RESET}"
         for line, length in zip(lines, line_lengthes):
             middle_lines.append(
                 f"{sep} {line + ' ' * (max_line_length - length)} {sep}"
@@ -85,8 +105,8 @@ class TursuRunner:
         if self.verbose:  # coverage: ignore
             with self.capsys.disabled():  # coverage: ignore
                 if replace_previous_line and self.verbose == 1:  # coverage: ignore
-                    print("\033[F", end="")  # coverage: ignore
-                print(f"{text}\033[K", end=end)  # coverage: ignore
+                    print(UP, end="")  # coverage: ignore
+                print(f"{text}{EL}", end=end)  # coverage: ignore
 
     def run_step(
         self,
@@ -122,7 +142,10 @@ class TursuRunner:
         return text
 
     def emit_running(
-        self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
+        self,
+        keyword: StepKeyword,
+        step: Step,
+        matches: Mapping[str, Any],
     ) -> None:
         """
         Update state when a step is marked as running.
@@ -131,9 +154,10 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[90m⏳ {keyword} {step.highlight(matches)}\033[0m"
+        text = f"{GREY}⏳ {keyword} {step.highlight(matches, CYAN, GREY)}{RESET}"
         self.runned.append(text)
         self.log(text)
+        self.start_time = time.perf_counter()
 
     def emit_error(
         self,
@@ -148,7 +172,17 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[91m❌ {keyword} {step.highlight(matches)}\033[0m"
+        self.end_time = time.perf_counter()
+        elapsed_ms = (self.end_time - self.start_time) * 1000
+
+        timelog = (
+            f" {RED}[{elapsed_ms:.2f}ms]"
+            if elapsed_ms > self.IGNORE_TIMING_MS or self.verbose > 1
+            else ""
+        )
+
+        steplog = step.highlight(matches, CYAN, RED)
+        text = f"{RED}❌ {keyword}{RESET} {steplog}{timelog}{RESET}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
@@ -164,7 +198,25 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[92m✅ {keyword} {step.highlight(matches)}\033[0m"
+
+        self.end_time = time.perf_counter()
+        elapsed_ms = (self.end_time - self.start_time) * 1000
+
+        if elapsed_ms < self.OK_TIMING_MS:
+            color = GREEN
+        elif elapsed_ms < self.WARN_TIMING_MS:
+            color = ORANGE
+        else:
+            color = RED
+
+        timelog = (
+            f" {color}[{elapsed_ms:.2f}ms]"
+            if elapsed_ms > self.IGNORE_TIMING_MS or self.verbose > 1
+            else ""
+        )
+
+        steplog = step.highlight(matches, CYAN, GREEN)
+        text = f"{GREEN}✅ {keyword} {steplog}{timelog}{RESET}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)

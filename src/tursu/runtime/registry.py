@@ -1,4 +1,5 @@
 """Registry of step definition."""
+
 import sys
 from collections.abc import Mapping
 from types import ModuleType

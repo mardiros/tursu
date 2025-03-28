@@ -1,4 +1,5 @@
 """Runtime exception"""
+
 from typing import TYPE_CHECKING
 
 from tursu.domain.model.steps import StepKeyword
@@ -15,6 +16,7 @@ class Unregistered(RuntimeError):
     :param step: Keyworkd of the step.
     :param text: the text that did not match any step definition.
     """
+
     def __init__(self, registry: "Tursu", step: StepKeyword, text: str):
         registered_list = [
             f"{step} {hdl.pattern.pattern}" for hdl in registry._handlers[step]

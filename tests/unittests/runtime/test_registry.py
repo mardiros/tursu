@@ -89,6 +89,7 @@ def test_registry_datatable(registry: Tursu):
 
 
 def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
+    tursu_runner.verbose = 0
     registry.run_step(tursu_runner, "Given", "a user Bob", dummy_app=dummy_app)
     registry.run_step(
         tursu_runner, "When", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app

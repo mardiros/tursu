@@ -147,7 +147,12 @@ class AbstractPatternMatcher(abc.ABC):
         """Get the fixtures list to use from the text."""
 
     @abc.abstractmethod
-    def hightlight(self, matches: Mapping[str, Any]) -> str:
+    def hightlight(
+        self,
+        matches: Mapping[str, Any],
+        color: str = "\033[36m",
+        reset: str = "\033[0m",
+    ) -> str:
         """
         Return a text representation of the step with the matched text highlighted
         for the terminal.
@@ -265,7 +270,12 @@ class DefaultPatternMatcher(RegexBasePattern):
                     re_pattern = re_pattern.replace(f"{{{key}}}", rf"(?P<{key}>[^\s]+)")
         self.re_pattern = re.compile(f"^{re_pattern}$")
 
-    def hightlight(self, matches: Mapping[str, Any]) -> str:
+    def hightlight(
+        self,
+        matches: Mapping[str, Any],
+        color: str = "\033[36m",
+        reset: str = "\033[0m",
+    ) -> str:
         """
         Return a text representation of the step with the matched text highlighted
         for the terminal.
@@ -274,7 +284,7 @@ class DefaultPatternMatcher(RegexBasePattern):
         :return: the highlighted version.
         """
         colored_matches = {
-            key: f"\033[36m{value}\033[0m" for key, value in matches.items()
+            key: f"{color}{value}{reset}" for key, value in matches.items()
         }
         return self.pattern.format(**colored_matches)
 
@@ -295,7 +305,12 @@ class RegExPatternMatcher(RegexBasePattern):
         except re.PatternError as exc:
             raise PatternError(f"Can't compile to regex: {pattern}: {exc}") from exc
 
-    def hightlight(self, matches: Mapping[str, Any]) -> str:
+    def hightlight(
+        self,
+        matches: Mapping[str, Any],
+        color: str = "\033[36m",
+        reset: str = "\033[0m",
+    ) -> str:
         """
         Return a text representation of the step with the matched text highlighted
         for the terminal.
@@ -304,7 +319,7 @@ class RegExPatternMatcher(RegexBasePattern):
         :return: the highlighted version.
         """
         colored_matches = {
-            key: f"\033[36m{value}\033[0m" for key, value in matches.items()
+            key: f"{color}{value}{reset}" for key, value in matches.items()
         }
         ret = self.pattern
         for key, val in colored_matches.items():
