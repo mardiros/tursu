@@ -1,3 +1,5 @@
+"""Gherkin scenario compiler."""
+
 from collections.abc import Iterator, Sequence
 from typing import Any
 
@@ -20,11 +22,19 @@ from tursu.service.ast.astmodule import TestModuleWriter
 
 
 class GherkinIterator:
+    """
+    Traverse the gherking feature document to emit gherkin objects.
+    Keep the stack while traversing.
+
+    :param doc: the document to iterate.
+    """
+
     def __init__(self, doc: GherkinDocument) -> None:
         self.doc = doc
         self.stack: list[Any] = []
 
     def emit(self) -> Iterator[Any]:
+        """Python iterator that emit the stack."""
         self.stack.append(self.doc)
         yield self.stack
         for _ in self.emit_feature(self.doc.feature):
@@ -34,6 +44,11 @@ class GherkinIterator:
     def emit_feature_from_enveloppe(
         self, enveloppe: Sequence[GherkinEnvelope]
     ) -> Iterator[Any]:
+        """
+        Helper to traverse Background, Scenario and Rule keywords from the scenario.
+
+        :param enveloppe: Gherkin envelope that wrap the proper object to emit.
+        """
         for child in enveloppe:
             match child:
                 case GherkinBackgroundEnvelope(background=background):
@@ -54,6 +69,11 @@ class GherkinIterator:
                     self.stack.pop()
 
     def emit_feature(self, feature: GherkinFeature) -> Iterator[Any]:
+        """
+        Helper to traverse feature.
+
+        :param feature: Gherkin feature to traverse.
+        """
         self.stack.append(feature)
         yield self.stack
         yield from self.emit_feature_from_enveloppe(self.doc.feature.children)
@@ -62,6 +82,11 @@ class GherkinIterator:
     def emit_scenario(
         self, scenario: GherkinScenario | GherkinScenarioOutline
     ) -> Iterator[Any]:
+        """
+        Helper to traverse scenario.
+
+        :param feature: Gherkin scenario or scenario outline to traverse.
+        """
         for step in scenario.steps:
             self.stack.append(step)
             yield self.stack
@@ -69,13 +94,19 @@ class GherkinIterator:
 
 
 class GherkinCompiler:
-    feat_idx = 1
+    """
+    Gherkin compiler.
+
+    :param doc: the gherkin file to compile.
+    :param registry: the tursu registry where steps are already loaded.
+    """
 
     def __init__(self, doc: GherkinDocument, registry: Tursu) -> None:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
 
     def to_module(self) -> TestModule:
+        """Get the compiled module."""
         module_node = None
         test_function = None
         background_steps: Sequence[GherkinStep] = []

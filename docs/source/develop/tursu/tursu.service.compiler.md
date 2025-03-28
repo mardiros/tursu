@@ -44,17 +44,6 @@
 :parser: myst
 ```
 
-````{py:attribute} feat_idx
-:canonical: tursu.service.compiler.GherkinCompiler.feat_idx
-:value: >
-   1
-
-```{autodoc2-docstring} tursu.service.compiler.GherkinCompiler.feat_idx
-:parser: myst
-```
-
-````
-
 ````{py:method} to_module() -> tursu.domain.model.testmod.TestModule
 :canonical: tursu.service.compiler.GherkinCompiler.to_module
 
