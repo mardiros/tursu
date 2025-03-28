@@ -51,6 +51,7 @@ class Step:
         return f'Step("{self.pattern}", {self.hook.__qualname__})'
 
     def __call__(self, **kwargs: Any) -> None:
+        """Will call the hook with the given parameter."""
         self.hook(**kwargs)
 
     def highlight(self, matches: Mapping[str, Any]) -> str:
