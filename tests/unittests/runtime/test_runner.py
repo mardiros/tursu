@@ -82,7 +82,7 @@ def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
     tursu_runner.run_step("Given", "a user Bob", dummy_app=dummy_app)
     assert tursu_runner.runned == [
-        "\x1b[92m✅ Given a user \x1b[36mBob\x1b[0m\x1b[0m",
+        "\x1b[92m✅ Given a user \x1b[36mBob\x1b[92m\x1b[0m",
     ]
 
 
@@ -91,7 +91,7 @@ def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     with pytest.raises(ScenarioFailed):
         tursu_runner.run_step("Then", "X see a mailbox X", dummy_app=dummy_app)
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Then \x1b[36mX\x1b[0m see a mailbox \x1b[36mX\x1b[0m\x1b[0m",
+        "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[0m see a mailbox \x1b[36mX\x1b[0m",
     ]
 
 
@@ -121,7 +121,7 @@ def test_emit_running(
         "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
-        "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+        "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[90m\x1b[0m",
     ]
 
 
@@ -143,7 +143,7 @@ def test_emit_error(
         "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+        "\x1b[91m❌ Given\x1b[0m a user \x1b[36mbob\x1b[0m",
     ]
 
 
@@ -165,5 +165,5 @@ def test_emit_success(
         "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
-        "\x1b[92m✅ Given a user \x1b[36mbob\x1b[0m\x1b[0m",
+        "\x1b[92m✅ Given a user \x1b[36mbob\x1b[92m\x1b[0m",
     ]

@@ -17,6 +17,18 @@ logger = logging.getLogger("tursu")
 logger.setLevel(logging.DEBUG)
 
 
+# ANSI color codes
+GREEN = "\033[92m"
+GREY = "\033[90m"
+ORANGE = "\033[93m"
+RED = "\033[91m"
+CYAN = "\033[36m"
+
+RESET = "\033[0m"  # Reset color
+UP = "\033[F"  # Cursor Previous Line
+EL = "\033[K"  # Erase in line
+
+
 class ScenarioFailed(Exception):
     """Scenario failure error."""
 
@@ -65,11 +77,11 @@ class TursuRunner:
         max_line_length = max(line_lengthes)
 
         # Create the border based on the longest line
-        top_border = "\033[91m┌" + "─" * (max_line_length + 3) + "┐\033[0m"
-        bottom_border = "\033[91m└" + "─" * (max_line_length + 3) + "┘\033[0m"
+        top_border = f"{RED}┌" + "─" * (max_line_length + 3) + f"┐{RESET}"
+        bottom_border = f"{RED}└" + "─" * (max_line_length + 3) + f"┘{RESET}"
 
         middle_lines = []
-        sep = "\033[91m│\033[0m"
+        sep = f"{RED}│{RESET}"
         for line, length in zip(lines, line_lengthes):
             middle_lines.append(
                 f"{sep} {line + ' ' * (max_line_length - length)} {sep}"
@@ -85,8 +97,8 @@ class TursuRunner:
         if self.verbose:  # coverage: ignore
             with self.capsys.disabled():  # coverage: ignore
                 if replace_previous_line and self.verbose == 1:  # coverage: ignore
-                    print("\033[F", end="")  # coverage: ignore
-                print(f"{text}\033[K", end=end)  # coverage: ignore
+                    print(UP, end="")  # coverage: ignore
+                print(f"{text}{EL}", end=end)  # coverage: ignore
 
     def run_step(
         self,
@@ -122,7 +134,10 @@ class TursuRunner:
         return text
 
     def emit_running(
-        self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
+        self,
+        keyword: StepKeyword,
+        step: Step,
+        matches: Mapping[str, Any],
     ) -> None:
         """
         Update state when a step is marked as running.
@@ -131,7 +146,7 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[90m⏳ {keyword} {step.highlight(matches)}\033[0m"
+        text = f"{GREY}⏳ {keyword} {step.highlight(matches, CYAN, GREY)}{RESET}"
         self.runned.append(text)
         self.log(text)
 
@@ -148,7 +163,7 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[91m❌ {keyword} {step.highlight(matches)}\033[0m"
+        text = f"{RED}❌ {keyword}{RESET} {step.highlight(matches, CYAN, RESET)}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
@@ -164,7 +179,7 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"\033[92m✅ {keyword} {step.highlight(matches)}\033[0m"
+        text = f"{GREEN}✅ {keyword} {step.highlight(matches, CYAN, GREEN)}{RESET}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)

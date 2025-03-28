@@ -54,6 +54,11 @@ class Step:
         """Will call the hook with the given parameter."""
         self.hook(**kwargs)
 
-    def highlight(self, matches: Mapping[str, Any]) -> str:
+    def highlight(
+        self,
+        matches: Mapping[str, Any],
+        color: str = "\033[36m",
+        reset: str = "\033[0m",
+    ) -> str:
         """Highlith representation of a step that has matched for the terminal."""
-        return self.pattern.hightlight(matches)
+        return self.pattern.hightlight(matches, color, reset)
