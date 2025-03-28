@@ -1,0 +1,1 @@
+"""Tursu domain model."""

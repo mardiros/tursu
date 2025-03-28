@@ -1,4 +1,4 @@
-"""Represent a gherkin hook."""
+"""Step definition hooks."""
 
 import inspect
 from collections.abc import Mapping
@@ -11,10 +11,26 @@ from tursu.runtime.pattern_matcher import (
 )
 
 StepKeyword = Literal["Given", "When", "Then"]
+"""Gherkin keywords that can be mapped to step definitions."""
+
 Handler = Callable[..., None]
+"""
+The hook handler is a decorated function that have any parameters
+but can't return anything.
+
+The decorated method parameters comes from the pattern matcher first
+and fallback to pytest fixtures.
+"""
 
 
 class Step:
+    """
+    Step definition.
+
+    :param pattern: pattern matcher for the step.
+    :param hook: The decorated method.
+    """
+
     def __init__(self, pattern: str | AbstractPattern, hook: Handler):
         matcher: type[AbstractPatternMatcher]
         if isinstance(pattern, str):
@@ -38,4 +54,5 @@ class Step:
         self.hook(**kwargs)
 
     def highlight(self, matches: Mapping[str, Any]) -> str:
+        """Highlith representation of a step that has matched for the terminal."""
         return self.pattern.hightlight(matches)
