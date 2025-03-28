@@ -1,4 +1,5 @@
 """AST helpers at the test module level."""
+
 import ast
 from collections.abc import Sequence
 from typing import Any
@@ -16,6 +17,7 @@ class TestModuleWriter:
     :param registry: tursu registry containing the steps definition.
     :param stack: current stack of the gherkin document traversal.
     """
+
     def __init__(
         self, feature: GherkinFeature, registry: Tursu, stack: Sequence[Any]
     ) -> None:

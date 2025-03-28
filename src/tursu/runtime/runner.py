@@ -2,6 +2,7 @@
 
 import logging
 import re
+import time
 from collections.abc import Mapping
 from types import TracebackType
 from typing import Self
@@ -56,6 +57,9 @@ class TursuRunner:
         self.capsys = capsys
         self.runned: list[str] = []
         self.scenario = scenario
+        self.start_time = time.perf_counter()
+        self.end_time = time.perf_counter()
+
         if self.verbose:
             self.log("", replace_previous_line=True)
             for step in self.scenario:
@@ -149,6 +153,7 @@ class TursuRunner:
         text = f"{GREY}⏳ {keyword} {step.highlight(matches, CYAN, GREY)}{RESET}"
         self.runned.append(text)
         self.log(text)
+        self.start_time = time.perf_counter()
 
     def emit_error(
         self,
@@ -163,7 +168,17 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"{RED}❌ {keyword}{RESET} {step.highlight(matches, CYAN, RESET)}"
+        self.end_time = time.perf_counter()
+        elapsed_ms = (self.end_time - self.start_time) * 1000
+
+        timelog = (
+            f" {RED}[{elapsed_ms:.2f}ms]"
+            if elapsed_ms > 0.1 or self.verbose > 1
+            else ""
+        )
+
+        steplog = step.highlight(matches, CYAN, RED)
+        text = f"{RED}❌ {keyword}{RESET} {steplog}{timelog}{RESET}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
@@ -179,7 +194,25 @@ class TursuRunner:
         :param step: matched step for the tursu registry.
         :param matches: parameters that match for highlighting purpose.
         """
-        text = f"{GREEN}✅ {keyword} {step.highlight(matches, CYAN, GREEN)}{RESET}"
+
+        self.end_time = time.perf_counter()
+        elapsed_ms = (self.end_time - self.start_time) * 1000
+
+        if elapsed_ms < 700:
+            color = GREEN
+        elif elapsed_ms < 2100:
+            color = ORANGE
+        else:
+            color = RED
+
+        timelog = (
+            f" {color}[{elapsed_ms:.2f}ms]"
+            if elapsed_ms > 0.1 or self.verbose > 1
+            else ""
+        )
+
+        steplog = step.highlight(matches, CYAN, GREEN)
+        text = f"{GREEN}✅ {keyword} {steplog}{timelog}{RESET}"
         self.runned.pop()
         self.runned.append(text)
         self.log(text, True)

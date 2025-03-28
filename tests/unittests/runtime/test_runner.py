@@ -1,3 +1,4 @@
+import time
 from collections.abc import Iterator
 
 import pytest
@@ -80,7 +81,9 @@ def test_fancy_scenario(tursu_runner: TursuRunner):
 
 def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
+    tursu_runner.start_time = time.perf_counter()
     tursu_runner.run_step("Given", "a user Bob", dummy_app=dummy_app)
+
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mBob\x1b[92m\x1b[0m",
     ]
@@ -88,10 +91,13 @@ def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
 
 def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
+    tursu_runner.start_time = time.perf_counter()
     with pytest.raises(ScenarioFailed):
         tursu_runner.run_step("Then", "X see a mailbox X", dummy_app=dummy_app)
+
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[0m see a mailbox \x1b[36mX\x1b[0m",
+        "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[91m see a mailbox "
+        "\x1b[36mX\x1b[91m\x1b[0m",
     ]
 
 
@@ -139,11 +145,12 @@ def test_emit_error(
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
+    tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_error(
         "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Given\x1b[0m a user \x1b[36mbob\x1b[0m",
+        "\x1b[91m❌ Given\x1b[0m a user \x1b[36mbob\x1b[91m\x1b[0m",
     ]
 
 
@@ -161,6 +168,7 @@ def test_emit_success(
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
+    tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_success(
         "Given", registry._handlers["Given"][1], matches={"username": "bob"}
     )
