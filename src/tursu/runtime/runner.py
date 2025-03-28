@@ -44,6 +44,10 @@ class TursuRunner:
     :param scenario: the stack list of gherkin sentence run for display purpose.
     """
 
+    IGNORE_TIMING_MS = 200
+    OK_TIMING_MS = 700
+    WARN_TIMING_MS = 2100
+
     def __init__(
         self,
         request: pytest.FixtureRequest,
@@ -173,7 +177,7 @@ class TursuRunner:
 
         timelog = (
             f" {RED}[{elapsed_ms:.2f}ms]"
-            if elapsed_ms > 0.1 or self.verbose > 1
+            if elapsed_ms > self.IGNORE_TIMING_MS or self.verbose > 1
             else ""
         )
 
@@ -198,16 +202,16 @@ class TursuRunner:
         self.end_time = time.perf_counter()
         elapsed_ms = (self.end_time - self.start_time) * 1000
 
-        if elapsed_ms < 700:
+        if elapsed_ms < self.OK_TIMING_MS:
             color = GREEN
-        elif elapsed_ms < 2100:
+        elif elapsed_ms < self.WARN_TIMING_MS:
             color = ORANGE
         else:
             color = RED
 
         timelog = (
             f" {color}[{elapsed_ms:.2f}ms]"
-            if elapsed_ms > 0.1 or self.verbose > 1
+            if elapsed_ms > self.IGNORE_TIMING_MS or self.verbose > 1
             else ""
         )
 

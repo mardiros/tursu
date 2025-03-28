@@ -175,3 +175,26 @@ def test_emit_success(
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[92m\x1b[0m",
     ]
+
+
+@pytest.mark.parametrize(
+    "start_shift,expected",
+    [
+        pytest.param(TursuRunner.OK_TIMING_MS - 100, '\x1b[92m[600', id="ok"),
+        pytest.param(TursuRunner.OK_TIMING_MS + 100,  '\x1b[93m[800', id="warn"),
+        pytest.param(TursuRunner.WARN_TIMING_MS + 100, '\x1b[91m[2200', id="error"),
+    ],
+)
+def test_emit_success_color(
+    start_shift: int,
+    expected: str,
+    tursu_runner: TursuRunner,
+    registry: Tursu,
+):
+    tursu_runner.runned.append("⏳")
+    tursu_runner.verbose = 1
+    tursu_runner.start_time = time.perf_counter() - start_shift / 1000
+    tursu_runner.emit_success(
+        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+    )
+    assert expected in tursu_runner.runned[0]
