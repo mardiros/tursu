@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
 
-from tursu.entrypoints.plugin import tursu_collect_file
+from tursu import tursu_collect_file
 
 tursu_collect_file()
 

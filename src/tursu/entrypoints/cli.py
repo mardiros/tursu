@@ -12,7 +12,7 @@ Documentation: https://mardiros.github.io/tursu/
 '''
 
 DEFAULT_CONFTEST = """\
-from tursu.entrypoints.plugin import tursu_collect_file
+from tursu import tursu_collect_file
 
 tursu_collect_file()
 """
