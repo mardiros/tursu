@@ -1,7 +1,6 @@
 import ast
 import textwrap
 from collections.abc import Sequence
-from pathlib import Path
 from typing import Annotated, cast
 
 import pytest
@@ -135,7 +134,6 @@ def test_fixtures_invalid(
     ],
 )
 def test_build_tags_decorators(
-    tmpdir: Path,
     registry: Tursu,
     scenario: GherkinScenario,
     stack: Sequence[Any],
@@ -158,8 +156,7 @@ def test_build_tags_decorators(
         ]
     )
     tmod = TestModule("dummy", module)
-    tmod.write_temporary(tmpdir)
-    assert (tmpdir / tmod.filename).read_text(encoding="utf-8") == expected_result
+    assert str(tmod) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -547,7 +544,6 @@ def test_build_step_kwargs(
     step: GherkinStep,
     handler: Any,
     expected_result: str,
-    tmpdir: Path,
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
@@ -577,5 +573,4 @@ def test_build_step_kwargs(
         ]
     )
     tmod = TestModule("dummy", module)
-    tmod.write_temporary(tmpdir)
-    assert (tmpdir / tmod.filename).read_text(encoding="utf-8") == expected_result
+    assert str(tmod) == expected_result

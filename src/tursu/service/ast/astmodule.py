@@ -1,3 +1,4 @@
+"""AST helpers at the test module level."""
 import ast
 from collections.abc import Sequence
 from typing import Any
@@ -8,6 +9,13 @@ from tursu.service.ast.astfunction import TestFunctionWriter
 
 
 class TestModuleWriter:
+    """
+    Prepare a python test module for the given feature.
+
+    :param feature: the feature that will be compiled to a python module.
+    :param registry: tursu registry containing the steps definition.
+    :param stack: current stack of the gherkin document traversal.
+    """
     def __init__(
         self, feature: GherkinFeature, registry: Tursu, stack: Sequence[Any]
     ) -> None:
@@ -56,7 +64,9 @@ class TestModuleWriter:
         )
 
     def append_test(self, fn: TestFunctionWriter) -> None:
+        """Append a test function to the module."""
         self.module_node.body.append(fn.to_ast())
 
     def to_ast(self) -> ast.Module:
+        """Convert the current state to ast code."""
         return self.module_node

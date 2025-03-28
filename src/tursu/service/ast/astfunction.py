@@ -1,3 +1,5 @@
+"""AST helpers at the test function level."""
+
 import ast
 import re
 from collections.abc import Sequence
@@ -17,6 +19,7 @@ from tursu.runtime.registry import Tursu
 
 
 def repr_stack(stack: Sequence[Any]) -> Sequence[str]:
+    """Helper to get a stack representation to display fancy tests results."""
     ret = []
     for el in stack:
         ret.append(repr(el))
@@ -24,14 +27,29 @@ def repr_stack(stack: Sequence[Any]) -> Sequence[str]:
 
 
 def is_step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
+    """
+    Typeguard for step keyword only.
+
+    :param value: any gherkin keyword input
+    """
     return value in get_args(StepKeyword)
 
 
 def sanitize(name: str) -> str:
+    """Used to generate valid python identifiers."""
     return re.sub(r"\W+", "_", name)[:100]
 
 
 class TestFunctionWriter:
+    """
+    Helper to write a test function for a given scenario.
+
+    :param scenario: scenario to compile to ast code.
+    :param registry: tursu registry containing steps definition.
+    :param steps: steps to include, including the one from the background.
+    :param stack: tursu compilation current stack.
+    """
+
     def __init__(
         self,
         scenario: GherkinScenario | GherkinScenarioOutline,
@@ -132,6 +150,7 @@ class TestFunctionWriter:
     def build_args(
         self, fixtures: dict[str, Any], examples_keys: Sequence[Any] | None = None
     ) -> list[ast.arg]:
+        """Build the args for the test functions."""
         args = [
             ast.arg(
                 arg="request",
@@ -166,6 +185,13 @@ class TestFunctionWriter:
     def build_fixtures(
         self, steps: Sequence[GherkinStep], registry: Tursu
     ) -> dict[str, type]:
+        """
+        Get the fixture for the given step.
+
+        :param steps: steps to include, including the one from the background.
+        :param registry: tursu registry containing steps definition.
+        :return: the fixtures to include for all the steps of the scenario.
+        """
         fixtures: dict[str, type] = {}
         step_last_keyword = None
         for step in steps:
@@ -180,6 +206,13 @@ class TestFunctionWriter:
         return fixtures
 
     def build_tags_decorators(self, stack: Sequence[Any]) -> list[ast.expr]:
+        """
+        Generate pytest markers for the function.
+        It will traverse the stack to get all the gherkin tags in order to generate
+        pytest markers with them.
+
+        :param stack: current compiler stack.
+        """
         decorator_list = []
         tags = self.get_tags(stack)
         if tags:
@@ -194,6 +227,11 @@ class TestFunctionWriter:
         return decorator_list  # type: ignore
 
     def get_tags(self, stack: Sequence[Any]) -> set[str]:
+        """
+        Get the all the gherkin tags from the stack.
+
+        :param stack: current compiler stack.
+        """
         ret = set()
         for el in stack:
             match el:
@@ -211,6 +249,15 @@ class TestFunctionWriter:
         return ret
 
     def get_keyword(self, stp: GherkinStep) -> StepKeyword:
+        """
+        Get the step keyword from the current step.
+        If the step is a conjunction (`And`, `But`), the step keyword come from
+        the previous step.
+
+        :param stp: the step to analyse.
+        :return: proper keyword for the step.
+        :raises ValueError: if a conjunction has been used to start a scenario.
+        """
         keyword = stp.keyword
         if stp.keyword_type == "Conjunction":
             if self.gherkin_keyword is None:
@@ -226,6 +273,17 @@ class TestFunctionWriter:
         stp: GherkinStep,
         examples: Sequence[GherkinExamples] | None = None,
     ) -> list[ast.expr]:
+        """
+        Get a step ast argument.
+
+        :param step_keyword: the step definition keyword.
+        :param stp: the step to analyse.
+        :param examples: in cases of scenario outline, its associated examples.
+            In this case, the chevron-enclosed placeholders (e.g. `<value>`) are
+            replaced by parametrized value during the call.
+        :return: ast values for the step argument.
+        :raises ValueError: if a conjunction has been used to start a scenario.
+        """
         call_format_node = None
         text = ast.Constant(value=stp.text)
         if examples:
@@ -256,6 +314,14 @@ class TestFunctionWriter:
     def build_step_kwargs(
         self, step_keyword: StepKeyword, stp: GherkinStep
     ) -> list[ast.keyword]:
+        """
+        Get the step kwargs, e.g. pytest fixtures for the given step.
+
+        :param step_keyword: the step definition keyword.
+        :param stp: the step to analyse.
+
+        :return: ast values for the step keyword argument.
+        """
         py_kwargs = []
         step_fixtures = self.registry.extract_fixtures(step_keyword, stp.text)
         for key, _val in step_fixtures.items():
@@ -334,6 +400,13 @@ class TestFunctionWriter:
         stack: list[Any],
         examples: Sequence[GherkinExamples] | None = None,
     ) -> None:
+        """
+        Appened the given step to the test function.
+
+        :param stp: the step to add.
+        :param stack: current compiler stack.
+        :param examples: in cases of scenario outline, its associated examples.
+        """
         step_keyword = self.get_keyword(stp)
         py_args = self.build_step_args(step_keyword, stp, examples)
         py_kwargs = self.build_step_kwargs(step_keyword, stp)
@@ -352,4 +425,5 @@ class TestFunctionWriter:
         self.step_list.append(ast.Expr(value=call_node, lineno=stp.location.line))
 
     def to_ast(self) -> ast.FunctionDef:
+        """Convert the current state to ast code."""
         return self.funcdef

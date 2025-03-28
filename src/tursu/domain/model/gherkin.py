@@ -1,3 +1,12 @@
+"""
+Gherkin feature files as DOM objects.
+
+Tursu use the gherkin-official package to parse file, with a pydantic
+layer in order to works with typed object instead of typed dict.
+
+It also clean up keywords and add representation for the output.
+"""
+
 import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path

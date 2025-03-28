@@ -3,13 +3,8 @@
 ```{toctree}
 :maxdepth: 1
 
-develop/tursu/tursu.compiler
 develop/tursu/tursu.domain
-develop/tursu/tursu.entrypoint
-develop/tursu/tursu.exceptions
-develop/tursu/tursu.pattern_matcher
-develop/tursu/tursu.entrypoints.plugin
-develop/tursu/tursu.registry
-develop/tursu/tursu.runner
-develop/tursu/tursu.steps
+develop/tursu/tursu.entrypoints
+develop/tursu/tursu.runtime
+develop/tursu/tursu.service
 ```

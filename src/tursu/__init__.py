@@ -4,6 +4,7 @@ Easily run Gherkin tests.
 
 from importlib import metadata
 
+from tursu.entrypoints.plugin import tursu_collect_file
 from tursu.runtime.pattern_matcher import RegEx
 from tursu.runtime.registry import given, then, when
 
@@ -14,4 +15,5 @@ __all__ = [
     "when",
     "then",
     "RegEx",
+    "tursu_collect_file",
 ]

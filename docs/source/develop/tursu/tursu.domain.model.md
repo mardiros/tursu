@@ -15,5 +15,6 @@
 :maxdepth: 1
 
 tursu.domain.model.gherkin
+tursu.domain.model.steps
 tursu.domain.model.testmod
 ```

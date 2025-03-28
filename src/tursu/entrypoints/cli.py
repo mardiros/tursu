@@ -1,3 +1,5 @@
+"""Command line interface."""
+
 import argparse
 import sys
 from collections.abc import Sequence
@@ -12,7 +14,7 @@ Documentation: https://mardiros.github.io/tursu/
 '''
 
 DEFAULT_CONFTEST = """\
-from tursu.entrypoints.plugin import tursu_collect_file
+from tursu import tursu_collect_file
 
 tursu_collect_file()
 """
@@ -104,6 +106,13 @@ Feature: User login with their own password
 
 
 def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
+    """
+    Will write a functional tests directory.
+
+    :param outdir: destination
+    :param overwrite: overwrite existing file.
+    :param no_dummies: do not write dummy fixtures and tests.
+    """
     with_dummies = not no_dummies
     outpath = Path(outdir)
     if outpath.exists() and not overwrite:
@@ -113,7 +122,7 @@ def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
     if outpath.is_file():
         outpath.unlink()
 
-    outpath.mkdir(exist_ok=True)
+    outpath.mkdir(exist_ok=True, parents=True)
     (outpath / "__init__.py").write_text(DEFAULT_INIT)
     (outpath / "conftest.py").write_text(
         DEFAULT_CONFTEST_WITH_DUMMIES if with_dummies else DEFAULT_CONFTEST
@@ -125,6 +134,7 @@ def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
 
 
 def main(args: Sequence[str] = sys.argv) -> None:
+    """Entrypoint of the CLI."""
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(title="action", required=True)
