@@ -1,4 +1,5 @@
 """Test module."""
+
 import ast
 import atexit
 from pathlib import Path
@@ -12,6 +13,7 @@ class TestModule:
     :param scenario: the scenario name representated.
     :param module_node: the AST generated code by the compiler of the scenario.
     """
+
     def __init__(self, scenario: str, module_node: ast.Module) -> None:
         self.scenario = scenario
         self.module_node = module_node
