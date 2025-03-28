@@ -17,7 +17,10 @@
 :align: left
 
 * - {py:obj}`GherkinTestModule <tursu.entrypoints.plugin.GherkinTestModule>`
-  -
+  - ```{autodoc2-docstring} tursu.entrypoints.plugin.GherkinTestModule
+    :parser: myst
+    :summary:
+    ```
 ````
 
 ### Functions
@@ -32,7 +35,7 @@
     :summary:
     ```
 * - {py:obj}`tursu_collect_file <tursu.entrypoints.plugin.tursu_collect_file>`
-- ```{autodoc2-docstring} tursu.entrypoints.plugin.tursu_collect_file
+  - ```{autodoc2-docstring} tursu.entrypoints.plugin.tursu_collect_file
     :parser: myst
     :summary:
     ```
@@ -40,10 +43,21 @@
 
 ### API
 
-`````{py:class} GherkinTestModule(path: pathlib.Path, tursu: tursu.registry.Tursu, **kwargs: typing.Any)
+`````{py:class} GherkinTestModule(path: pathlib.Path, tursu: tursu.runtime.registry.Tursu, **kwargs: typing.Any)
 :canonical: tursu.entrypoints.plugin.GherkinTestModule
 
 Bases: {py:obj}`pytest.Module`
+
+```{autodoc2-docstring} tursu.entrypoints.plugin.GherkinTestModule
+:parser: myst
+```
+
+```{rubric} Initialization
+```
+
+```{autodoc2-docstring} tursu.entrypoints.plugin.GherkinTestModule.__init__
+:parser: myst
+```
 
 ````{py:method} __repr__() -> str
 :canonical: tursu.entrypoints.plugin.GherkinTestModule.__repr__
@@ -57,7 +71,7 @@ Bases: {py:obj}`pytest.Module`
 
 `````
 
-````{py:function} tursu() -> tursu.registry.Tursu
+````{py:function} tursu() -> tursu.runtime.registry.Tursu
 :canonical: tursu.entrypoints.plugin.tursu
 
 ```{autodoc2-docstring} tursu.entrypoints.plugin.tursu

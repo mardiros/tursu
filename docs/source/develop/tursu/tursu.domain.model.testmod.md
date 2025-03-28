@@ -93,4 +93,13 @@
 
 ````
 
+````{py:method} write_temporary(parent: pathlib.Path) -> None
+:canonical: tursu.domain.model.testmod.TestModule.write_temporary
+
+```{autodoc2-docstring} tursu.domain.model.testmod.TestModule.write_temporary
+:parser: myst
+```
+
+````
+
 `````

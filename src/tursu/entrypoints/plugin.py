@@ -62,6 +62,46 @@ class GherkinTestModule(pytest.Module):
 
 
 def tursu_collect_file() -> None:
+    """
+    Used to generate a `pytest_collect_file()` function in a conftest.py file.
+
+    pytest comes with a hook
+    [pytest_collect_file](https://docs.pytest.org/en/7.1.x/reference/reference.html#pytest.hookspec.pytest_collect_file)
+    used to collect tests that tursu use to generate the tests suite from
+    Gherkin files.
+
+    the conftest.py has to be created with in the same directory structure of
+    .scenario file.
+
+    Function Tests Directory Structure:
+
+    ```
+    tests/functionals/
+    │── conftest.py        # Must contains `tursu_collect_file()`
+    │── steps.py           # Step definitions for Gherkin scenarios
+    │── example.scenario   # Gherkin scenario file
+    ```
+
+    If you want to rearrange your scenario in subdirectory, or
+    just your steps, it is not a problem, pytest will walk under all directory
+    tree. Tursu will collect all steps definifition too.
+
+    ```
+    tests/functionals/
+    │── conftest.py        # Must contains `tursu_collect_file()`
+    │── steps.py           # Common step definitions for Gherkin scenarios
+    │── features1/
+    │   ├── other_steps.py    # Step definitions for Gherkin scenarios
+    │   ├── example.scenario  # Gherkin scenario file
+    ```
+
+    ```{important}
+    steps definition using the ([@given](#tursu.given),
+    [@when](#tursu.when), [@then](#tursu.then)) are globals.
+
+    Says differently, **they are not scoped per sub-directories**.
+    ```
+    """
     conftest_mod = inspect.getmodule(inspect.stack()[1][0])  # this is conftest.py
     assert conftest_mod
 
