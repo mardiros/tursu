@@ -2,7 +2,7 @@
 
 import ast
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Any, TypeGuard, get_args, get_origin
 
 from tursu.domain.model.gherkin import (
@@ -103,7 +103,6 @@ class TestFunctionWriter:
                 ast.Call(func=parametrize_decorator, args=ex_args, keywords=[])
             )
 
-        args = self.build_args(fixtures, examples_keys)
         self.step_list: list[ast.stmt] = []
         runner_instance = ast.With(
             items=[
@@ -127,6 +126,7 @@ class TestFunctionWriter:
 
         docstring = f"{scenario.name}\n\n    {scenario.description}".strip()
 
+        args = self.build_args(fixtures, examples_keys)
         self.funcdef = ast.FunctionDef(
             name=f"test_{scenario.id}_{sanitize(scenario.name)}",
             args=ast.arguments(
@@ -148,7 +148,7 @@ class TestFunctionWriter:
         )
 
     def build_args(
-        self, fixtures: dict[str, Any], examples_keys: Sequence[Any] | None = None
+        self, fixtures: Mapping[str, Any], examples_keys: Sequence[Any] | None = None
     ) -> list[ast.arg]:
         """Build the args for the test functions."""
         args = [
@@ -166,6 +166,8 @@ class TestFunctionWriter:
             ),
         ]
         for key, _val in fixtures.items():
+            if key in ("request", "capsys", "tursu"):
+                continue
             args.append(
                 ast.arg(
                     arg=key,
