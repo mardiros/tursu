@@ -11,6 +11,7 @@ introduction
 gherkin_in_a_nutchell
 step_definition
 advanced_datatable
+advanced_docstring
 using_tags
 working_with_playwright
 migrate_from_behave
