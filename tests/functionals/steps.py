@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from tursu import given, then, when
 
 from .conftest import DummyApp
@@ -26,6 +28,15 @@ def assert_not_connected(app: DummyApp):
 @then("I see the docstring")
 def assert_docstring(app: DummyApp, doc_string: dict[str, str]):
     assert doc_string == {"nick": app.connected_user}
+
+
+class ParsedDocstring(BaseModel):
+    nick: str
+
+
+@then("I can parse the docstring")
+def assert_parsed_docstring(app: DummyApp, doc_string: ParsedDocstring):
+    assert doc_string.nick == app.connected_user
 
 
 @then("I see the data_table")

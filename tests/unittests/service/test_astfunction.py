@@ -263,8 +263,17 @@ def given_raw_revesed_data_table(data_table: dict[str, str]): ...
 def given_doc_string(doc_string: dict[str, str]): ...
 
 
+def given_doc_string_seq(doc_string: list[dict[str, str]]): ...
+
+
 class User(BaseModel):
     username: str
+
+
+def given_parsed_doc_string(doc_string: User): ...
+
+
+def given_parsed_doc_string_seq(doc_string: list[User]): ...
 
 
 def given_parsed_data_table(data_table: list[User]): ...
@@ -280,6 +289,14 @@ def given_parsed_annotated_data_table(data_table: list[Annotated[User, load_user
 
 
 def given_parsed_annotated_rev_data_table(data_table: Annotated[User, load_user]): ...
+
+
+def given_parsed_annotated_doc_string(doc_string: Annotated[User, load_user]): ...
+
+
+def given_parsed_annotated_doc_string_seq(
+    doc_string: list[Annotated[User, load_user]],
+): ...
 
 
 @pytest.mark.parametrize(
@@ -498,30 +515,6 @@ def test_build_args(
                 """
             ).strip(),
             id="docstring",
-        ),
-        pytest.param(
-            [],
-            GherkinStep(
-                id="1",
-                location=GherkinLocation(line=1, column=1),
-                keyword="Given",
-                text="a set of users:",
-                keywordType="Context",
-                docString=GherkinDocString(
-                    location=GherkinLocation(line=1, column=1),
-                    content='[{"username": "alice"}, {"username": "bob"}]',
-                    delimiter="",
-                    mediaType="json",
-                ),
-            ),
-            given_doc_string,
-            textwrap.dedent(
-                """
-                def test_dummy():
-                    step(doc_string=[{'username': 'alice'}, {'username': 'bob'}])
-                """
-            ).strip(),
-            id="docstring json",
         ),
     ],
 )
@@ -912,6 +905,241 @@ def test_parse_data_table(
     registry.register_handler(step_keyword, step.text, handler)
     fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
     kwargs = fn.parse_data_table(step_keyword, step)
+
+    module = ast.Module(
+        body=[
+            ast.FunctionDef(
+                name="test_dummy",
+                args=ast.arguments(
+                    args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None
+                ),
+                body=[
+                    ast.Expr(
+                        ast.Call(
+                            func=ast.Name(id="step", ctx=ast.Load()),
+                            args=[],
+                            keywords=[kwargs],
+                        )
+                    )
+                ],
+                decorator_list=[],
+                lineno=1,
+            )
+        ]
+    )
+    tmod = TestModule("dummy", module)
+    assert str(tmod) == expected_result
+
+
+@pytest.mark.parametrize(
+    "steps,step,handler,expected_result",
+    [
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content="username\nbob\nalice",
+                    delimiter="",
+                    mediaType="csv",
+                ),
+            ),
+            given_doc_string,
+            textwrap.dedent(
+                """
+            def test_dummy():
+                step(doc_string='username\\nbob\\nalice')
+            """
+            ).strip(),
+            id="raw",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a user:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='{"username": "alice"}',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string={'username': 'alice'})
+                """
+            ).strip(),
+            id="dict",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='[{"username": "alice"}, {"username": "bob"}]',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_doc_string_seq,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=[{'username': 'alice'}, {'username': 'bob'}])
+                """
+            ).strip(),
+            id="list",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='{"username": "alice"}',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_parsed_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=User0(username='alice'))
+                """
+            ).strip(),
+            id="model",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='{"username": "alice"}',
+                    delimiter="",
+                    mediaType="",
+                ),
+            ),
+            given_parsed_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=User0(username='alice'))
+                """
+            ).strip(),
+            id="model without media_type",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='[{"username": "alice"}, {"username": "bob"}]',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_parsed_doc_string_seq,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=[User0(username='alice'), User0(username='bob')])
+                """
+            ).strip(),
+            id="list[model]",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='{"username": "alice"}',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_parsed_annotated_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=load_user0(username='alice'))
+                """
+            ).strip(),
+            id="Annotated[model]",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='[{"username": "alice"}, {"username": "bob"}]',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_parsed_annotated_doc_string_seq,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=[load_user0(username='alice'), load_user0(username='bob')])
+                """
+            ).strip(),
+            id="list[Annotated[model, factory]",
+        ),
+    ],
+)
+def test_parse_docstring(
+    scenario: GherkinScenario,
+    steps: Sequence[GherkinStep],
+    step: GherkinStep,
+    handler: Any,
+    expected_result: str,
+):
+    registry = Tursu()
+    step_keyword = cast(StepKeyword, step.keyword)
+    registry.register_handler(step_keyword, step.text, handler)
+    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    kwargs = fn.parse_doc_string(step_keyword, step)
 
     module = ast.Module(
         body=[

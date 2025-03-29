@@ -85,11 +85,11 @@
 
 ````
 
-````{py:property} data_tables_types
-:canonical: tursu.runtime.registry.Tursu.data_tables_types
+````{py:property} models_types
+:canonical: tursu.runtime.registry.Tursu.models_types
 :type: dict[type, str]
 
-```{autodoc2-docstring} tursu.runtime.registry.Tursu.data_tables_types
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.models_types
 :parser: myst
 ```
 

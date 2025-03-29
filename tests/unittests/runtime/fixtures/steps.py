@@ -1,8 +1,6 @@
-from typing import Any
-
 from tursu import given, then, when
 
-from .conftest import DummyApp
+from .conftest import DummyApp, DummyMail
 
 
 @given("a user {username}")
@@ -28,9 +26,9 @@ def assert_mailbox_contains(
 
 @then("the API for {username} respond")
 def assert_api_response(
-    dummy_app: DummyApp, username: str, doc_string: list[dict[str, Any]]
+    dummy_app: DummyApp, username: str, doc_string: list[DummyMail]
 ):
-    assert [m.model_dump() for m in dummy_app.mailboxes[username]] == doc_string
+    assert doc_string == dummy_app.mailboxes[username]
 
 
 @then("the users raw dataset is")

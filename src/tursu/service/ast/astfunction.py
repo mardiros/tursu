@@ -1,9 +1,10 @@
 """AST helpers at the test function level."""
 
 import ast
+import json
 import re
 from collections.abc import Mapping, Sequence
-from typing import Annotated, Any, TypeGuard, get_args, get_origin
+from typing import Annotated, Any, TypeGuard, cast, get_args, get_origin
 
 from tursu.domain.model.gherkin import (
     GherkinExamples,
@@ -313,6 +314,90 @@ class TestFunctionWriter:
             call_format_node if call_format_node else text,
         ]
 
+    def parse_doc_string(
+        self, step_keyword: StepKeyword, stp: GherkinStep
+    ) -> ast.keyword:
+        registry_step = self.registry.get_step(step_keyword, stp.text)
+
+        assert registry_step, "Step not found"
+        assert stp.doc_string, "Step has not doc_string"
+
+        typ = None
+        is_list = False
+        anon = registry_step.pattern.signature.parameters["doc_string"].annotation
+        if anon:
+            param_origin = get_origin(anon)
+            if param_origin is Annotated:
+                # we are in a factory
+                typ = get_args(anon)[-1]
+            elif param_origin and issubclass(param_origin, Sequence):
+                is_list = True
+                typ = get_args(anon)[0]
+                orig = get_origin(typ)
+                if orig is dict:
+                    typ = None
+                elif orig is Annotated:
+                    typ = get_args(typ)[-1]
+            else:
+                orig = get_origin(anon)
+                if orig is dict:
+                    typ = None
+                else:
+                    typ = anon
+
+        if typ:
+            datatable_keywords = []
+            call_doc_string_node: ast.expr
+            if isinstance(stp.doc_string.content, str):
+                data = json.loads(stp.doc_string.content)
+            else:
+                data = stp.doc_string.content
+            if is_list:
+                doc_string_models: list[ast.expr] = []
+                for model in cast(Sequence[Mapping[str, Any]], data):
+                    datatable_keywords = [
+                        ast.keyword(
+                            arg=key,
+                            value=ast.Constant(value=val),
+                        )
+                        for key, val in model.items()
+                    ]
+
+                    param_origin = get_origin(anon)
+                    doc_string_models.append(
+                        ast.Call(
+                            func=ast.Name(
+                                id=self.registry.models_types[typ],
+                                ctx=ast.Load(),
+                            ),
+                            keywords=datatable_keywords,
+                        )
+                    )
+
+                call_doc_string_node = ast.List(elts=doc_string_models, ctx=ast.Load())
+            else:
+                datatable_keywords = [
+                    ast.keyword(
+                        arg=key,
+                        value=ast.Constant(value=val),
+                    )
+                    for key, val in cast(Mapping[str, Any], data).items()
+                ]
+
+                param_origin = get_origin(anon)
+                call_doc_string_node = ast.Call(
+                    func=ast.Name(
+                        id=self.registry.models_types[typ],
+                        ctx=ast.Load(),
+                    ),
+                    keywords=datatable_keywords,
+                )
+            return ast.keyword(arg="doc_string", value=call_doc_string_node)
+
+        return ast.keyword(
+            arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
+        )
+
     def parse_data_table(
         self, step_keyword: StepKeyword, stp: GherkinStep
     ) -> ast.keyword:
@@ -378,7 +463,7 @@ class TestFunctionWriter:
             ]
             call_rev_datatable_node = ast.Call(
                 func=ast.Name(
-                    id=self.registry.data_tables_types[typ],
+                    id=self.registry.models_types[typ],
                     ctx=ast.Load(),
                 ),
                 keywords=datatable_keywords,
@@ -403,7 +488,7 @@ class TestFunctionWriter:
                 call_datatable_node.append(
                     ast.Call(
                         func=ast.Name(
-                            id=self.registry.data_tables_types[typ],
+                            id=self.registry.models_types[typ],
                             ctx=ast.Load(),
                         ),
                         keywords=datatable_keywords,
@@ -433,11 +518,7 @@ class TestFunctionWriter:
             )
 
         if stp.doc_string:
-            py_kwargs.append(
-                ast.keyword(
-                    arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
-                )
-            )
+            py_kwargs.append(self.parse_doc_string(step_keyword, stp))
 
         if stp.data_table:
             py_kwargs.append(self.parse_data_table(step_keyword, stp))

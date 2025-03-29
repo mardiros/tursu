@@ -48,7 +48,7 @@ class TestModuleWriter:
                 level=0,
             ),
         ]
-        for typ, alias in registry.data_tables_types.items():
+        for typ, alias in registry.models_types.items():
             import_mods.append(
                 ast.ImportFrom(
                     module=typ.__module__,
