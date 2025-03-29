@@ -42,7 +42,7 @@ def given(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `Given` Gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
@@ -55,7 +55,7 @@ def when(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `When` gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
@@ -68,7 +68,7 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `Then` gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.

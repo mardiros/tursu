@@ -1,8 +1,17 @@
-(pattern-matcher)=
+(step-definition)=
 
-# Matching Step Expression
+# Step Definition
 
-To match gherkin steps into python code, we used a [pattern matcher](#tursu.runtime.pattern_matcher).
+To match gherkin steps into python code, we used a
+[pattern matcher](#tursu.runtime.pattern_matcher).
+
+The definition of the step is written using the syntax of the pattern matcher.
+
+Tursu has two pattern matcher, a default pattern matcher which is documented here,
+
+and a regular expression pattern matcher for even more flexibility, but less readable.
+
+## Default pattern matcher
 
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.
@@ -36,14 +45,14 @@ But if it is enclosed by `"`, then it can be a sentence.
     ```
 :::
 
-## Typing support
+### Typing support
 
 The default matcher does not enforce the type in the text of the decorator,
 **it use the function signature**.
 
 Supported types are: `bool`, `date`, `datetime`, `float`, `int`, `str`, `Enum` and `Literal[...]`:
 
-### boolean
+#### boolean
 
 **Python signature:**
 
@@ -70,7 +79,7 @@ Those values are case insensitive.
 Everything else will raise a value error.
 ```
 
-### date
+#### date
 
 **Python signature:**
 
@@ -86,7 +95,7 @@ def given_expires_on_subscription(expires_on: date):
 Given the user's subscription expires on 2025-12-31
 ```
 
-### datetime
+#### datetime
 
 **Python signature:**
 
@@ -102,7 +111,7 @@ def given_expires_at_subscription(expires_at: date):
 Given the user's subscription expires at 2025-12-31T08:00:00Z
 ```
 
-### float
+#### float
 
 **Python signature:**
 
@@ -118,7 +127,7 @@ def toggle_feature_flag(account_balance: float):
 Given the account balance is 99.99
 ```
 
-### int
+#### int
 
 **Python signature:**
 
@@ -134,7 +143,7 @@ def assert_cart_items_count(feature_flag: int):
 Then the cart should contain 3 items
 ```
 
-### str
+#### str
 
 **Python signature:**
 
@@ -150,7 +159,7 @@ def given_role(role: str, passphrase: str):
 Given the user role admin protected by passphrase "I am feeling lucky"
 ```
 
-### Enum
+#### Enum
 
 **Python signature:**
 
@@ -180,7 +189,7 @@ Given the order status is PROCESSING
 For enum, the key must be passed, not the value.
 ```
 
-### Literal
+#### Literal
 
 **Python signature:**
 
@@ -200,13 +209,61 @@ def set_feature_flag(feature: FeatureFlagName, status: bool):
 Given the feature flag dark_mode is set to on
 ```
 
-## Complex types and more about Gherkin
 
-To provide long text or data set, gherkin supports 2 things, doc strings,
-and data tables.
+## RegEx pattern matcher
 
-It allow to multiline step, and we will start with the docstring for
-json support.
+This is less readable, but, may be usefull in certain situation,
+
+Regular Expression can be used to match patterns.
+
+First you need to import the [RegEx](#tursu.RegEx) class:
+
+```python
+from tursu import RegEx
+```
+
+Afterwhat, the named capturing group syntax has to be used `(?P<matched_name>regex_pattern)`:
+
+:::{list-table}
+:widths: 20 40 40
+:header-rows: 1
+
+- - matcher
+  - Python decorator example
+  - Gherkin usage example
+- - ```python
+    r"(?P<username>[^\s]+)"
+    ```
+  - ```python
+    @given(
+      RegEx(r'a user (?P<username>[^\s]+)')
+    )
+    ```
+  - ```Gherkin
+    Given a user Alice
+    ```
+- - ```python
+    r'(?P<expected>[^\"]+)'
+  - ```python
+    @then(
+      RegEx(r'I see the text "(?P<expected>[^\"]+)"')
+    )
+    ```
+  - ```Gherkin
+    I see the text "Welcome Alice"
+    ```
+:::
+
+
+## Complex types from Gherkin DataTable and DocString
+
+Regardless of the pattern matcher you use, a step definition can also include
+a complex type derived directly from Gherkin grammar.
+
+To handle long text or datasets,
+Gherkin supports two features: **doc strings** and **data tables**.
+
+These allow for multiline steps, and we'll begin with doc strings for JSON support.
 
 ### Json
 
@@ -342,48 +399,3 @@ data_table looks like
 ]
 ```
 ````
-
-## Alternative Step matcher based on regular extension.
-
-This is less readable, but, may be usefull in certain situation,
-
-Regular Expression can be used to match patterns.
-
-First you need to import the [RegEx](#tursu.RegEx) class:
-
-```python
-from tursu import RegEx
-```
-
-Afterwhat, the named capturing group syntax has to be used `(?P<matched_name>regex_pattern)`:
-
-:::{list-table}
-:widths: 20 40 40
-:header-rows: 1
-
-- - matcher
-  - Python decorator example
-  - Gherkin usage example
-- - ```python
-    r"(?P<username>[^\s]+)"
-    ```
-  - ```python
-    @given(
-      RegEx(r'a user (?P<username>[^\s]+)')
-    )
-    ```
-  - ```Gherkin
-    Given a user Alice
-    ```
-- - ```python
-    r'(?P<expected>[^\"]+)'
-  - ```python
-    @then(
-      RegEx(r'I see the text "(?P<expected>[^\"]+)"')
-    )
-    ```
-  - ```Gherkin
-    I see the text "Welcome Alice"
-    ```
-:::
-```
