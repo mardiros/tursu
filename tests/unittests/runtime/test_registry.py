@@ -1,4 +1,6 @@
 import textwrap
+from collections.abc import Sequence
+from typing import cast
 
 import pytest
 
@@ -16,7 +18,7 @@ from tests.unittests.runtime.fixtures.steps import (
     create_mailbox,
     give_user,
 )
-from tursu.domain.model.steps import Step
+from tursu.domain.model.steps import Step, StepKeyword
 from tursu.runtime.registry import Tursu, Unregistered
 from tursu.runtime.runner import TursuRunner
 
@@ -202,3 +204,45 @@ def test_registry_step_unregistered_no_step(
                 def step_definition(): ...
 
             """)
+
+
+@pytest.mark.wip
+@pytest.mark.parametrize(
+    "steps, text,expected",
+    [
+        pytest.param(
+            ["Given a user {username}"],
+            "Given a user Bob",
+            ["Given a user {username}"],
+            id="One match",
+        ),
+        pytest.param(
+            ["Given a user {name}", "Given a buzzer {name}"],
+            "Given a uzer name",
+            [
+                "Given a buzzer {name}",
+                "Given a user {name}",
+            ],
+            id="Many match",
+        ),
+        pytest.param(
+            [
+                "Given a user {name}",
+                "When the user click on the {role} {name}",
+                "When the user click on the 1st {role} {name}",
+            ],
+            "Then the user click on button",
+            [
+                "When the user click on the {role} {name}",
+                "When the user click on the 1st {role} {name}",
+            ],
+            id="Many match",
+        ),
+    ],
+)
+def test_get_best_match(steps: list[str], text: str, expected: Sequence[str]):
+    registry = Tursu()
+    for step in steps:
+        stp, rest = step.split(" ", 1)
+        registry.register_handler(cast(StepKeyword, stp), rest, lambda: None)
+    assert registry.get_best_matches(text) == expected

@@ -1,5 +1,6 @@
 """Registry of step definition."""
 
+import difflib
 import sys
 from collections.abc import Mapping, Sequence
 from inspect import Parameter
@@ -145,6 +146,36 @@ class Tursu:
             if handler.pattern.match(text):
                 return handler
         return None
+
+    def get_best_matches(
+        self,
+        text: str,
+        n: int = 5,
+        cutoff: float = 0.3,
+        lgtm_threshold: float = 0.4,
+        sure_threshold: float = 0.7,
+    ) -> Sequence[str]:
+        """
+        Return the gherkin steps from the registry that look like the given text.
+        """
+        possibilities = [
+            *[f"Given {hdl.pattern.pattern}" for hdl in self._handlers["Given"]],
+            *[f"When {hdl.pattern.pattern}" for hdl in self._handlers["When"]],
+            *[f"Then {hdl.pattern.pattern}" for hdl in self._handlers["Then"]],
+        ]
+        matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
+        if len(matches) <= 1:
+            return matches
+
+        scored_matches = [
+            (difflib.SequenceMatcher(None, text, match).ratio(), match)
+            for match in matches
+        ]
+        scored_matches.sort(reverse=True)
+
+        if scored_matches[0][0] >= sure_threshold:
+            return [match for score, match in scored_matches if score > sure_threshold]
+        return [match for score, match in scored_matches if score > lgtm_threshold]
 
     def run_step(
         self, tursu_runner: "TursuRunner", step: StepKeyword, text: str, **kwargs: Any
