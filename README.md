@@ -29,7 +29,7 @@ uv add --group dev tursu
 
 ### Creating a new test suite
 
-The simplest way to initialize a test suite is to run the tursu cli.
+The simplest way to initialize a test suite is to run the Turşu cli.
 
 ```
 uv run tursu init
@@ -264,7 +264,7 @@ This my be usefull in case of hard time debugging.
 
 ### All Gherkin features are support.
 
-tursu use the gherkin-official package to parse scenario, however,
+Turşu use the gherkin-official package to parse scenario, however,
 they must be compiled to pytest tests function, implementation in development.
 
 - ✅ Scenario

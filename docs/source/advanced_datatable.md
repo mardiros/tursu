@@ -4,7 +4,7 @@
 
 In the previous chapter, we learnt [basics data table supports](#step-definition-data-table)
 
-but there is more, Tursu is able to map gherkin table to pydantic model, or dataclasses.
+but there is more, Turşu is able to map gherkin table to pydantic model, or dataclasses.
 
 It works for [Data table](#data-table-tabular-data) and [reversed data table](reversed-data-table).
 
@@ -58,7 +58,7 @@ def fill_user_profile(data_table: User):
     ...
 ```
 
-And that's it. Now Tursu will provide data_table mapped to your given models.
+And that's it. Now Turşu will provide data_table mapped to your given models.
 
 ```{important}
 At the moment, nested model are not implemented in Tursu.
@@ -78,7 +78,7 @@ Given a user with the following informations:
 ```
 
 The step above failed because the password is ommited, and
-there is no default value set on the model, and Tursu will parse the table
+there is no default value set on the model, and Turşu will parse the table
 to **User(username='johndoe')**, of course you can define a **field_factory**
 on the model, or you may use a factory, that le you reuse the type for different
 purpose.

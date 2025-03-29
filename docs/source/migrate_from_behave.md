@@ -7,7 +7,7 @@ It improves upon Behave by eliminating dynamic attribute issues and enhancing ma
 
 The cherry on top is that you can run the debugger without pain.
 
-## Step 1 - Install tursu and configure it.
+## Step 1 - Install Turşu and configure it.
 
 Installation:
 
@@ -15,7 +15,7 @@ Installation:
 uv add --group dev tursu
 ```
 
-Add the Tursu Gherkin compiler to AST generate the tests suite:
+Add the Turşu Gherkin compiler to AST generate the tests suite:
 
 - Ensure the `__init__.py` file exists in the functionals tests suite.
 
@@ -35,7 +35,7 @@ EOF
 
 ## Step 2 - Replace context with fixtures in all decorators
 
-Tursu simplifies BDD by replacing Behave’s dynamic context with pytest fixtures,
+Turşu simplifies BDD by replacing Behave’s dynamic context with pytest fixtures,
 making it more maintainable and test-friendly.
 
 Example:

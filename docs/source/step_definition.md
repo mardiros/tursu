@@ -1,17 +1,17 @@
 (step-definition)=
 
-# Step Definition
+# Step definition
 
 To match gherkin steps into python code, we used a
 [pattern matcher](#tursu.runtime.pattern_matcher).
 
 The definition of the step is written using the syntax of the pattern matcher.
 
-Tursu has two pattern matcher, a default pattern matcher which is documented here,
+Turşu has two pattern matcher, a default pattern matcher which is documented here,
 
 and a regular expression pattern matcher for even more flexibility, but less readable.
 
-## Default Pattern Matcher
+## Default pattern matcher
 
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.
@@ -45,7 +45,7 @@ But if it is enclosed by `"`, then it can be a sentence.
     ```
 :::
 
-### Typing Support
+### Typing support
 
 The default matcher does not enforce the type in the text of the decorator,
 **it use the function signature**.
@@ -209,7 +209,7 @@ def set_feature_flag(feature: FeatureFlagName, status: bool):
 Given the feature flag dark_mode is set to on
 ```
 
-## RegEx Pattern Matcher
+## RegEx pattern matcher
 
 This is less readable, but, may be usefull in certain situation,
 
@@ -289,7 +289,7 @@ pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempo
 """
 ```
 
-#### As JSON
+#### As json
 
 ```python
 @given("the user provides the following profile data:")
@@ -314,7 +314,7 @@ Given the user provides the following profile data:
 
 ```{tip}
 When a media type is set to `json` (`"""json` in the Gherkin doc string)
-then tursu will parse the json using the python standard library.
+then Turşu will parse the json using the python standard library.
 
 Otherwise, a plain string will be returned.
 ```
@@ -328,7 +328,7 @@ with many row, or a reversed datatable can be used for a single structured input
 
 (data-table-tabular-data)=
 
-#### Tabular Data
+#### Tabular data
 
 In a tabula data, the data table, is column based and can be seen filled out like:
 
@@ -357,8 +357,8 @@ data_table looks like
 ```
 ````
 
-The type **list** is very important to tell tursu that the data table is list base,
-otherwise, tursu data table parser will interpret it as a row based data table,
+The type **list** is very important to tell Turşu that the data table is list base,
+otherwise, Turşu data table parser will interpret it as a row based data table,
 also known as reversed data table.
 
 (reversed-data-table)=
@@ -390,7 +390,7 @@ data_table looks like
 ````
 
 
-Because there is no list type annotated, then the tursu parser will
+Because there is no list type annotated, then the Turşu parser will
 only used the two first column of the table.
 
 ```{tip}

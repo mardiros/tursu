@@ -29,7 +29,7 @@ and is you're new to gherkin, we will reintroduce it in the next chapter.
 
 ## Bind code function to gherkin keyword
 
-Using tursu, those keywords are bound to python decorators that will match the phrase.
+Using Turşu, those keywords are bound to python decorators that will match the phrase.
 
 While running the following command
 

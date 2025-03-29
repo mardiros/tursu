@@ -1,7 +1,7 @@
 # Working with playwright
 
-tursu does not provice playwright option, but you can works with both
-playwright and tursu for testing your web application.
+Turşu does not provice playwright option, but you can works with both
+playwright and Turşu for testing your web application.
 
 Actually, it has been develop for that!
 
