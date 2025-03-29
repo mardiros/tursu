@@ -1,6 +1,6 @@
 import ast
 import textwrap
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Annotated, cast
 
 import pytest
@@ -251,6 +251,9 @@ def given_username(username: str): ...
 def given_username_fixture(username: str, fixture: str): ...
 
 
+def given_username_request_fixture(username: str, request: pytest.FixtureRequest): ...
+
+
 def given_raw_data_table(data_table: list[dict[str, str]]): ...
 
 
@@ -268,6 +271,89 @@ def load_user(username: str): ...
 
 
 def given_parsed_annotated_data_table(data_table: list[Annotated[User, load_user]]): ...
+
+
+@pytest.mark.parametrize(
+    "steps,fixtures,examples_keys,expected_result",
+    [
+        pytest.param(
+            [],
+            {},
+            [],
+            textwrap.dedent(
+                """
+                def test_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu):
+                    ...
+                """
+            ).strip(),
+            id="no-fixture",
+        ),
+        pytest.param(
+            [],
+            {"fixture1": ...},
+            [],
+            textwrap.dedent(
+                """
+                def test_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, fixture1: Any):
+                    ...
+                """
+            ).strip(),
+            id="fixture",
+        ),
+        pytest.param(
+            [],
+            {"request": ..., "capsys": ..., "tursu": ...},
+            [],
+            textwrap.dedent(
+                """
+                def test_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu):
+                    ...
+                """
+            ).strip(),
+            id="existing fixtures",
+        ),
+        pytest.param(
+            [],
+            {"request": ..., "fixture1": ...},
+            [],
+            textwrap.dedent(
+                """
+                def test_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, fixture1: Any):
+                    ...
+                """
+            ).strip(),
+            id="mix",
+        ),
+    ],
+)
+def test_build_args(
+    scenario: GherkinScenario,
+    steps: Sequence[GherkinStep],
+    fixtures: Mapping[str, Any],
+    examples_keys: Sequence[Any],
+    expected_result: str,
+):
+    registry = Tursu()
+    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    args = fn.build_args(fixtures, examples_keys)
+
+    module = ast.Module(
+        body=[
+            ast.FunctionDef(
+                name="test_dummy",
+                args=ast.arguments(
+                    args=args, vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None
+                ),
+                body=[
+                    ast.Expr(value=ast.Constant(Ellipsis)),
+                ],
+                decorator_list=[],
+                lineno=1,
+            )
+        ]
+    )
+    tmod = TestModule("dummy", module)
+    assert str(tmod) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -305,6 +391,24 @@ def given_parsed_annotated_data_table(data_table: list[Annotated[User, load_user
                 """
                 def test_dummy():
                     step(fixture=fixture)
+                """
+            ).strip(),
+            id="fixture",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a user {username}",
+                keywordType="Context",
+            ),
+            given_username_request_fixture,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(request=request)
                 """
             ).strip(),
             id="fixture",
