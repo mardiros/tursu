@@ -163,6 +163,9 @@ class Tursu:
                     tursu_runner.emit_success(step, handler, matches)
                 break
         else:
+            tursu_runner.emit_error(
+                step, Step(text, lambda: None), {}, unregistered=True
+            )
             raise Unregistered(self, step, text)
 
     def extract_fixtures(

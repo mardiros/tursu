@@ -155,6 +155,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
 │ ✅ When Bob create a mailbox bob@alice.net │
 │ ✅ Then Bob see a mailbox bob@alice.net    │
 │ ✅ Then the API for Bob respond            │
+│ ❌ When Bob see a mailbox "bob@alice.net"  │
 └────────────────────────────────────────────┘
 """
     )

@@ -124,9 +124,6 @@ class TursuRunner:
         """
         try:
             self.tursu.run_step(self, step, text, **kwargs)
-        # FIXME this should be a spacial cases
-        # except Unregistered as exc:
-        #     raise ScenarioFailed(self.fancy()) from exc
         except Exception as exc:
             raise ScenarioFailed(self.fancy()) from exc
 
@@ -164,6 +161,8 @@ class TursuRunner:
         keyword: StepKeyword,
         step: Step,
         matches: Mapping[str, Any],
+        *,
+        unregistered: bool = False,
     ) -> None:
         """
         Update state when a step is marked as error.
@@ -183,7 +182,8 @@ class TursuRunner:
 
         steplog = step.highlight(matches, CYAN, RED)
         text = f"{RED}❌ {keyword}{RESET} {steplog}{timelog}{RESET}"
-        self.runned.pop()
+        if not unregistered:
+            self.runned.pop()
         self.runned.append(text)
         self.log(text, True)
         self.log("-" * (len(self.name) + 2), end="")
