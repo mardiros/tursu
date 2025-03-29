@@ -257,6 +257,9 @@ def given_username_request_fixture(username: str, request: pytest.FixtureRequest
 def given_raw_data_table(data_table: list[dict[str, str]]): ...
 
 
+def given_raw_revesed_data_table(data_table: dict[str, str]): ...
+
+
 def given_doc_string(doc_string: dict[str, str]): ...
 
 
@@ -267,10 +270,16 @@ class User(BaseModel):
 def given_parsed_data_table(data_table: list[User]): ...
 
 
+def given_parsed_rev_data_table(data_table: User): ...
+
+
 def load_user(username: str): ...
 
 
 def given_parsed_annotated_data_table(data_table: list[Annotated[User, load_user]]): ...
+
+
+def given_parsed_annotated_rev_data_table(data_table: Annotated[User, load_user]): ...
 
 
 @pytest.mark.parametrize(
@@ -474,6 +483,201 @@ def test_build_args(
                 keyword="Given",
                 text="a set of users:",
                 keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content="username\nbob\nalice",
+                    delimiter="",
+                    mediaType="csv",
+                ),
+            ),
+            given_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string='username\\nbob\\nalice')
+                """
+            ).strip(),
+            id="docstring",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='[{"username": "alice"}, {"username": "bob"}]',
+                    delimiter="",
+                    mediaType="json",
+                ),
+            ),
+            given_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string=[{'username': 'alice'}, {'username': 'bob'}])
+                """
+            ).strip(),
+            id="docstring json",
+        ),
+    ],
+)
+def test_build_step_kwargs(
+    scenario: GherkinScenario,
+    steps: Sequence[GherkinStep],
+    step: GherkinStep,
+    handler: Any,
+    expected_result: str,
+):
+    registry = Tursu()
+    step_keyword = cast(StepKeyword, step.keyword)
+    registry.register_handler(step_keyword, step.text, handler)
+    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    kwargs = fn.build_step_kwargs(step_keyword, step)
+
+    module = ast.Module(
+        body=[
+            ast.FunctionDef(
+                name="test_dummy",
+                args=ast.arguments(
+                    args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None
+                ),
+                body=[
+                    ast.Expr(
+                        ast.Call(
+                            func=ast.Name(id="step", ctx=ast.Load()),
+                            args=[],
+                            keywords=kwargs,
+                        )
+                    )
+                ],
+                decorator_list=[],
+                lineno=1,
+            )
+        ]
+    )
+    tmod = TestModule("dummy", module)
+    assert str(tmod) == expected_result
+
+
+@pytest.mark.parametrize(
+    "steps,step,handler,expected_result",
+    [
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                dataTable=GherkinDataTable(
+                    location=GherkinLocation(line=1, column=1),
+                    rows=[
+                        GherkinTableRow(
+                            id="header",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="username",
+                                )
+                            ],
+                        ),
+                        GherkinTableRow(
+                            id="row1",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="alice",
+                                )
+                            ],
+                        ),
+                        GherkinTableRow(
+                            id="row2",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="bob",
+                                )
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            given_raw_data_table,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(data_table=[{'username': 'alice'}, {'username': 'bob'}])
+                """
+            ).strip(),
+            id="raw data_table",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a user:",
+                keywordType="Context",
+                dataTable=GherkinDataTable(
+                    location=GherkinLocation(line=1, column=1),
+                    rows=[
+                        GherkinTableRow(
+                            id="row1",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="username",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="alice",
+                                ),
+                            ],
+                        ),
+                        GherkinTableRow(
+                            id="row2",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="password",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="secret",
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            given_raw_revesed_data_table,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(data_table={'username': 'alice', 'password': 'secret'})
+                """
+            ).strip(),
+            id="raw reversed data_table",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
                 dataTable=GherkinDataTable(
                     location=GherkinLocation(line=1, column=1),
                     rows=[
@@ -590,7 +794,7 @@ def test_build_args(
                     step(data_table=[load_user0(username='alice'), load_user0(username='bob'), load_user0()])
                 """
             ).strip(),
-            id="parsed given_parsed_annotated_data_table",
+            id="parsed annotated data_table",
         ),
         pytest.param(
             [],
@@ -600,21 +804,48 @@ def test_build_args(
                 keyword="Given",
                 text="a set of users:",
                 keywordType="Context",
-                docString=GherkinDocString(
+                dataTable=GherkinDataTable(
                     location=GherkinLocation(line=1, column=1),
-                    content="username\nbob\nalice",
-                    delimiter="",
-                    mediaType="csv",
+                    rows=[
+                        GherkinTableRow(
+                            id="row1",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="username",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="alice",
+                                ),
+                            ],
+                        ),
+                        GherkinTableRow(
+                            id="row2",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="password",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="secret",
+                                ),
+                            ],
+                        ),
+                    ],
                 ),
             ),
-            given_doc_string,
+            given_parsed_rev_data_table,
             textwrap.dedent(
                 """
                 def test_dummy():
-                    step(doc_string='username\\nbob\\nalice')
+                    step(data_table=User0(username='alice', password='secret'))
                 """
             ).strip(),
-            id="docstring",
+            id="parsed reverse data_table",
         ),
         pytest.param(
             [],
@@ -622,27 +853,54 @@ def test_build_args(
                 id="1",
                 location=GherkinLocation(line=1, column=1),
                 keyword="Given",
-                text="a set of users:",
+                text="a user with a random password:",
                 keywordType="Context",
-                docString=GherkinDocString(
+                dataTable=GherkinDataTable(
                     location=GherkinLocation(line=1, column=1),
-                    content='[{"username": "alice"}, {"username": "bob"}]',
-                    delimiter="",
-                    mediaType="json",
+                    rows=[
+                        GherkinTableRow(
+                            id="row1",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="username",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="alice",
+                                ),
+                            ],
+                        ),
+                        GherkinTableRow(
+                            id="row2",
+                            location=GherkinLocation(line=1, column=1),
+                            cells=[
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="password",
+                                ),
+                                GherkinCell(
+                                    location=GherkinLocation(line=1, column=1),
+                                    value="",
+                                ),
+                            ],
+                        ),
+                    ],
                 ),
             ),
-            given_doc_string,
+            given_parsed_annotated_rev_data_table,
             textwrap.dedent(
                 """
                 def test_dummy():
-                    step(doc_string=[{'username': 'alice'}, {'username': 'bob'}])
+                    step(data_table=load_user0(username='alice'))
                 """
             ).strip(),
-            id="docstring json",
+            id="parsed annotated reverved data_table",
         ),
     ],
 )
-def test_build_step_kwargs(
+def test_parse_data_table(
     scenario: GherkinScenario,
     steps: Sequence[GherkinStep],
     step: GherkinStep,
@@ -653,7 +911,7 @@ def test_build_step_kwargs(
     step_keyword = cast(StepKeyword, step.keyword)
     registry.register_handler(step_keyword, step.text, handler)
     fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
-    kwargs = fn.build_step_kwargs(step_keyword, step)
+    kwargs = fn.parse_data_table(step_keyword, step)
 
     module = ast.Module(
         body=[
@@ -667,7 +925,7 @@ def test_build_step_kwargs(
                         ast.Call(
                             func=ast.Name(id="step", ctx=ast.Load()),
                             args=[],
-                            keywords=kwargs,
+                            keywords=[kwargs],
                         )
                     )
                 ],

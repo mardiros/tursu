@@ -180,9 +180,9 @@ def test_emit_success(
 @pytest.mark.parametrize(
     "start_shift,expected",
     [
-        pytest.param(TursuRunner.OK_TIMING_MS - 100, '\x1b[92m[600', id="ok"),
-        pytest.param(TursuRunner.OK_TIMING_MS + 100,  '\x1b[93m[800', id="warn"),
-        pytest.param(TursuRunner.WARN_TIMING_MS + 100, '\x1b[91m[2200', id="error"),
+        pytest.param(TursuRunner.OK_TIMING_MS - 100, "\x1b[92m[600", id="ok"),
+        pytest.param(TursuRunner.OK_TIMING_MS + 100, "\x1b[93m[800", id="warn"),
+        pytest.param(TursuRunner.WARN_TIMING_MS + 100, "\x1b[91m[2200", id="error"),
     ],
 )
 def test_emit_success_color(
