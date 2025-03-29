@@ -13,7 +13,7 @@ be replaced by typed object.
 
 Here is wome class definition for the [previous example](#step-definition-data-table).
 
-**Dataclass example:**
+## Dataclass
 
 ```python
 from dataclasses import dataclass
@@ -26,7 +26,7 @@ class User(BaseModel):
 
 ```
 
-**Pydantic example:**
+## Pydantic
 
 If you prefer go with pydantic, it also works.
 
@@ -40,6 +40,9 @@ class User(BaseModel):
     password: str
 
 ```
+
+
+## Usage of model based class.
 
 After the type has been devined, we can replace it in step definitions,
 like this:
@@ -57,8 +60,7 @@ def fill_user_profile(data_table: User):
 
 And that's it. Now Tursu will provide data_table mapped to your given models.
 
-
-```important
+```{important}
 At the moment, nested model are not implemented in Tursu.
 
 It may happen in a next release!
@@ -68,6 +70,18 @@ You may also notive that the **blanked gherkin column will not be passed to mode
 They will be removed and the default values of the field will be used instead.
 To get more control of the model construction, you can passed a factory.
 
+So the following step will failed:
+```Gherkin
+Given a user with the following informations:
+  | username | johndoe   |
+  | password |           |
+```
+
+The step above failed because the password is ommited, and
+there is no default value set on the model, and Tursu will parse the table
+to **User(username='johndoe')**, of course you can define a **field_factory**
+on the model, or you may use a factory, that le you reuse the type for different
+purpose.
 
 ## Adding model factory with faker.
 
@@ -105,9 +119,7 @@ def fill_user_profile(data_table: Annotated[User, UserFactory]):
     ...
 ```
 
-
 In that case, the gherkin scenario with empty data, are filled by faker values:
-
 
 ```Gherkin
 Given the user provides the following informations:
