@@ -1,5 +1,7 @@
 """Runtime exception"""
 
+import textwrap
+from difflib import get_close_matches
 from typing import TYPE_CHECKING
 
 from tursu.domain.model.steps import StepKeyword
@@ -18,13 +20,38 @@ class Unregistered(RuntimeError):
     """
 
     def __init__(self, registry: "Tursu", step: StepKeyword, text: str):
-        registered_list = [
-            f"{step} {hdl.pattern.pattern}" for hdl in registry._handlers[step]
-        ]
-        CR = "\n"
-        registered_list_str = "\n  - ".join(registered_list)
+        registered_list = get_close_matches(
+            text,
+            [f"Given {hdl.pattern.pattern}" for hdl in registry._handlers["Given"]]
+            + [f"When {hdl.pattern.pattern}" for hdl in registry._handlers["When"]]
+            + [f"Then {hdl.pattern.pattern}" for hdl in registry._handlers["Then"]],
+            cutoff=0.3,
+        )
+        registered_list_str = "\n    ".join(registered_list)
+
+        create_step = textwrap.indent(
+            textwrap.dedent(
+                f"""
+                @{step.lower()}("{text.replace('"', '\\"')}")
+                def step_definition(): ...
+                """
+            ),
+            prefix="    ",
+        )
+
         super().__init__(
-            f"Unregister step:{CR}"
-            f"  - {step} {text}{CR}Available steps:{CR}"
-            f"  - {registered_list_str}"
+            textwrap.dedent(
+                f"""
+                Unregistered step:
+
+                    {step} {text}
+
+                Maybe you look for:
+
+                    {{registered_list_str}}
+
+                Or you want to register a new step:
+                {{create_step}}
+                """
+            ).format(registered_list_str=registered_list_str, create_step=create_step)
         )

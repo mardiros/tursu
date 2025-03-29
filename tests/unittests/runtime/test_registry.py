@@ -123,15 +123,27 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(tursu_runner, "When", "Bob see a mailbox bob@alice.net")
+        registry.run_step(tursu_runner, "When", 'Bob see a mailbox "bob@alice.net"')
 
-    assert str(ctx.value) == (
+    assert str(ctx.value) == textwrap.dedent(
         """\
-Unregister step:
-  - When Bob see a mailbox bob@alice.net
-Available steps:
-  - When {username} create a mailbox {email}
-""".strip()
+
+        Unregistered step:
+
+            When Bob see a mailbox "bob@alice.net"
+
+        Maybe you look for:
+
+            Then {username} see a mailbox {email}
+            When {username} create a mailbox {email}
+            Then the mailbox {email} "{subject}" message is
+
+        Or you want to register a new step:
+
+            @when("Bob see a mailbox \\"bob@alice.net\\"")
+            def step_definition(): ...
+
+        """
     )
 
     assert (
@@ -153,13 +165,18 @@ def test_registry_step_unregistered_extract_fixtures(
 ):
     with pytest.raises(Unregistered) as ctx:
         registry.extract_fixtures("Given", "a nickname Bob", dummy_app=dummy_app)
-    assert (
-        str(ctx.value)
-        == textwrap.dedent("""
-            Unregister step:
-              - Given a nickname Bob
-            Available steps:
-              - Given a set of users:
-              - Given a user {username}
-            """).strip()
-    )
+    assert str(ctx.value) == textwrap.dedent("""
+            Unregistered step:
+
+                Given a nickname Bob
+
+            Maybe you look for:
+
+                Given a user {username}
+
+            Or you want to register a new step:
+
+                @given("a nickname Bob")
+                def step_definition(): ...
+
+            """)
