@@ -38,7 +38,7 @@ lf:
     uv run pytest -sxvvv --lf --base-url http://127.0.0.1:8888
 
 wip:
-    uv run pytest -m wip -sxvvv --lf  --base-url http://127.0.0.1:8888
+    uv run pytest -m wip -sxvvv --lf --base-url http://127.0.0.1:8888
 
 cov test_suite=default_unittest_suite:
     rm -f .coverage
