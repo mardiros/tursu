@@ -136,9 +136,8 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
 
             Then {username} see a mailbox {email}
             When {username} create a mailbox {email}
-            Then the mailbox {email} "{subject}" message is
 
-        Or you want to register a new step:
+        Otherwise, to register this new step:
 
             @when("Bob see a mailbox \\"bob@alice.net\\"")
             def step_definition(): ...
@@ -175,9 +174,31 @@ def test_registry_step_unregistered_extract_fixtures(
 
                 Given a user {username}
 
-            Or you want to register a new step:
+            Otherwise, to register this new step:
 
                 @given("a nickname Bob")
+                def step_definition(): ...
+
+            """)
+
+
+def test_registry_step_unregistered_no_step(
+    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
+):
+    with pytest.raises(Unregistered) as ctx:
+        registry.extract_fixtures(
+            "Given",
+            "some stuff that can't match any registered step",
+            dummy_app=dummy_app,
+        )
+    assert str(ctx.value) == textwrap.dedent("""
+            Unregistered step:
+
+                Given some stuff that can't match any registered step
+
+            To register this new step:
+
+                @given("some stuff that can't match any registered step")
                 def step_definition(): ...
 
             """)

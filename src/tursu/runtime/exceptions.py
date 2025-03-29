@@ -1,13 +1,57 @@
 """Runtime exception"""
 
+import difflib
 import textwrap
-from difflib import get_close_matches
 from typing import TYPE_CHECKING
 
 from tursu.domain.model.steps import StepKeyword
 
 if TYPE_CHECKING:
     from .registry import Tursu
+
+TEMPLATE_WITH_MATCHED_STEPS = """
+Unregistered step:
+
+    {step} {text}
+
+Maybe you look for:
+
+    {registered_list_str}
+
+Otherwise, to register this new step:
+{create_step}
+"""
+
+TEMPLATE_WITHOUT_MATCHED_STEPS = """
+Unregistered step:
+
+    {step} {text}
+
+To register this new step:
+{create_step}
+"""
+
+
+def get_best_matches(
+    text: str,
+    possibilities: list[str],
+    n: int = 5,
+    cutoff: float = 0.3,
+    lgtm_threshold: float = 0.4,
+    sure_threshold: float = 0.5,
+) -> list[str]:
+    matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
+    if len(matches) <= 1:
+        return matches
+
+    scored_matches = [
+        (difflib.SequenceMatcher(None, text, match).ratio(), match) for match in matches
+    ]
+    scored_matches.sort(reverse=True)
+
+    if scored_matches[0][0] >= sure_threshold:
+        return [scored_matches[0][1]]
+    return [match for score, match in scored_matches if score > lgtm_threshold]
 
 
 class Unregistered(RuntimeError):
@@ -20,13 +64,13 @@ class Unregistered(RuntimeError):
     """
 
     def __init__(self, registry: "Tursu", step: StepKeyword, text: str):
-        registered_list = get_close_matches(
+        registered_list = get_best_matches(
             text,
             [f"Given {hdl.pattern.pattern}" for hdl in registry._handlers["Given"]]
             + [f"When {hdl.pattern.pattern}" for hdl in registry._handlers["When"]]
             + [f"Then {hdl.pattern.pattern}" for hdl in registry._handlers["Then"]],
-            cutoff=0.3,
         )
+
         registered_list_str = "\n    ".join(registered_list)
 
         create_step = textwrap.indent(
@@ -39,19 +83,16 @@ class Unregistered(RuntimeError):
             prefix="    ",
         )
 
+        template = (
+            TEMPLATE_WITH_MATCHED_STEPS
+            if registered_list
+            else TEMPLATE_WITHOUT_MATCHED_STEPS
+        )
         super().__init__(
-            textwrap.dedent(
-                f"""
-                Unregistered step:
-
-                    {step} {text}
-
-                Maybe you look for:
-
-                    {{registered_list_str}}
-
-                Or you want to register a new step:
-                {{create_step}}
-                """
-            ).format(registered_list_str=registered_list_str, create_step=create_step)
+            template.format(
+                step=step,
+                text=text,
+                registered_list_str=registered_list_str,
+                create_step=create_step,
+            )
         )
