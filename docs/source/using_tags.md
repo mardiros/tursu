@@ -1,10 +1,11 @@
+(using-tags)=
+
 # Gherkin tag as pytest tag
 
 Gherkin support tags on multiple keywords, such as `Feature`, `Rule`, `Scenario`
 and `Scenario Outline`.
 
 All of them can be used to set a pytest mark and use the `-m` option of pytest.
-
 
 ## Skipping tests
 
@@ -63,4 +64,28 @@ collected 2 items / 1 deselected / 1 selected
 tests/functionals/test_1_Discover_Gherkin_tag.py                   [100%]
 
 =================== 1 passed, 1 deselected in 0.01s =====================
+```
+
+## Write your own tags dependings on your need.
+
+Depending on the what you are working on, you have different needs, if
+you are working.
+
+You may have `@smoke`, `@regression`, `@critical` or even `@mobile` if you ware working
+on a responsive design.
+
+Also note that the marks are available in your step definition using
+the pytest request fixture, and you can access to it by declaring the dependency.
+
+```python
+import time
+import pytest
+
+from tursu import given, then, when
+
+
+@given("example")
+def example(request: pytest.FixtureRequest):
+    if request.node.get_closest_marker("slow_down") is not None:
+        time.sleep(1)
 ```
