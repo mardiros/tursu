@@ -25,3 +25,8 @@ class UserFactory(factory.Factory[User]):
 def a_set_of_users(app: DummyApp, data_table: list[Annotated[User, UserFactory]]):
     for user in data_table:
         app.users[user.username] = user.password
+
+
+@given("a user with the following properties:")
+def on_user(app: DummyApp, data_table: User):
+    app.users[data_table.username] = data_table.password

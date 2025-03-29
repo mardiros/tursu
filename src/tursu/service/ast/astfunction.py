@@ -313,6 +313,107 @@ class TestFunctionWriter:
             call_format_node if call_format_node else text,
         ]
 
+    def parse_data_table(
+        self, step_keyword: StepKeyword, stp: GherkinStep
+    ) -> ast.keyword:
+        """
+        Parse the data table to its step definition signature.
+
+        :param step_keyword: the step definition keyword.
+        :param stp: the step to analyse.
+            the step must have a definved data_table.
+        """
+        registry_step = self.registry.get_step(step_keyword, stp.text)
+
+        assert registry_step, "Step not found"
+        assert stp.data_table, "Step has no data_table"
+        typ: type | None = None
+        is_reversed = False
+        anon = registry_step.pattern.signature.parameters["data_table"].annotation
+        if anon:
+            param_origin = get_origin(anon)
+            if param_origin is Annotated:
+                # we are in a factory
+                is_reversed = True
+                typ = get_args(anon)[-1]
+            elif param_origin and issubclass(param_origin, Sequence):
+                typ = get_args(anon)[0]
+                orig = get_origin(typ)
+                if orig is dict:
+                    typ = None
+                elif orig is Annotated:
+                    typ = get_args(typ)[-1]
+            else:
+                is_reversed = True
+                orig = get_origin(anon)
+                if orig is dict:
+                    typ = None
+                else:
+                    typ = anon
+
+        if typ is None:
+            if is_reversed:
+                rev_tabl = {
+                    row.cells[0].value: row.cells[1].value
+                    for row in stp.data_table.rows
+                }
+                return ast.keyword(arg="data_table", value=ast.Constant(value=rev_tabl))
+            else:
+                tabl = []
+                hdr = [c.value for c in stp.data_table.rows[0].cells]
+                for row in stp.data_table.rows[1:]:
+                    vals = [c.value for c in row.cells]
+                    tabl.append(dict(zip(hdr, vals)))
+
+                return ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+
+        if is_reversed:
+            datatable_keywords = [
+                ast.keyword(
+                    arg=row.cells[0].value,
+                    value=ast.Constant(value=row.cells[1].value),
+                )
+                for row in stp.data_table.rows
+                if row.cells[1].value != self.registry.DATA_TABLE_EMPTY_CELL
+            ]
+            call_rev_datatable_node = ast.Call(
+                func=ast.Name(
+                    id=self.registry.data_tables_types[typ],
+                    ctx=ast.Load(),
+                ),
+                keywords=datatable_keywords,
+            )
+            return ast.keyword(arg="data_table", value=call_rev_datatable_node)
+        else:
+            # we have to parse the value
+            tabl = []
+            hdr = [c.value for c in stp.data_table.rows[0].cells]
+            call_datatable_node: list[ast.expr] = []
+            for row in stp.data_table.rows[1:]:
+                vals = [c.value for c in row.cells]
+                datatable_keywords = []
+                for key, val in zip(hdr, vals):
+                    if val == self.registry.DATA_TABLE_EMPTY_CELL:
+                        # empty string are our null value
+                        continue
+                    datatable_keywords.append(
+                        ast.keyword(arg=key, value=ast.Constant(value=val))
+                    )
+
+                call_datatable_node.append(
+                    ast.Call(
+                        func=ast.Name(
+                            id=self.registry.data_tables_types[typ],
+                            ctx=ast.Load(),
+                        ),
+                        keywords=datatable_keywords,
+                    )
+                )
+            return ast.keyword(
+                arg="data_table",
+                value=ast.List(elts=call_datatable_node, ctx=ast.Load()),
+            )
+
     def build_step_kwargs(
         self, step_keyword: StepKeyword, stp: GherkinStep
     ) -> list[ast.keyword]:
@@ -339,60 +440,7 @@ class TestFunctionWriter:
             )
 
         if stp.data_table:
-            registry_step = self.registry.get_step(step_keyword, stp.text)
-
-            assert registry_step, "Step not found"
-            typ: type | None = None
-            anon = registry_step.pattern.signature.parameters["data_table"].annotation
-            if anon:
-                typ = get_args(anon)[0]
-                orig = get_origin(typ)
-                if orig is dict:
-                    typ = None
-                elif orig is Annotated:
-                    typ = get_args(typ)[-1]
-
-            if typ is None:
-                tabl = []
-                hdr = [c.value for c in stp.data_table.rows[0].cells]
-                for row in stp.data_table.rows[1:]:
-                    vals = [c.value for c in row.cells]
-                    tabl.append(dict(zip(hdr, vals)))
-
-                py_kwargs.append(
-                    ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
-                )
-            else:
-                # we have to parse the value
-                tabl = []
-                hdr = [c.value for c in stp.data_table.rows[0].cells]
-                call_datatable_node: list[ast.expr] = []
-                for row in stp.data_table.rows[1:]:
-                    vals = [c.value for c in row.cells]
-                    datatable_keywords = []
-                    for key, val in zip(hdr, vals):
-                        if val == self.registry.DATA_TABLE_EMPTY_CELL:
-                            # empty string are our null value
-                            continue
-                        datatable_keywords.append(
-                            ast.keyword(arg=key, value=ast.Constant(value=val))
-                        )
-
-                    call_datatable_node.append(
-                        ast.Call(
-                            func=ast.Name(
-                                id=self.registry.data_tables_types[typ],
-                                ctx=ast.Load(),
-                            ),
-                            keywords=datatable_keywords,
-                        )
-                    )
-                py_kwargs.append(
-                    ast.keyword(
-                        arg="data_table",
-                        value=ast.List(elts=call_datatable_node, ctx=ast.Load()),
-                    )
-                )
+            py_kwargs.append(self.parse_data_table(step_keyword, stp))
 
         return py_kwargs
 

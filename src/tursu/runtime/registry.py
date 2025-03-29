@@ -1,7 +1,7 @@
 """Registry of step definition."""
 
 import sys
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
 
@@ -42,7 +42,7 @@ def given(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `Given` Gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
@@ -55,7 +55,7 @@ def when(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `When` gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
@@ -68,7 +68,7 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     Decorator to listen for the `Then` gherkin keyword.
 
     :param pattern: a pattern to extract parameter.
-                    Refer to the [pattern matcher documentation](#pattern-matcher)
+                    Refer to the [step definition documentation](#step-definition)
                     for the syntax.
     :return: the decorate function that have any parameter coming from
              the pattern matcher or pytest fixtures.
@@ -113,13 +113,24 @@ class Tursu:
     def register_data_table(self, step: Step) -> None:
         parameter = step.pattern.signature.parameters.get("data_table")
         if parameter and parameter.annotation:
-            typ = get_args(parameter.annotation)[0]
-            orig = get_origin(typ)
-            if orig is not dict:
-                if orig is Annotated:
-                    typ = get_args(typ)[-1]
-                if typ not in self._data_tables:
-                    self._data_tables[typ] = f"{typ.__name__}{len(self._data_tables)}"
+            param_origin = get_origin(parameter.annotation)
+            if param_origin is Annotated:
+                # we are in a factory
+                typ = get_args(parameter.annotation)[-1]
+            elif param_origin and issubclass(param_origin, Sequence):
+                # we are in a list
+                typ = get_args(parameter.annotation)[0]
+                item_orig = get_origin(typ)
+                if item_orig is not dict:
+                    if item_orig is Annotated:
+                        # the list has a factory
+                        typ = get_args(typ)[-1]
+            else:
+                # this is a reversed data_table, there should be two column
+                typ = parameter.annotation
+
+            if typ is not dict and typ not in self._data_tables:
+                self._data_tables[typ] = f"{typ.__name__}{len(self._data_tables)}"
 
     def get_step(self, step: StepKeyword, text: str, **kwargs: Any) -> Step | None:
         handlers = self._handlers[step]

@@ -64,6 +64,8 @@ Feature: **feature description**
 
 To run the tests marked with wip use the command `pytest` with the option `-m wip`.
 
+See chapter [Gherkin tag as pytest tag](#using-tags) for more.
+
 ## Adding another scenario
 
 When the first scenario works, you may write a new scenario and mark it as **@wip**.

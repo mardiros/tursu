@@ -71,7 +71,7 @@
 
 ````
 
-````{py:method} build_args(fixtures: dict[str, typing.Any], examples_keys: collections.abc.Sequence[typing.Any] | None = None) -> list[ast.arg]
+````{py:method} build_args(fixtures: collections.abc.Mapping[str, typing.Any], examples_keys: collections.abc.Sequence[typing.Any] | None = None) -> list[ast.arg]
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.build_args
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.build_args

@@ -131,7 +131,7 @@ def assert_connected(app: DummyApp, username: str):
 ```{note}
 If you are using extra_types, remove it too, tursu matcher uses python type hinting,
 
-refer to the [pattern matcher documentation](#pattern-matcher) for help.
+refer to the [step definition documentation](#step-definition) for help.
 ```
 
 ### tursu
