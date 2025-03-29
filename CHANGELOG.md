@@ -1,3 +1,17 @@
+0.13.0 - Released on 2025-03-29
+-------------------------------
+* Breaking changes: the tursu_collect_file has moved, so the conftest.py
+  must updated to:
+    ```python
+    from tursu import tursu_collect_file
+
+    tursu_collect_file()
+    ```
+* Implement revered data table ( Column Based ).
+* Documentation improved.
+* Fix usage of request, capsys or even tursu from step definition functions.
+* Refactor and cleanup code
+
 0.12.5 - Released on 2025-03-22
 -------------------------------
 * Internal refactor without new feature.
