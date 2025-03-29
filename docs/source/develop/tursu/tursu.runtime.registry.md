@@ -85,16 +85,6 @@
 
 ````
 
-````{py:property} data_tables_types
-:canonical: tursu.runtime.registry.Tursu.data_tables_types
-:type: dict[type, str]
-
-```{autodoc2-docstring} tursu.runtime.registry.Tursu.data_tables_types
-:parser: myst
-```
-
-````
-
 ````{py:method} extract_fixtures(step: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
 :canonical: tursu.runtime.registry.Tursu.extract_fixtures
 
@@ -113,6 +103,16 @@
 
 ````
 
+````{py:property} models_types
+:canonical: tursu.runtime.registry.Tursu.models_types
+:type: dict[type, str]
+
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.models_types
+:parser: myst
+```
+
+````
+
 ````{py:method} register_data_table(step: tursu.domain.model.steps.Step) -> None
 :canonical: tursu.runtime.registry.Tursu.register_data_table
 
@@ -122,10 +122,28 @@
 
 ````
 
+````{py:method} register_doc_string(step: tursu.domain.model.steps.Step) -> None
+:canonical: tursu.runtime.registry.Tursu.register_doc_string
+
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_doc_string
+:parser: myst
+```
+
+````
+
 ````{py:method} register_handler(type: tursu.domain.model.steps.StepKeyword, pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, handler: tursu.domain.model.steps.Handler) -> None
 :canonical: tursu.runtime.registry.Tursu.register_handler
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_handler
+:parser: myst
+```
+
+````
+
+````{py:method} register_model(parameter: inspect.Parameter | None) -> None
+:canonical: tursu.runtime.registry.Tursu.register_model
+
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_model
 :parser: myst
 ```
 

@@ -2,6 +2,7 @@
 
 import sys
 from collections.abc import Mapping, Sequence
+from inspect import Parameter
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
 
@@ -96,12 +97,12 @@ class Tursu:
             "When": [],
             "Then": [],
         }
-        self._data_tables: dict[type, str] = {}
+        self._models_types: dict[type, str] = {}
 
     @property
-    def data_tables_types(self) -> dict[type, str]:
+    def models_types(self) -> dict[type, str]:
         """ "Registered data types, used in order to build imports on tests."""
-        return self._data_tables
+        return self._models_types
 
     def register_handler(
         self, type: StepKeyword, pattern: str | AbstractPattern, handler: Handler
@@ -109,9 +110,9 @@ class Tursu:
         step = Step(pattern, handler)
         self._handlers[type].append(step)
         self.register_data_table(step)
+        self.register_doc_string(step)
 
-    def register_data_table(self, step: Step) -> None:
-        parameter = step.pattern.signature.parameters.get("data_table")
+    def register_model(self, parameter: Parameter | None) -> None:
         if parameter and parameter.annotation:
             param_origin = get_origin(parameter.annotation)
             if param_origin is Annotated:
@@ -129,8 +130,14 @@ class Tursu:
                 # this is a reversed data_table, there should be two column
                 typ = parameter.annotation
 
-            if typ is not dict and typ not in self._data_tables:
-                self._data_tables[typ] = f"{typ.__name__}{len(self._data_tables)}"
+            if typ is not dict and typ not in self._models_types:
+                self._models_types[typ] = f"{typ.__name__}{len(self._models_types)}"
+
+    def register_data_table(self, step: Step) -> None:
+        self.register_model(step.pattern.signature.parameters.get("data_table"))
+
+    def register_doc_string(self, step: Step) -> None:
+        self.register_model(step.pattern.signature.parameters.get("doc_string"))
 
     def get_step(self, step: StepKeyword, text: str, **kwargs: Any) -> Step | None:
         handlers = self._handlers[step]

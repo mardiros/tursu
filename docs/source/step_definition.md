@@ -264,6 +264,8 @@ Gherkin supports two features: **doc strings** and **data tables**.
 
 These allow for multiline steps, and we'll begin with doc strings for JSON support.
 
+(step-definition-doc-string)=
+
 ### DocString
 
 Multiline text are not feet for gherkin pattern matcher, so a doc string with the
@@ -404,11 +406,27 @@ Gherkin tabular data is nice and can be even nicer with advanced python
 types, or even faked data, so
 
 
-### Arbitrary type from a data table
+### Arbitrary type for doc string and data table
+
+The step definition signature can be annotated with complex type, using libraries
+such as dataclasses or pydantic in order to improve the developper experience
+with type completion and increasing the readability.
 
 ```python
 
 from pydantic import BaseModel
+
+
+class Address(BaseModel):
+    street: str
+    city: str
+    postal_code: str
+
+
+class UserProfile(BaseModel):
+    username: str
+    email: str
+    address: Address
 
 
 class User(BaseModel):
@@ -416,20 +434,51 @@ class User(BaseModel):
     password: str
 
 
+@given("the user provides the following profile data:")
+def create_user_from_json(doc_string: UserProfile):
+    ...
+
+
 @given("the user provides the following informations:")
 def fill_user_table(data_table: list[User]):
     ...
+
 ```
 
+
 ```Gherkin
-Given the user provides the following informations:
+Given the user provides the following profile data:
+  """json
+  {
+    "username": "johndoe",
+    "email": "johndoe@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "Anytown",
+      "postal_code": "12345"
+    }
+  }
+  """
+And the user provides the following informations:
   | username | password  |
   | johndoe  | secret123 |
   | janedoe  | password1 |
 ```
 
 ````{note}
+
+doc_string looks like
+
+```python
+UserProfile(
+  username="johndoe",
+  email="johndoe@example.com",
+  address=Address(street="123 Main St", city="Anytown", postal_code="12345")
+)
+```
+
 data_table looks like
+
 ```python
 [
     User(username="johndoe", password="secret123"),
@@ -437,3 +486,5 @@ data_table looks like
 ]
 ```
 ````
+
+This will be the subject of the [next chapter](#advanced-data-table).

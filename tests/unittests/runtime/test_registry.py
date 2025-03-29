@@ -85,7 +85,12 @@ def test_registry_get_step_none(registry: Tursu):
 
 def test_registry_datatable(registry: Tursu):
     registry.register_data_table(Step("the users dataset is", assert_dataset))
-    assert registry._data_tables[Dataset] == "Dataset1"
+    assert registry.models_types[Dataset] == "Dataset1"
+
+
+def test_registry_doc_string(registry: Tursu):
+    registry.register_doc_string(Step("the API for {username} respond", assert_dataset))
+    assert registry.models_types[DummyMail] == "DummyMail2"
 
 
 def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
@@ -107,7 +112,7 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
         "the API for Bob respond",
         dummy_app=dummy_app,
         doc_string=[
-            {"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}
+            DummyMail(email="bob@alice.net", subject="Welcome Bob", body="...")
         ],
     )
 

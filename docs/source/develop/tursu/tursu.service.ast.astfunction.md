@@ -143,6 +143,15 @@
 
 ````
 
+````{py:method} parse_doc_string(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep) -> ast.keyword
+:canonical: tursu.service.ast.astfunction.TestFunctionWriter.parse_doc_string
+
+```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.parse_doc_string
+:parser: myst
+```
+
+````
+
 ````{py:method} to_ast() -> ast.FunctionDef
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.to_ast
 

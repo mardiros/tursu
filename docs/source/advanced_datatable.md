@@ -20,7 +20,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class User(BaseModel):
+class User:
     username: str
     password: str
 
@@ -41,7 +41,6 @@ class User(BaseModel):
 
 ```
 
-
 ## Usage of model based class.
 
 After the type has been devined, we can replace it in step definitions,
@@ -61,9 +60,10 @@ def fill_user_profile(data_table: User):
 And that's it. Now Turşu will provide data_table mapped to your given models.
 
 ```{important}
-At the moment, nested model are not implemented in Tursu.
+Nested model are not implemented in data table in Turşu,
 
-It may happen in a next release!
+You can achieve it usign a [Doc String that use a model](#advanced-doc-string).
+This is the subject of the [next chapter](#advanced-doc-string).
 ```
 
 You may also notive that the **blanked gherkin column will not be passed to model constructurors**.,
@@ -71,6 +71,7 @@ They will be removed and the default values of the field will be used instead.
 To get more control of the model construction, you can passed a factory.
 
 So the following step will failed:
+
 ```Gherkin
 Given a user with the following informations:
   | username | johndoe   |

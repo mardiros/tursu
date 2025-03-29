@@ -11,3 +11,12 @@ Feature: doc string
       "nick": "Bob"
     }
     """
+
+  Scenario: see the doc string
+    When Bob login with password dumbsecret
+    Then I can parse the docstring
+    """json
+    {
+      "nick": "Bob"
+    }
+    """
