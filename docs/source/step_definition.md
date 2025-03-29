@@ -11,7 +11,7 @@ Tursu has two pattern matcher, a default pattern matcher which is documented her
 
 and a regular expression pattern matcher for even more flexibility, but less readable.
 
-## Default pattern matcher
+## Default Pattern Matcher
 
 The default pattern matcher is based on curly brace to discover variable,
 and it match a single world.
@@ -45,7 +45,7 @@ But if it is enclosed by `"`, then it can be a sentence.
     ```
 :::
 
-### Typing support
+### Typing Support
 
 The default matcher does not enforce the type in the text of the decorator,
 **it use the function signature**.
@@ -209,8 +209,7 @@ def set_feature_flag(feature: FeatureFlagName, status: bool):
 Given the feature flag dark_mode is set to on
 ```
 
-
-## RegEx pattern matcher
+## RegEx Pattern Matcher
 
 This is less readable, but, may be usefull in certain situation,
 
@@ -265,7 +264,32 @@ Gherkin supports two features: **doc strings** and **data tables**.
 
 These allow for multiline steps, and we'll begin with doc strings for JSON support.
 
-### Json
+### DocString
+
+Multiline text are not feet for gherkin pattern matcher, so a doc string with the
+following syntax can be used to capture multiline from a scenario.
+
+#### As text
+
+```python
+@then("the page containts the following text:")
+def create_user_from_json(page: Page, doc_string: string):
+    ...
+```
+
+```Gherkin
+Then the user provides the following profile data:
+"""
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
+Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.
+Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod
+non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum
+diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in,
+pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor.
+"""
+```
+
+#### As JSON
 
 ```python
 @given("the user provides the following profile data:")
@@ -288,26 +312,39 @@ Given the user provides the following profile data:
   """
 ```
 
-```{note}
-When a media type is set to `json` (`"""json` in gherkin docstring)
-then tursu will parse the json and return it as a list or a dict.
+```{tip}
+When a media type is set to `json` (`"""json` in the Gherkin doc string)
+then tursu will parse the json using the python standard library.
 
 Otherwise, a plain string will be returned.
 ```
 
-### List of dict from a data table
+(step-definition-data-table)=
 
-```python
-@given("the user provides the following login credentials:")
-def fill_user_table(data_table: list[dict[str, str]]):
-    ...
-```
+### DataTable
+
+Data table are usefull to get tabular data input. You may have multiple input
+with many row, or a reversed datatable can be used for a single structured input.
+
+(data-table-tabular-data)=
+
+#### Tabular Data
+
+In a tabula data, the data table, is column based and can be seen filled out like:
 
 ```Gherkin
-Given the user provides the following login credentials:
+Given users with the following informations:
   | username | password  |
   | johndoe  | secret123 |
   | janedoe  | password1 |
+```
+
+and in that case we can use the step definition bellow:
+
+```python
+@given("users with the following informations:")
+def fill_user_table(data_table: list[dict[str, str]]):
+    ...
 ```
 
 ````{note}
@@ -320,8 +357,54 @@ data_table looks like
 ```
 ````
 
-### Arbitrary type from a data table
+The type **list** is very important to tell tursu that the data table is list base,
+otherwise, tursu data table parser will interpret it as a row based data table,
+also known as reversed data table.
 
+(reversed-data-table)=
+
+#### Reversed DataTable
+
+A reversed data table is **column based**. It is a key value per.
+
+And it is ideal to fill a profile with many attributes, here we set two attibutes
+for brevity.
+
+```Gherkin
+Given a user with the following informations:
+  | username | johndoe   |
+  | password | secret123 |
+```
+
+```python
+@given("a user with the following informations:")
+def fill_user_profile(data_table: dict[str, str]):
+    ...
+```
+
+````{note}
+data_table looks like
+```python
+    {"username": "johndoe", "password": "secret123"},
+```
+````
+
+
+Because there is no list type annotated, then the tursu parser will
+only used the two first column of the table.
+
+```{tip}
+If you set more attributes on the table then they will be ignored.
+Use them as comment if you want.
+```
+
+#### Using dataclass or pydantic objects.
+
+Gherkin tabular data is nice and can be even nicer with advanced python
+types, or even faked data, so
+
+
+### Arbitrary type from a data table
 
 ```python
 
@@ -333,13 +416,13 @@ class User(BaseModel):
     password: str
 
 
-@given("the user provides the following login credentials:")
+@given("the user provides the following informations:")
 def fill_user_table(data_table: list[User]):
     ...
 ```
 
 ```Gherkin
-Given the user provides the following login credentials:
+Given the user provides the following informations:
   | username | password  |
   | johndoe  | secret123 |
   | janedoe  | password1 |
@@ -376,13 +459,13 @@ class UserFactory(factory.Factory[User]):
 
 
 
-@given("the user provides the following login credentials:")
+@given("the user provides the following informations:")
 def a_set_of_users(app: DummyApp, data_table: list[Annotated[User, UserFactory]]):
     ...
 ```
 
 ```Gherkin
-Given the user provides the following login credentials:
+Given the user provides the following informations:
   | username  | password   |
   | johndoe   | secret123  |
   | janedoe   |            |
