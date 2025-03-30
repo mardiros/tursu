@@ -241,7 +241,7 @@ kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x76103daad940>}
 E           tursu.runner.ScenarioFailed:
 E           ┌────────────────────────────────────────────────────┐
 E           │ 📄 Document: login.feature                         │
-E           │ 🥒 Feature: User login with their own password │
+E           │ 🥒 Feature: User login with their own password     │
 E           │ 🎬 Scenario: User can login                        │
 E           │ ✅ Given a user Bob with password dumbsecret       │
 E           │ ✅ When Bob login with password dumbsecret         │
