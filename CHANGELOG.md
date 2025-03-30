@@ -1,3 +1,10 @@
+0.14.0 - Released on 2025-03-30
+-------------------------------
+* Implement type model for Gherkin json docstring.
+* Fix bug of error reported when a step is not registered.
+* Improve hint whe a step definition has not been found.
+* More documentation.
+
 0.13.0 - Released on 2025-03-29
 -------------------------------
 * Breaking changes: the tursu_collect_file has moved, so the conftest.py
