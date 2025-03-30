@@ -1,4 +1,6 @@
 import textwrap
+from collections.abc import Sequence
+from typing import cast
 
 import pytest
 
@@ -16,7 +18,7 @@ from tests.unittests.runtime.fixtures.steps import (
     create_mailbox,
     give_user,
 )
-from tursu.domain.model.steps import Step
+from tursu.domain.model.steps import Step, StepKeyword
 from tursu.runtime.registry import Tursu, Unregistered
 from tursu.runtime.runner import TursuRunner
 
@@ -123,15 +125,26 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(tursu_runner, "When", "Bob see a mailbox bob@alice.net")
+        registry.run_step(tursu_runner, "When", 'Bob see a mailbox "bob@alice.net"')
 
-    assert str(ctx.value) == (
+    assert str(ctx.value) == textwrap.dedent(
         """\
-Unregister step:
-  - When Bob see a mailbox bob@alice.net
-Available steps:
-  - When {username} create a mailbox {email}
-""".strip()
+
+        Unregistered step:
+
+            When Bob see a mailbox "bob@alice.net"
+
+        Maybe you look for:
+
+            Then {username} see a mailbox {email}
+            When {username} create a mailbox {email}
+
+        Otherwise, to register this new step:
+
+            @when("Bob see a mailbox \\"bob@alice.net\\"")
+            def step_definition(): ...
+
+        """
     )
 
     assert (
@@ -143,6 +156,7 @@ Available steps:
 │ ✅ When Bob create a mailbox bob@alice.net │
 │ ✅ Then Bob see a mailbox bob@alice.net    │
 │ ✅ Then the API for Bob respond            │
+│ ❌ When Bob see a mailbox "bob@alice.net"  │
 └────────────────────────────────────────────┘
 """
     )
@@ -153,13 +167,82 @@ def test_registry_step_unregistered_extract_fixtures(
 ):
     with pytest.raises(Unregistered) as ctx:
         registry.extract_fixtures("Given", "a nickname Bob", dummy_app=dummy_app)
-    assert (
-        str(ctx.value)
-        == textwrap.dedent("""
-            Unregister step:
-              - Given a nickname Bob
-            Available steps:
-              - Given a set of users:
-              - Given a user {username}
-            """).strip()
-    )
+    assert str(ctx.value) == textwrap.dedent("""
+            Unregistered step:
+
+                Given a nickname Bob
+
+            Maybe you look for:
+
+                Given a user {username}
+
+            Otherwise, to register this new step:
+
+                @given("a nickname Bob")
+                def step_definition(): ...
+
+            """)
+
+
+def test_registry_step_unregistered_no_step(
+    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
+):
+    with pytest.raises(Unregistered) as ctx:
+        registry.extract_fixtures(
+            "Given",
+            "some stuff that can't match any registered step",
+            dummy_app=dummy_app,
+        )
+    assert str(ctx.value) == textwrap.dedent("""
+            Unregistered step:
+
+                Given some stuff that can't match any registered step
+
+            To register this new step:
+
+                @given("some stuff that can't match any registered step")
+                def step_definition(): ...
+
+            """)
+
+
+@pytest.mark.wip
+@pytest.mark.parametrize(
+    "steps, text,expected",
+    [
+        pytest.param(
+            ["Given a user {username}"],
+            "Given a user Bob",
+            ["Given a user {username}"],
+            id="One match",
+        ),
+        pytest.param(
+            ["Given a user {name}", "Given a buzzer {name}"],
+            "Given a uzer name",
+            [
+                "Given a buzzer {name}",
+                "Given a user {name}",
+            ],
+            id="Many match",
+        ),
+        pytest.param(
+            [
+                "Given a user {name}",
+                "When the user click on the {role} {name}",
+                "When the user click on the 1st {role} {name}",
+            ],
+            "Then the user click on button",
+            [
+                "When the user click on the {role} {name}",
+                "When the user click on the 1st {role} {name}",
+            ],
+            id="Many match",
+        ),
+    ],
+)
+def test_get_best_match(steps: list[str], text: str, expected: Sequence[str]):
+    registry = Tursu()
+    for step in steps:
+        stp, rest = step.split(" ", 1)
+        registry.register_handler(cast(StepKeyword, stp), rest, lambda: None)
+    assert registry.get_best_matches(text) == expected

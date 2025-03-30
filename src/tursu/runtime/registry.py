@@ -1,5 +1,6 @@
 """Registry of step definition."""
 
+import difflib
 import sys
 from collections.abc import Mapping, Sequence
 from inspect import Parameter
@@ -101,18 +102,38 @@ class Tursu:
 
     @property
     def models_types(self) -> dict[type, str]:
-        """ "Registered data types, used in order to build imports on tests."""
+        """
+        Registered data types, used in order to build imports on tests.
+        The type are aliased during registration to avoid conflict name at import time
+        during the ast generation.
+
+        :return: type as key, alias as value.
+        """
+
         return self._models_types
 
     def register_handler(
         self, type: StepKeyword, pattern: str | AbstractPattern, handler: Handler
     ) -> None:
+        """
+        Register a step handler for a step definition.
+
+        This method is the primitive for [@given](#tursu.given),
+        [@when](#tursu.when) and [@then](#tursu.then) decorators.
+
+        :param type: gherkin keyword for the definition.
+        :param pattern: pattern to match the definition.
+        :param handler: function called when a step in a scenario match the pattern.
+        """
         step = Step(pattern, handler)
         self._handlers[type].append(step)
         self.register_data_table(step)
         self.register_doc_string(step)
 
     def register_model(self, parameter: Parameter | None) -> None:
+        """
+        Register the model in the parameter of a signature for data_table or doc_string.
+        """
         if parameter and parameter.annotation:
             param_origin = get_origin(parameter.annotation)
             if param_origin is Annotated:
@@ -134,21 +155,80 @@ class Tursu:
                 self._models_types[typ] = f"{typ.__name__}{len(self._models_types)}"
 
     def register_data_table(self, step: Step) -> None:
+        """
+        This method register the data table as a model.
+
+        :param step: The step containing a data_table parameter.
+        """
         self.register_model(step.pattern.signature.parameters.get("data_table"))
 
     def register_doc_string(self, step: Step) -> None:
+        """
+        This method register the doc string as a model.
+
+        :param step: The step containing a doc_string parameter.
+        """
         self.register_model(step.pattern.signature.parameters.get("doc_string"))
 
-    def get_step(self, step: StepKeyword, text: str, **kwargs: Any) -> Step | None:
+    def get_step(self, step: StepKeyword, text: str) -> Step | None:
+        """
+        Get the first registered step that match the text.
+
+        :param type: gherkin keyword for the definition.
+        :param text: text to match the definition.
+        :return: the register step if exists otherwise None.
+        """
         handlers = self._handlers[step]
         for handler in handlers:
             if handler.pattern.match(text):
                 return handler
         return None
 
+    def get_best_matches(
+        self,
+        text: str,
+        n: int = 5,
+        cutoff: float = 0.3,
+        lgtm_threshold: float = 0.4,
+        sure_threshold: float = 0.7,
+    ) -> Sequence[str]:
+        """
+        Return the gherkin steps from the registry that look like the given text.
+        This method is called if no step definition matches to build a proper hint
+        for the user.
+
+        :param text: text to match the definition.
+        """
+        possibilities = [
+            *[f"Given {hdl.pattern.pattern}" for hdl in self._handlers["Given"]],
+            *[f"When {hdl.pattern.pattern}" for hdl in self._handlers["When"]],
+            *[f"Then {hdl.pattern.pattern}" for hdl in self._handlers["Then"]],
+        ]
+        matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
+        if len(matches) <= 1:
+            return matches
+
+        scored_matches = [
+            (difflib.SequenceMatcher(None, text, match).ratio(), match)
+            for match in matches
+        ]
+        scored_matches.sort(reverse=True)
+
+        if scored_matches[0][0] >= sure_threshold:
+            return [match for score, match in scored_matches if score > sure_threshold]
+        return [match for score, match in scored_matches if score > lgtm_threshold]
+
     def run_step(
         self, tursu_runner: "TursuRunner", step: StepKeyword, text: str, **kwargs: Any
     ) -> None:
+        """
+        Run the step that match the parameter and emit information to the runner.
+
+        :param tursu_runner: the fixtures pytest fixtures from the test function.
+        :param step: gherkin step to match.
+        :param text: text to match the definition.
+        :param kwargs: the fixtures pytest fixtures from the test function.
+        """
         handlers = self._handlers[step]
         for handler in handlers:
             matches = handler.pattern.get_matches(text, kwargs)
@@ -163,11 +243,22 @@ class Tursu:
                     tursu_runner.emit_success(step, handler, matches)
                 break
         else:
+            tursu_runner.emit_error(
+                step, Step(text, lambda: None), {}, unregistered=True
+            )
             raise Unregistered(self, step, text)
 
     def extract_fixtures(
         self, step: StepKeyword, text: str, **kwargs: Any
     ) -> Mapping[str, Any]:
+        """
+        Extract fixture for a step from the given pytest fixtures of the test function.
+
+        :param step: gherkin step to match.
+        :param text: text to match the definition.
+        :param kwargs: the fixtures pytest fixtures from the test function.
+        :return: the fixtures for the step handler.
+        """
         handlers = self._handlers[step]
         for handler in handlers:
             fixtures = handler.pattern.extract_fixtures(text)
@@ -180,6 +271,8 @@ class Tursu:
     def scan(self, mod: ModuleType | None = None) -> "Tursu":
         """
         Scan the module (or modules) containing steps.
+
+        :return: the current tursu registry for multiple scan purpose.
         """
         if mod is None:
             import inspect

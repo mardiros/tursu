@@ -1,11 +1,34 @@
 """Runtime exception"""
 
+import textwrap
 from typing import TYPE_CHECKING
 
 from tursu.domain.model.steps import StepKeyword
 
 if TYPE_CHECKING:
     from .registry import Tursu
+
+TEMPLATE_WITH_MATCHED_STEPS = """
+Unregistered step:
+
+    {step} {text}
+
+Maybe you look for:
+
+    {registered_list_str}
+
+Otherwise, to register this new step:
+{create_step}
+"""
+
+TEMPLATE_WITHOUT_MATCHED_STEPS = """
+Unregistered step:
+
+    {step} {text}
+
+To register this new step:
+{create_step}
+"""
 
 
 class Unregistered(RuntimeError):
@@ -18,13 +41,30 @@ class Unregistered(RuntimeError):
     """
 
     def __init__(self, registry: "Tursu", step: StepKeyword, text: str):
-        registered_list = [
-            f"{step} {hdl.pattern.pattern}" for hdl in registry._handlers[step]
-        ]
-        CR = "\n"
-        registered_list_str = "\n  - ".join(registered_list)
+        registered_list = registry.get_best_matches(text)
+
+        registered_list_str = "\n    ".join(registered_list)
+
+        create_step = textwrap.indent(
+            textwrap.dedent(
+                f"""
+                @{step.lower()}("{text.replace('"', '\\"')}")
+                def step_definition(): ...
+                """
+            ),
+            prefix="    ",
+        )
+
+        template = (
+            TEMPLATE_WITH_MATCHED_STEPS
+            if registered_list
+            else TEMPLATE_WITHOUT_MATCHED_STEPS
+        )
         super().__init__(
-            f"Unregister step:{CR}"
-            f"  - {step} {text}{CR}Available steps:{CR}"
-            f"  - {registered_list_str}"
+            template.format(
+                step=step,
+                text=text,
+                registered_list_str=registered_list_str,
+                create_step=create_step,
+            )
         )
