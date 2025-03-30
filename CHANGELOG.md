@@ -1,3 +1,7 @@
+0.14.1 - Released on 2025-03-30
+-------------------------------
+* Remove backslash in f-string for python 3.10 an 3.11 support.
+
 0.14.0 - Released on 2025-03-30
 -------------------------------
 * Implement type model for Gherkin json docstring.
