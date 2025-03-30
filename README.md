@@ -164,7 +164,6 @@ or even decorate with tag and use pytest markers (`pytest -m <tag>`).
 
 ```
 
-
 ## Get errors context
 
 ```bash
@@ -261,18 +260,24 @@ the `???` in the context are replaced by the generated python test function.
 This my be usefull in case of hard time debugging.
 ```
 
-
 ### All Gherkin features are support.
 
-Turşu use the gherkin-official package to parse scenario, however,
-they must be compiled to pytest tests function, implementation in development.
+Turşu use the [gherkin-official](https://pypi.org/project/gherkin-official/)
+package to parse Gherkin Scenario beeing compiled to python.
 
-- ✅ Scenario
-- ✅ Scenario Outlines / Examples
-- ✅ Background
+- ✅ Feature  *(converted to python module)*
+- ✅ Scenario *(converted to python test functions)*
+- ✅ Scenario Outlines / Examples *(converted to @pytest.mark.parametrized test function)*
+- ✅ Background *(Step copied to all the function of the scenario)*
 - ✅ Rule
-- ✅ Feature
-- ✅ Steps (Given, When, Then, And, But)
-- ✅ Tags  (converted as pytest marker)
-- ✅ Doc String
-- ✅ Datatables
+- ✅ Steps *(Given, When, Then, And, But, bound to the step definition provided.)*
+- ✅ Tags *(converted as pytest marker on Feature, Scenario, Scenario Outline and Rule)*
+- ✅ Doc String *(support casting of json to python model with the lib of your choice: pydantic, dataclasses,...)*
+- ✅ Data Table *(support casting to python model with the lib of your choice: pydantic, dataclasses,...)*
+
+
+### Great support of playwright.
+
+Combining Turşu and [pytest-playwright](https://pypi.org/project/pytest-playwright/)
+is a great experience.
+See the [example in the documentation](https://mardiros.github.io/tursu/working_with_playwright.html)
