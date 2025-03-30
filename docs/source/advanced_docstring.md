@@ -69,7 +69,7 @@ If the model of the doc_string argument is **Annotated**, then the factory
 will be used to contruct the model, it can be usefull to inject the data
 you need for you expectation, or random data.
 
-Here is an example:
+Here is an example with factory-boy:
 
 ```python
 import factory
