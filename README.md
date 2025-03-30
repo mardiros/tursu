@@ -12,6 +12,9 @@ and execute them using **pytest**.
 It compiles Gherkin syntax into Python code using **Abstract Syntax Tree (AST)** manipulation,
 enabling seamless integration with pytest for running your tests.
 
+Enjoy practicing BDD in modern Python (3.10+), type hinting, dataclasses or Pydantic, pytest,
+playwright.
+
 ## Features
 
 - Write tests using **Gherkin syntax**.
@@ -281,3 +284,7 @@ package to parse Gherkin Scenario beeing compiled to python.
 Combining Turşu and [pytest-playwright](https://pypi.org/project/pytest-playwright/)
 is a great experience.
 See the [example in the documentation](https://mardiros.github.io/tursu/working_with_playwright.html)
+
+### Great support of pytest fixtures and faker.
+
+See the [example in the documentation](https://mardiros.github.io/tursu/working_with_fixtures.html)
