@@ -44,11 +44,11 @@ class Unregistered(RuntimeError):
         registered_list = registry.get_best_matches(text)
 
         registered_list_str = "\n    ".join(registered_list)
-
+        safe_text = text.replace('"', '\\"')
         create_step = textwrap.indent(
             textwrap.dedent(
                 f"""
-                @{step.lower()}("{text.replace('"', '\\"')}")
+                @{step.lower()}("{safe_text}")
                 def step_definition(): ...
                 """
             ),
