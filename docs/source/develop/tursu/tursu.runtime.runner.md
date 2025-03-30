@@ -238,7 +238,7 @@ Bases: {py:obj}`Exception`
 
 ````
 
-````{py:method} emit_error(keyword: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.Step, matches: collections.abc.Mapping[str, typing_extensions.Any]) -> None
+````{py:method} emit_error(keyword: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.Step, matches: collections.abc.Mapping[str, typing_extensions.Any], *, unregistered: bool = False) -> None
 :canonical: tursu.runtime.runner.TursuRunner.emit_error
 
 ```{autodoc2-docstring} tursu.runtime.runner.TursuRunner.emit_error
