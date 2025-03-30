@@ -13,6 +13,7 @@ step_definition
 advanced_datatable
 advanced_docstring
 using_tags
+working_with_fixtures
 working_with_playwright
 migrate_from_behave
 migrate_from_pytest_bdd
