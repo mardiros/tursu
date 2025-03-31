@@ -1,3 +1,8 @@
+0.14.2 - Released on 2025-03-31
+-------------------------------
+* Fix docstring in pure str (properly typed...).
+* Add support of docstring using python literals.
+
 0.14.1 - Released on 2025-03-30
 -------------------------------
 * Remove backslash in f-string for python 3.10 an 3.11 support.
