@@ -122,3 +122,28 @@ doc_string looks like
 ]
 ```
 ````
+
+# Doc String With AST literals
+
+Docstring can also be pure python literals,
+in that case they will be parsed with the
+[ast.literal_eval](https://docs.python.org/3/library/ast.html#ast.literal_eval)
+function.
+
+This is **limitted to** python literal structures: **strings, bytes, numbers, tuples,
+lists, dicts, sets, booleans, None and Ellipsis**.
+
+It cab be convenience for small structures to avoid extra schema, such as:
+
+```Gherkin
+Given a set of super power:
+  """python
+    {"foo", "bar"}
+  """
+```
+
+```gherkin
+@given("a set of super power:")
+def a_set_of_users(doc_string: set[str]):
+    ...
+```

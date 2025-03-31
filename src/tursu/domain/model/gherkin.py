@@ -7,6 +7,7 @@ layer in order to works with typed object instead of typed dict.
 It also clean up keywords and add representation for the output.
 """
 
+import ast
 import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -91,8 +92,15 @@ class GherkinDocString(BaseModel):
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> "GherkinDocString":
-        if self.media_type == "json" and isinstance(self.content, str):
-            self.content = json.loads(self.content)
+        if not isinstance(self.content, str):
+            return self
+        match self.media_type:
+            case "json":
+                self.content = json.loads(self.content)
+            case "python":
+                self.content = ast.literal_eval(self.content)
+            case _:
+                ...
         return self
 
 
