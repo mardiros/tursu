@@ -262,10 +262,14 @@ def given_raw_revesed_data_table(data_table: dict[str, str]): ...
 
 def given_raw_doc_string(doc_string: str): ...
 
+
 def given_doc_string(doc_string: dict[str, str]): ...
 
 
 def given_doc_string_seq(doc_string: list[dict[str, str]]): ...
+
+
+def given_ast_doc_string(doc_string: set[str]): ...
 
 
 class User(BaseModel):
@@ -1007,6 +1011,30 @@ def test_parse_data_table(
                 """
             ).strip(),
             id="list",
+        ),
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content='{"alice"}',
+                    delimiter="",
+                    mediaType="python",
+                ),
+            ),
+            given_ast_doc_string,
+            textwrap.dedent(
+                """
+                def test_dummy():
+                    step(doc_string={'alice'})
+                """
+            ).strip(),
+            id="ast set",
         ),
         pytest.param(
             [],

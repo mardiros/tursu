@@ -345,7 +345,7 @@ class TestFunctionWriter:
                 else:
                     typ = anon
 
-        if typ and typ is not str:
+        if typ and typ is not str and stp.doc_string.media_type != "python":
             doc_string_keywords = []
             call_doc_string_node: ast.expr
             if isinstance(stp.doc_string.content, str):
