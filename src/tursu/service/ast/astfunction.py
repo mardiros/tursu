@@ -345,8 +345,8 @@ class TestFunctionWriter:
                 else:
                     typ = anon
 
-        if typ:
-            datatable_keywords = []
+        if typ and typ is not str:
+            doc_string_keywords = []
             call_doc_string_node: ast.expr
             if isinstance(stp.doc_string.content, str):
                 data = json.loads(stp.doc_string.content)
@@ -355,7 +355,7 @@ class TestFunctionWriter:
             if is_list:
                 doc_string_models: list[ast.expr] = []
                 for model in cast(Sequence[Mapping[str, Any]], data):
-                    datatable_keywords = [
+                    doc_string_keywords = [
                         ast.keyword(
                             arg=key,
                             value=ast.Constant(value=val),
@@ -370,13 +370,13 @@ class TestFunctionWriter:
                                 id=self.registry.models_types[typ],
                                 ctx=ast.Load(),
                             ),
-                            keywords=datatable_keywords,
+                            keywords=doc_string_keywords,
                         )
                     )
 
                 call_doc_string_node = ast.List(elts=doc_string_models, ctx=ast.Load())
             else:
-                datatable_keywords = [
+                doc_string_keywords = [
                     ast.keyword(
                         arg=key,
                         value=ast.Constant(value=val),
@@ -390,7 +390,7 @@ class TestFunctionWriter:
                         id=self.registry.models_types[typ],
                         ctx=ast.Load(),
                     ),
-                    keywords=datatable_keywords,
+                    keywords=doc_string_keywords,
                 )
             return ast.keyword(arg="doc_string", value=call_doc_string_node)
 

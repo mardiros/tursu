@@ -260,6 +260,8 @@ def given_raw_data_table(data_table: list[dict[str, str]]): ...
 def given_raw_revesed_data_table(data_table: dict[str, str]): ...
 
 
+def given_raw_doc_string(doc_string: str): ...
+
 def given_doc_string(doc_string: dict[str, str]): ...
 
 
@@ -507,7 +509,7 @@ def test_build_args(
                     mediaType="csv",
                 ),
             ),
-            given_doc_string,
+            given_raw_doc_string,
             textwrap.dedent(
                 """
                 def test_dummy():
@@ -949,7 +951,7 @@ def test_parse_data_table(
                     mediaType="csv",
                 ),
             ),
-            given_doc_string,
+            given_raw_doc_string,
             textwrap.dedent(
                 """
             def test_dummy():
