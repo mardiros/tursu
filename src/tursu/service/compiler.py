@@ -127,16 +127,12 @@ class GherkinCompiler:
                     )
                     assert module_node is not None
                     module_node.append_test(test_function)
-                    fixtures = {}
+                    module_node.append_fixtures(test_function.fixtures)
                     if background_steps:
                         for step in background_steps:
                             test_function.add_step(step, stack)
-                            fixtures.update(test_function.fixtures)
                     for step in steps:
                         test_function.add_step(step, stack)
-                        fixtures.update(test_function.fixtures)
-
-                    module_node.append_fixtures(fixtures)
 
                 case GherkinScenarioOutline(steps=steps, examples=examples):
                     test_function = TestFunctionWriter(
@@ -144,6 +140,7 @@ class GherkinCompiler:
                     )
                     assert module_node is not None
                     module_node.append_test(test_function)
+                    module_node.append_fixtures(test_function.fixtures)
                     if background_steps:
                         for step in background_steps:
                             test_function.add_step(step, stack)
