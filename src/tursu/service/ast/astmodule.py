@@ -21,10 +21,22 @@ class TestModuleWriter:
     def __init__(
         self, feature: GherkinFeature, registry: Tursu, stack: Sequence[Any]
     ) -> None:
+        self.feature = feature
+        self.fixtures: dict[str, type] = {}
+        self.registry = registry
+
+        self.module_name = stack[0].name
+        self.tests_fn: list[ast.stmt] = []
+
+    def append_fixtures(self, fixtures: dict[str, type]) -> None:
+        self.fixtures.update(fixtures)
+
+    def import_stmt(self) -> list[ast.stmt]:
         import_mods: list[ast.stmt] = [
             ast.Expr(
                 value=ast.Constant(
-                    f"{feature.name}\n\n{feature.description}".strip(), lineno=1
+                    f"{self.feature.name}\n\n{self.feature.description}".strip(),
+                    lineno=1,
                 )
             ),
             ast.ImportFrom(
@@ -48,27 +60,42 @@ class TestModuleWriter:
                 level=0,
             ),
         ]
-        for typ, alias in registry.models_types.items():
+        for typ, alias in self.registry.models_types.items():
             import_mods.append(
                 ast.ImportFrom(
                     module=typ.__module__,
                     names=[
-                        ast.alias(name=typ.__qualname__, asname=alias),
+                        ast.alias(name=typ.__name__, asname=alias),
                     ],
                     level=0,
                 )
             )
 
-        self.module_name = stack[0].name
-        self.module_node = ast.Module(
-            body=import_mods,
-            type_ignores=[],
-        )
+        fixtures = self.registry.get_fixtures()
+
+        for key, _typ in self.fixtures.items():
+            # register fixture that are declared with their step definition
+            if key in fixtures:
+                import_mods.append(
+                    ast.ImportFrom(
+                        module=fixtures[key].__module__,
+                        names=[
+                            ast.alias(name=fixtures[key].__name__),
+                        ],
+                        level=0,
+                    )
+                )
+            # we may import the type and type it in the ast function.
+
+        return import_mods
 
     def append_test(self, fn: TestFunctionWriter) -> None:
         """Append a test function to the module."""
-        self.module_node.body.append(fn.to_ast())
+        self.tests_fn.append(fn.to_ast())
 
     def to_ast(self) -> ast.Module:
         """Convert the current state to ast code."""
-        return self.module_node
+        return ast.Module(
+            body=self.import_stmt() + self.tests_fn,
+            type_ignores=[],
+        )

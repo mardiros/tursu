@@ -1,8 +1,25 @@
 from dataclasses import dataclass
 
+import pytest
+
 from tursu import given, then, when
 
-from .conftest import DummyApp
+
+class DummyApp:
+    """Represent a tested application"""
+
+    def __init__(self):
+        self.users = {}
+        self.connected_user: str | None = None
+
+    def login(self, username: str, password: str) -> None:
+        if username in self.users and self.users[username] == password:
+            self.connected_user = username
+
+
+@pytest.fixture()
+def app() -> DummyApp:
+    return DummyApp()
 
 
 @dataclass

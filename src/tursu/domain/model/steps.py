@@ -1,6 +1,7 @@
 """Step definition hooks."""
 
 import inspect
+import sys
 from collections.abc import Mapping
 from typing import Any, Callable, Literal
 
@@ -23,6 +24,16 @@ and fallback to pytest fixtures.
 """
 
 
+def discover_fixtures(hook: Callable[..., None]) -> dict[str, type]:
+    signature = inspect.signature(hook)
+    module = sys.modules[hook.__module__]
+    fixtures: dict[str, type] = {}
+    for key in signature.parameters:
+        if hasattr(module, key):
+            fixtures[key] = getattr(module, key)
+    return fixtures
+
+
 class Step:
     """
     Step definition.
@@ -41,6 +52,7 @@ class Step:
 
         self.pattern = matcher(pattern, inspect.signature(hook))
         self.hook = hook
+        self.fixtures: Mapping[str, type] = discover_fixtures(hook)
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Step):

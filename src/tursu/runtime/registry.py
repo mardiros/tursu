@@ -100,6 +100,13 @@ class Tursu:
         }
         self._models_types: dict[type, str] = {}
 
+    def get_fixtures(self) -> Mapping[str, type]:
+        fixtures: dict[str, type] = {}
+        for handlers in self._handlers.values():
+            for handler in handlers:
+                fixtures.update(handler.fixtures)
+        return fixtures
+
     @property
     def models_types(self) -> dict[type, str]:
         """

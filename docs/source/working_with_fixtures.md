@@ -136,9 +136,6 @@ def assert_connected(app: DummyApp, username: str):
     assert app.connected_user == username
 
 
-@then("the user is not connected")
-def assert_not_connected(app: DummyApp):
-    assert app.connected_user is None
 ```
 
 As you can see, the gherkin pattern matcher will not have username and password
