@@ -1,6 +1,6 @@
-import pytest
-
 from dataclasses import dataclass
+
+import pytest
 
 from tursu import given, then, when
 
