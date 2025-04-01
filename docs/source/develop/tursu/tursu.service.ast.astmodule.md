@@ -39,10 +39,28 @@
 :parser: myst
 ```
 
+````{py:method} append_fixtures(fixtures: dict[str, type]) -> None
+:canonical: tursu.service.ast.astmodule.TestModuleWriter.append_fixtures
+
+```{autodoc2-docstring} tursu.service.ast.astmodule.TestModuleWriter.append_fixtures
+:parser: myst
+```
+
+````
+
 ````{py:method} append_test(fn: tursu.service.ast.astfunction.TestFunctionWriter) -> None
 :canonical: tursu.service.ast.astmodule.TestModuleWriter.append_test
 
 ```{autodoc2-docstring} tursu.service.ast.astmodule.TestModuleWriter.append_test
+:parser: myst
+```
+
+````
+
+````{py:method} import_stmt() -> list[ast.stmt]
+:canonical: tursu.service.ast.astmodule.TestModuleWriter.import_stmt
+
+```{autodoc2-docstring} tursu.service.ast.astmodule.TestModuleWriter.import_stmt
 :parser: myst
 ```
 

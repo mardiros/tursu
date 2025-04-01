@@ -23,6 +23,19 @@
     ```
 ````
 
+### Functions
+
+````{list-table}
+:class: autosummary longtable
+:align: left
+
+* - {py:obj}`discover_fixtures <tursu.domain.model.steps.discover_fixtures>`
+  - ```{autodoc2-docstring} tursu.domain.model.steps.discover_fixtures
+    :parser: myst
+    :summary:
+    ```
+````
+
 ### Data
 
 ````{list-table}
@@ -107,4 +120,12 @@
 :parser: myst
 ```
 
+````
+
+````{py:function} discover_fixtures(hook: typing.Callable[..., None]) -> dict[str, type]
+:canonical: tursu.domain.model.steps.discover_fixtures
+
+```{autodoc2-docstring} tursu.domain.model.steps.discover_fixtures
+:parser: myst
+```
 ````
