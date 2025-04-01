@@ -117,6 +117,7 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
     from tursu.runtime.registry import Tursu
     from tursu.runtime.runner import TursuRunner
     from tests.unittests.service.fixtures.steps import User as User0
+    from tests.unittests.service.fixtures.steps import app
 
     def test_7_User_can_login(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any):
         """User can login"""

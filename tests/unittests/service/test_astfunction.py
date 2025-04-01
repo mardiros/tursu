@@ -7,7 +7,7 @@ import pytest
 from pydantic.main import BaseModel
 from typing_extensions import Any
 
-from tests.unittests.service.fixtures.conftest import DummyApp
+from tests.unittests.service.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import (
     GherkinCell,
     GherkinDataTable,
