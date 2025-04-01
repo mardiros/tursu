@@ -7,7 +7,7 @@ faker = Faker()
 
 
 class DummyApp:
-    """Represent a tested application"""
+    """Represent a tested application."""
 
     def __init__(self):
         self.users = {}

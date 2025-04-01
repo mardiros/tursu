@@ -21,11 +21,11 @@ method will consume the fixture to setup the context.
 So imagine we have this dummy application, below that don't use any
 database but it could, and we just have a user database and a login method.
 
-## The application to test in a fixture
+## The application
 
 ```python
 class DummyApp:
-    """Represent a tested application"""
+    """Represent a tested application."""
 
     def __init__(self):
         self.users = {}
@@ -58,7 +58,7 @@ from tursu import given, then, when
 
 
 class DummyApp:
-    """Represent a tested application"""
+    """Represent a tested application."""
 
     def __init__(self):
         self.users = {}
