@@ -4,7 +4,7 @@ from collections.abc import Iterator
 import pytest
 
 from tests.unittests.runtime.fixtures.steps import DummyApp
-from tursu.runtime.registry import Tursu
+from tursu.runtime.registry import ModRegistry, Tursu
 from tursu.runtime.runner import ScenarioFailed, TursuRunner
 
 
@@ -33,13 +33,18 @@ class TursuRunnerNoLog(TursuRunner):
 
 @pytest.fixture()
 def tursu_runner(
-    registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
+    registry: Tursu,
+    request: pytest.FixtureRequest,
+    capsys: pytest.CaptureFixture[str],
+    gherkin_test_module: pytest.Package,
 ) -> Iterator[TursuRunnerNoLog]:
+    oldparent, request.node.parent = request.node.parent, gherkin_test_module
     old_verbose = request.config.option.verbose
     request.config.option.verbose = max(request.config.option.verbose, 1)
     with TursuRunnerNoLog(request, capsys, registry) as runner:
         yield runner
     request.config.option.verbose = old_verbose
+    request.node.parent = oldparent
 
 
 def test_remove_ansi_escape_sequences(tursu_runner: TursuRunner):
@@ -118,13 +123,11 @@ def test_format_example_step(tursu_runner: TursuRunner):
     ],
 )
 def test_emit_running(
-    verbose: bool,
-    tursu_runner: TursuRunner,
-    registry: Tursu,
+    verbose: bool, tursu_runner: TursuRunner, mod_registry: ModRegistry
 ):
     tursu_runner.verbose = verbose
     tursu_runner.emit_running(
-        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[90m\x1b[0m",
@@ -139,15 +142,13 @@ def test_emit_running(
     ],
 )
 def test_emit_error(
-    verbose: bool,
-    tursu_runner: TursuRunner,
-    registry: Tursu,
+    verbose: bool, tursu_runner: TursuRunner, mod_registry: ModRegistry
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_error(
-        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[91m❌ Given\x1b[0m a user \x1b[36mbob\x1b[91m\x1b[0m",
@@ -164,13 +165,13 @@ def test_emit_error(
 def test_emit_success(
     verbose: bool,
     tursu_runner: TursuRunner,
-    registry: Tursu,
+    mod_registry: ModRegistry,
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = verbose
     tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_success(
-        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[92m\x1b[0m",
@@ -189,12 +190,12 @@ def test_emit_success_color(
     start_shift: int,
     expected: str,
     tursu_runner: TursuRunner,
-    registry: Tursu,
+    mod_registry: ModRegistry,
 ):
     tursu_runner.runned.append("⏳")
     tursu_runner.verbose = 1
     tursu_runner.start_time = time.perf_counter() - start_shift / 1000
     tursu_runner.emit_success(
-        "Given", registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
     )
     assert expected in tursu_runner.runned[0]

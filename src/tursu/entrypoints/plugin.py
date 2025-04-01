@@ -30,6 +30,15 @@ def tursu() -> Tursu:
     return _tursu
 
 
+def build_pkg(node: Any) -> str:
+    parts: list[str] = []
+    while node.__class__ is pytest.Package:
+        parts.append(node.name)
+        node = node.parent
+    parts.reverse()
+    return ".".join(parts)
+
+
 class GherkinTestModule(pytest.Module):
     """
     A pytest collector made for gherkin .scenario files.
@@ -41,14 +50,23 @@ class GherkinTestModule(pytest.Module):
     :param **kwargs: pytest extra parameters.
     """
 
-    def __init__(self, path: Path, tursu: Tursu, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        path: Path,
+        tursu: Tursu,
+        parent: pytest.Module | None = None,
+        **kwargs: Any,
+    ) -> None:
         doc = GherkinDocument.from_file(path)
         self.gherkin_doc = path.name
-        compiler = GherkinCompiler(doc, tursu)
+        assert parent
+
+        self.module_name = build_pkg(parent)
+        compiler = GherkinCompiler(doc, tursu, self.module_name)
         self.test_mod = case = compiler.to_module()
 
         self.test_casefile = path.parent / case.filename
-        super().__init__(path=self.test_casefile, **kwargs)
+        super().__init__(path=self.test_casefile, parent=parent, **kwargs)
         if (
             self.session.config.getoption("--trace")
             or self.session.config.option.verbose == 3

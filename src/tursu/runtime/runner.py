@@ -55,6 +55,7 @@ class TursuRunner:
         tursu: Tursu,
         scenario: list[str],
     ) -> None:
+        self.module_name = request.node.parent.module_name
         self.name = request.node.nodeid
         self.verbose = request.config.option.verbose
         self.tursu = tursu

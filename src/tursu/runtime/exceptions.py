@@ -40,8 +40,10 @@ class Unregistered(RuntimeError):
     :param text: the text that did not match any step definition.
     """
 
-    def __init__(self, registry: "Tursu", step: StepKeyword, text: str):
-        registered_list = registry.get_best_matches(text)
+    def __init__(
+        self, module_name: str, registry: "Tursu", step: StepKeyword, text: str
+    ):
+        registered_list: list[str] = registry.get_best_matches(module_name, text)
 
         registered_list_str = "\n    ".join(registered_list)
         safe_text = text.replace('"', '\\"')

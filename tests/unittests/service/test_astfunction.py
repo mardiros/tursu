@@ -65,7 +65,13 @@ def test_fixtures(
     steps: Sequence[GherkinStep],
     expected_fixtures: dict[str, type],
 ):
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     fixtures = fn.build_fixtures(steps, registry)
     assert fixtures == expected_fixtures
 
@@ -94,7 +100,13 @@ def test_fixtures_invalid(
     steps: Sequence[GherkinStep],
     expected_error: str,
 ):
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     with pytest.raises(ValueError) as ctx:
         fn.build_fixtures(steps, registry)
     assert str(ctx.value) == expected_error
@@ -139,7 +151,13 @@ def test_build_tags_decorators(
     stack: Sequence[Any],
     expected_result: str,
 ):
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     decorators = fn.build_tags_decorators(stack)
 
     module = ast.Module(
@@ -210,7 +228,13 @@ def test_get_keyword(
     steps: Sequence[GherkinStep],
     expected_keywords: Sequence[StepKeyword],
 ):
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     keywords = [fn.get_keyword(step) for step in steps]
     assert keywords == expected_keywords
 
@@ -239,7 +263,13 @@ def test_get_keyword_error(
     steps: Sequence[GherkinStep],
     expected_error: str,
 ):
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     with pytest.raises(ValueError) as ctx:
         fn.get_keyword(steps[0])
     assert str(ctx.value) == expected_error
@@ -366,7 +396,13 @@ def test_build_args(
     expected_result: str,
 ):
     registry = Tursu()
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     args = fn.build_args(fixtures, examples_keys)
 
     module = ast.Module(
@@ -533,8 +569,16 @@ def test_build_step_kwargs(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(step_keyword, step.text, handler)
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    registry.register_handler(
+        "tests.unittests.service.fixtures", step_keyword, step.text, handler
+    )
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     kwargs = fn.build_step_kwargs(step_keyword, step)
 
     module = ast.Module(
@@ -908,8 +952,16 @@ def test_parse_data_table(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(step_keyword, step.text, handler)
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    registry.register_handler(
+        "tests.unittests.service.fixtures", step_keyword, step.text, handler
+    )
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     kwargs = fn.parse_data_table(step_keyword, step)
 
     module = ast.Module(
@@ -1167,8 +1219,16 @@ def test_parse_docstring(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(step_keyword, step.text, handler)
-    fn = TestFunctionWriter(scenario, registry, stack=[], steps=[])
+    registry.register_handler(
+        "tests.unittests.service.fixtures", step_keyword, step.text, handler
+    )
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[],
+        steps=[],
+        package_name="tests.unittests.service.fixtures",
+    )
     kwargs = fn.parse_doc_string(step_keyword, step)
 
     module = ast.Module(

@@ -99,11 +99,15 @@ class GherkinCompiler:
 
     :param doc: the gherkin file to compile.
     :param registry: the tursu registry where steps are already loaded.
+    :param package_name: the parent module of the doc.
     """
 
-    def __init__(self, doc: GherkinDocument, registry: Tursu) -> None:
+    def __init__(
+        self, doc: GherkinDocument, registry: Tursu, package_name: str
+    ) -> None:
         self.emmiter = GherkinIterator(doc)
         self.registry = registry
+        self.package_name = package_name
 
     def to_module(self) -> TestModule:
         """Get the compiled module."""
@@ -116,14 +120,20 @@ class GherkinCompiler:
             match el:
                 case GherkinFeature():
                     assert module_node is None
-                    module_node = TestModuleWriter(el, self.registry, stack)
+                    module_node = TestModuleWriter(
+                        el, self.registry, stack, self.package_name
+                    )
 
                 case GherkinBackground(steps=steps):
                     background_steps = steps
 
                 case GherkinScenario(steps=steps):
                     test_function = TestFunctionWriter(
-                        el, self.registry, [*background_steps, *steps], stack
+                        el,
+                        self.registry,
+                        [*background_steps, *steps],
+                        stack,
+                        self.package_name,
                     )
                     assert module_node is not None
                     module_node.append_test(test_function)
@@ -136,7 +146,11 @@ class GherkinCompiler:
 
                 case GherkinScenarioOutline(steps=steps, examples=examples):
                     test_function = TestFunctionWriter(
-                        el, self.registry, [*background_steps, *steps], stack
+                        el,
+                        self.registry,
+                        [*background_steps, *steps],
+                        stack,
+                        self.package_name,
                     )
                     assert module_node is not None
                     module_node.append_test(test_function)

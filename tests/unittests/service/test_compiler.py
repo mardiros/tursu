@@ -104,7 +104,7 @@ def test_emit_items(doc: GherkinDocument):
 
 
 def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
-    compiler = GherkinCompiler(doc, registry)
+    compiler = GherkinCompiler(doc, registry, "tests.unittests.service.fixtures")
     code = compiler.to_module()
 
     assert (

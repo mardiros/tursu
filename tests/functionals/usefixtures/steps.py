@@ -1,6 +1,6 @@
 import pytest
 
-from tests.functionals.conftest import DummyApp
+from tests.functionals.steps import DummyApp
 from tursu import given, then, when
 
 

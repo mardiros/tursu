@@ -1,5 +1,5 @@
 import textwrap
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from typing import cast
 
 import pytest
@@ -19,15 +19,26 @@ from tests.unittests.runtime.fixtures.steps import (
     give_user,
 )
 from tursu.domain.model.steps import Step, StepKeyword
-from tursu.runtime.registry import Tursu, Unregistered
+from tursu.runtime.registry import (
+    ModRegistry,
+    Tursu,
+    Unregistered,
+    normalize_module_name,
+)
 from tursu.runtime.runner import TursuRunner
 
 
 @pytest.fixture()
 def tursu_runner(
-    registry: Tursu, request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str]
-) -> TursuRunner:
-    return TursuRunner(request, capsys, registry, ["📄 Document: ..."])
+    registry: Tursu,
+    request: pytest.FixtureRequest,
+    capsys: pytest.CaptureFixture[str],
+    gherkin_test_module: pytest.Package,
+) -> Iterator[TursuRunner]:
+    oldparent, request.node.parent = request.node.parent, gherkin_test_module
+    runner = TursuRunner(request, capsys, registry, ["📄 Document: ..."])
+    yield runner
+    request.node.parent = oldparent
 
 
 @pytest.fixture()
@@ -38,7 +49,11 @@ def dummy_app() -> DummyApp:
 def test_scan():
     registry = Tursu()
     registry.scan()
-    assert registry._handlers == {
+
+    assert registry._registry._handlers.keys() == {"tests.unittests.runtime.fixtures"}
+    assert registry._registry._handlers[
+        "tests.unittests.runtime.fixtures"
+    ]._handlers == {
         "Given": [
             Step("a set of users:", a_set_of_users),
             Step("a user {username}", give_user),
@@ -47,52 +62,38 @@ def test_scan():
             Step("the users dataset is", assert_dataset),
             Step("the API for {username} respond", assert_api_response),
             Step("the users raw dataset is", assert_dataset_raw),
-            Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
+            Step(
+                'the mailbox {email} "{subject}" message is',
+                assert_mailbox_contains,
+            ),
             Step("{username} see a mailbox {email}", assert_user_has_mailbox),
         ],
         "When": [
             Step("{username} create a mailbox {email}", create_mailbox),
-        ],
-    }
-
-
-def test_registry_handler(registry: Tursu):
-    assert registry._handlers == {
-        "Given": [
-            Step("a set of users:", a_set_of_users),
-            Step("a user {username}", give_user),
-        ],
-        "When": [
-            Step("{username} create a mailbox {email}", create_mailbox),
-        ],
-        "Then": [
-            Step("the users dataset is", assert_dataset),
-            Step("the API for {username} respond", assert_api_response),
-            Step("the users raw dataset is", assert_dataset_raw),
-            Step('the mailbox {email} "{subject}" message is', assert_mailbox_contains),
-            Step("{username} see a mailbox {email}", assert_user_has_mailbox),
         ],
     }
 
 
 def test_registry_get_step(registry: Tursu):
-    step = registry.get_step("Given", "a user Bob")
+    step = registry.get_step("tests.unittests.runtime.fixtures", "Given", "a user Bob")
     assert step == Step("a user {username}", give_user)
 
 
 def test_registry_get_step_none(registry: Tursu):
-    step = registry.get_step("When", "a user Bob")
+    step = registry.get_step("tests.unittests.runtime.fixtures", "When", "a user Bob")
     assert step is None
 
 
-def test_registry_datatable(registry: Tursu):
-    registry.register_data_table(Step("the users dataset is", assert_dataset))
-    assert registry.models_types[Dataset] == "Dataset1"
+def test_registry_datatable(mod_registry: ModRegistry):
+    mod_registry.register_data_table(Step("the users dataset is", assert_dataset))
+    assert mod_registry.models_types[Dataset] == "Dataset1"
 
 
-def test_registry_doc_string(registry: Tursu):
-    registry.register_doc_string(Step("the API for {username} respond", assert_dataset))
-    assert registry.models_types[DummyMail] == "DummyMail2"
+def test_registry_doc_string(mod_registry: ModRegistry):
+    mod_registry.register_doc_string(
+        Step("the API for {username} respond", assert_dataset)
+    )
+    assert mod_registry.models_types[DummyMail] == "DummyMail2"
 
 
 def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu):
@@ -162,33 +163,12 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     )
 
 
-def test_registry_step_unregistered_extract_fixtures(
-    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
-):
-    with pytest.raises(Unregistered) as ctx:
-        registry.extract_fixtures("Given", "a nickname Bob", dummy_app=dummy_app)
-    assert str(ctx.value) == textwrap.dedent("""
-            Unregistered step:
-
-                Given a nickname Bob
-
-            Maybe you look for:
-
-                Given a user {username}
-
-            Otherwise, to register this new step:
-
-                @given("a nickname Bob")
-                def step_definition(): ...
-
-            """)
-
-
 def test_registry_step_unregistered_no_step(
     tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
 ):
     with pytest.raises(Unregistered) as ctx:
         registry.extract_fixtures(
+            "tests.unittests.runtime.fixtures",
             "Given",
             "some stuff that can't match any registered step",
             dummy_app=dummy_app,
@@ -206,7 +186,6 @@ def test_registry_step_unregistered_no_step(
             """)
 
 
-@pytest.mark.wip
 @pytest.mark.parametrize(
     "steps, text,expected",
     [
