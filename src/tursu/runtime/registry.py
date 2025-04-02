@@ -100,6 +100,13 @@ class Tursu:
         }
         self._models_types: dict[type, str] = {}
 
+    def get_fixtures(self) -> Mapping[str, type]:
+        fixtures: dict[str, type] = {}
+        for handlers in self._handlers.values():
+            for handler in handlers:
+                fixtures.update(handler.fixtures)
+        return fixtures
+
     @property
     def models_types(self) -> dict[type, str]:
         """
@@ -151,7 +158,7 @@ class Tursu:
                 # this is a reversed data_table, there should be two column
                 typ = parameter.annotation
 
-            if typ is not dict and typ not in self._models_types:
+            if typ.__module__ != "builtins" and typ not in self._models_types:
                 self._models_types[typ] = f"{typ.__name__}{len(self._models_types)}"
 
     def register_data_table(self, step: Step) -> None:

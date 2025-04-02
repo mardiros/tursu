@@ -61,7 +61,7 @@ class TestFunctionWriter:
         self.registry = registry
         self.gherkin_keyword: StepKeyword | None = None
 
-        fixtures = self.build_fixtures(steps, registry)
+        self.fixtures = self.build_fixtures(steps, registry)
         decorator_list = self.build_tags_decorators(stack)
         examples_keys = None
         if isinstance(scenario, GherkinScenarioOutline) and scenario.examples:
@@ -127,7 +127,7 @@ class TestFunctionWriter:
 
         docstring = f"{scenario.name}\n\n    {scenario.description}".strip()
 
-        args = self.build_args(fixtures, examples_keys)
+        args = self.build_args(self.fixtures, examples_keys)
         self.funcdef = ast.FunctionDef(
             name=f"test_{scenario.id}_{sanitize(scenario.name)}",
             args=ast.arguments(

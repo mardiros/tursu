@@ -103,6 +103,15 @@
 
 ````
 
+````{py:method} get_fixtures() -> collections.abc.Mapping[str, type]
+:canonical: tursu.runtime.registry.Tursu.get_fixtures
+
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.get_fixtures
+:parser: myst
+```
+
+````
+
 ````{py:method} get_step(step: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.Step | None
 :canonical: tursu.runtime.registry.Tursu.get_step
 

@@ -1,4 +1,5 @@
-from tursu.domain.model.steps import Step
+from tests.unittests.domain.fixtures.steps import a_set_of_users, app
+from tursu.domain.model.steps import Step, discover_fixtures
 from tursu.runtime.pattern_matcher import (
     DefaultPatternMatcher,
     RegEx,
@@ -7,6 +8,10 @@ from tursu.runtime.pattern_matcher import (
 
 
 def dummy_hook(): ...
+
+
+def test_discover_fixtures():
+    assert discover_fixtures(a_set_of_users) == {"app": app}
 
 
 def test_default_step():

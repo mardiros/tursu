@@ -25,7 +25,7 @@ import pytest
 {DEFAULT_CONFTEST}
 
 class DummyApp:
-    """Represent a tested application"""
+    """Represent a tested application."""
     def __init__(self):
         self.users = {{}}
         self.connected_user: str | None = None

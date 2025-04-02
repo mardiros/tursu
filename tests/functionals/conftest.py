@@ -6,7 +6,7 @@ tursu_collect_file()
 
 
 class DummyApp:
-    """Represent a tested application"""
+    """Represent a tested application."""
 
     def __init__(self):
         self.mailboxes: dict[str, dict[str, list[str]]] = {}
