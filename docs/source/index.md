@@ -9,6 +9,7 @@
 
 introduction
 gherkin_in_a_nutchell
+project_layout
 step_definition
 advanced_datatable
 advanced_docstring

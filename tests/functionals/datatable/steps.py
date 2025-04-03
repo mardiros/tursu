@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from tursu import given
 
-from ..conftest import DummyApp
+from ..steps import DummyApp
 
 
 class User(BaseModel):

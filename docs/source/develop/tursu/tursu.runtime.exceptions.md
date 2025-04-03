@@ -50,7 +50,7 @@
 
 ````
 
-````{py:exception} Unregistered(registry: tursu.runtime.registry.Tursu, step: tursu.domain.model.steps.StepKeyword, text: str)
+````{py:exception} Unregistered(module_name: str, registry: tursu.runtime.registry.Tursu, step: tursu.domain.model.steps.StepKeyword, text: str)
 :canonical: tursu.runtime.exceptions.Unregistered
 
 Bases: {py:obj}`RuntimeError`

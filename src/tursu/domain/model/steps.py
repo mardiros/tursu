@@ -25,6 +25,10 @@ and fallback to pytest fixtures.
 
 
 def discover_fixtures(hook: Callable[..., None]) -> dict[str, type]:
+    """
+    Get all the fixtures that have been declared in the hook module
+    from the signature of the hook.
+    """
     signature = inspect.signature(hook)
     module = sys.modules[hook.__module__]
     fixtures: dict[str, type] = {}

@@ -30,7 +30,7 @@
 
 ### API
 
-`````{py:class} GherkinCompiler(doc: tursu.domain.model.gherkin.GherkinDocument, registry: tursu.runtime.registry.Tursu)
+`````{py:class} GherkinCompiler(doc: tursu.domain.model.gherkin.GherkinDocument, registry: tursu.runtime.registry.Tursu, package_name: str)
 :canonical: tursu.service.compiler.GherkinCompiler
 
 ```{autodoc2-docstring} tursu.service.compiler.GherkinCompiler

@@ -1,9 +1,12 @@
 """Registry of step definition."""
 
 import difflib
+import importlib
 import sys
+from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from inspect import Parameter
+from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
 
@@ -21,6 +24,25 @@ from tursu.runtime.exceptions import Unregistered
 VENUSIAN_CATEGORY = "tursu"
 
 
+def is_init_file(module: ModuleType) -> bool:
+    """Check if a module corresponds to an __init__.py file."""
+    return (
+        hasattr(module, "__file__")
+        and module.__file__ is not None
+        and Path(module.__file__).name == "__init__.py"
+    )
+
+
+def normalize_module_name(module_name: str) -> str:
+    """If the module is an __init__.py, keep its name. Otherwise, drop the last part."""
+    module = importlib.import_module(module_name)
+    if not is_init_file(module):
+        module_name = ".".join(module_name.split(".")[:-1])
+    if module_name.endswith(".steps"):
+        module_name = module_name[: -len(".steps")]
+    return module_name
+
+
 def _step(
     step_name: str, step_pattern: str | AbstractPattern
 ) -> Callable[[Handler], Handler]:
@@ -29,8 +51,10 @@ def _step(
             if not hasattr(scanner, "registry"):
                 return  # coverage: ignore
 
+            step_module = normalize_module_name(ob.__module__)
+
             scanner.registry.register_handler(  # type: ignore
-                step_name, step_pattern, wrapped
+                step_module, step_name, step_pattern, wrapped
             )
 
         venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)
@@ -78,34 +102,14 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
     return _step("Then", pattern)
 
 
-class Tursu:
-    """Store all the handlers for gherkin action."""
-
-    DATA_TABLE_EMPTY_CELL = ""
-    """
-    This value is used only in case of data_table types usage.
-    If the table contains this value, then, it is ommited by the constructor in order
-    to let the type default value works.
-
-    In case of list[dict[str,str]], then this is ignored, empty cells exists with
-    an empty string value.
-    """
-
+class ModRegistry:
     def __init__(self) -> None:
-        self.scanned: set[ModuleType] = set()
         self._handlers: dict[StepKeyword, list[Step]] = {
             "Given": [],
             "When": [],
             "Then": [],
         }
         self._models_types: dict[type, str] = {}
-
-    def get_fixtures(self) -> Mapping[str, type]:
-        fixtures: dict[str, type] = {}
-        for handlers in self._handlers.values():
-            for handler in handlers:
-                fixtures.update(handler.fixtures)
-        return fixtures
 
     @property
     def models_types(self) -> dict[type, str]:
@@ -119,23 +123,17 @@ class Tursu:
 
         return self._models_types
 
-    def register_handler(
-        self, type: StepKeyword, pattern: str | AbstractPattern, handler: Handler
-    ) -> None:
-        """
-        Register a step handler for a step definition.
-
-        This method is the primitive for [@given](#tursu.given),
-        [@when](#tursu.when) and [@then](#tursu.then) decorators.
-
-        :param type: gherkin keyword for the definition.
-        :param pattern: pattern to match the definition.
-        :param handler: function called when a step in a scenario match the pattern.
-        """
-        step = Step(pattern, handler)
-        self._handlers[type].append(step)
+    def append(self, stp: StepKeyword, step: Step) -> None:
+        self._handlers[stp].append(step)
         self.register_data_table(step)
         self.register_doc_string(step)
+
+    def get_fixtures(self) -> Mapping[str, type]:
+        fixtures: dict[str, type] = {}
+        for handlers in self._handlers.values():
+            for handler in handlers:
+                fixtures.update(handler.fixtures)
+        return fixtures
 
     def register_model(self, parameter: Parameter | None) -> None:
         """
@@ -177,28 +175,12 @@ class Tursu:
         """
         self.register_model(step.pattern.signature.parameters.get("doc_string"))
 
-    def get_step(self, step: StepKeyword, text: str) -> Step | None:
-        """
-        Get the first registered step that match the text.
-
-        :param type: gherkin keyword for the definition.
-        :param text: text to match the definition.
-        :return: the register step if exists otherwise None.
-        """
-        handlers = self._handlers[step]
-        for handler in handlers:
-            if handler.pattern.match(text):
-                return handler
-        return None
-
     def get_best_matches(
         self,
         text: str,
         n: int = 5,
         cutoff: float = 0.3,
-        lgtm_threshold: float = 0.4,
-        sure_threshold: float = 0.7,
-    ) -> Sequence[str]:
+    ) -> Sequence[tuple[float, str]]:
         """
         Return the gherkin steps from the registry that look like the given text.
         This method is called if no step definition matches to build a proper hint
@@ -212,68 +194,245 @@ class Tursu:
             *[f"Then {hdl.pattern.pattern}" for hdl in self._handlers["Then"]],
         ]
         matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
-        if len(matches) <= 1:
-            return matches
 
         scored_matches = [
             (difflib.SequenceMatcher(None, text, match).ratio(), match)
             for match in matches
         ]
-        scored_matches.sort(reverse=True)
+        return scored_matches
 
-        if scored_matches[0][0] >= sure_threshold:
-            return [match for score, match in scored_matches if score > sure_threshold]
-        return [match for score, match in scored_matches if score > lgtm_threshold]
+    def get_step(self, step: StepKeyword, text: str) -> Step | None:
+        """
+        Get the first registered step that match the text.
+
+        :param type: gherkin keyword for the definition.
+        :param text: text to match the definition.
+        :return: the register step if exists otherwise None.
+        """
+
+        handlers = self._handlers[step]
+        for handler in handlers:
+            if handler.pattern.match(text):
+                return handler
+        return None
+
+
+class Registry:
+    """Step definition registry stacked"""
+
+    def __init__(self) -> None:
+        self._handlers: dict[str, ModRegistry] = defaultdict(ModRegistry)
+
+    def append(self, module_name: str, stp: StepKeyword, step: Step) -> None:
+        self._handlers[module_name].append(stp, step)
+
+    def get_fixtures(self, module_name: str) -> Mapping[str, type]:
+        fixtures: dict[str, type] = {}
+
+        parts = module_name.split(".")
+        module_name = parts.pop(0)
+        while True:
+            if module_name in self._handlers:
+                fixtures.update(self._handlers[module_name].get_fixtures())
+            if parts:
+                module_name = f"{module_name}.{parts.pop(0)}"
+            else:
+                break
+        return fixtures
+
+    def get_models_types(self, module_name: str) -> dict[type, str]:
+        """
+        Registered data types, used in order to build imports on tests.
+        The type are aliased during registration to avoid conflict name at import time
+        during the ast generation.
+
+        :return: type as key, alias as value.
+        """
+        model_types: dict[type, str] = {}
+
+        parts = module_name.split(".")
+        module_name = parts.pop(0)
+        while True:
+            if module_name in self._handlers:
+                model_types.update(self._handlers[module_name].models_types)
+            if parts:
+                module_name = f"{module_name}.{parts.pop(0)}"
+            else:
+                break
+        return model_types
+
+    def get_step(
+        self, module_name: str, step_kwd: StepKeyword, text: str
+    ) -> Step | None:
+        """
+        Get the first registered step that match the text.
+
+        :param module_name: the name of the current module.
+        :param type: gherkin keyword for the definition.
+        :param text: text to match the definition.
+        :return: the register step if exists otherwise None.
+        """
+        parts = module_name.split(".")
+        while parts:
+            mod_path = ".".join(parts)
+            if mod_path in self._handlers:
+                if handle := self._handlers[mod_path].get_step(step_kwd, text):
+                    return handle
+            parts.pop()
+        return None
+
+    def get_matched_step(
+        self,
+        module_name: str,
+        step_kwd: StepKeyword,
+        text: str,
+        fixtures: Mapping[str, Any],
+    ) -> tuple[Step | None, Mapping[str, Any]]:
+        """
+        Get the first registered step that match the text.
+
+        :param module_name: the name of the current module.
+        :param type: gherkin keyword for the definition.
+        :param text: text to match the definition.
+        :return: the register step if exists otherwise None.
+        """
+        step_def = self.get_step(module_name, step_kwd, text)
+        if step_def:
+            matches = step_def.pattern.get_matches(text, fixtures)
+            return step_def, matches or {}
+        return None, {}
+
+    def get_best_matches(
+        self,
+        module_name: str,
+        text: str,
+    ) -> list[str]:
+        parts = module_name.split(".")
+        matches: list[tuple[float, str]] = []
+        while parts:
+            mod_path = ".".join(parts)
+            if mod_path in self._handlers:
+                matches += self._handlers[mod_path].get_best_matches(text)
+            parts.pop()
+        matches = list(set(matches))
+        matches.sort(reverse=True)
+        sure_threshold = 0.9
+        while sure_threshold >= 0.4:
+            match_text = [match[1] for match in matches if match[0] > sure_threshold]
+            if match_text:
+                return match_text
+            sure_threshold -= 0.1
+        return []
+
+
+class Tursu:
+    """Store all the handlers for gherkin action."""
+
+    DATA_TABLE_EMPTY_CELL = ""
+    """
+    This value is used only in case of data_table types usage.
+    If the table contains this value, then, it is ommited by the constructor in order
+    to let the type default value works.
+
+    In case of list[dict[str,str]], then this is ignored, empty cells exists with
+    an empty string value.
+    """
+
+    def __init__(self) -> None:
+        self.scanned: set[ModuleType] = set()
+        self._registry = Registry()
+
+    def get_fixtures(self, module_name: str) -> Mapping[str, type]:
+        return self._registry.get_fixtures(module_name)
+
+    def register_handler(
+        self,
+        module_name: str,
+        type: StepKeyword,
+        pattern: str | AbstractPattern,
+        handler: Handler,
+    ) -> None:
+        """
+        Register a step handler for a step definition.
+
+        This method is the primitive for [@given](#tursu.given),
+        [@when](#tursu.when) and [@then](#tursu.then) decorators.
+
+        :param type: gherkin keyword for the definition.
+        :param pattern: pattern to match the definition.
+        :param handler: function called when a step in a scenario match the pattern.
+        """
+        step = Step(pattern, handler)
+        self._registry.append(module_name, type, step)
+
+    def get_step(self, module_name: str, step: StepKeyword, text: str) -> Step | None:
+        """
+        Get the first registered step that match the text.
+
+        :param module_name: the name of the current module.
+        :param type: gherkin keyword for the definition.
+        :param text: text to match the definition.
+        :return: the register step if exists otherwise None.
+        """
+        return self._registry.get_step(module_name, step, text)
+
+    def get_models_types(self, module_name: str) -> dict[type, str]:
+        return self._registry.get_models_types(module_name)
+
+    def get_models_type(self, module_name: str, typ: type[Any]) -> str:
+        return self._registry.get_models_types(module_name)[typ]
+
+    def get_best_matches(self, module_name: str, text: str) -> list[str]:
+        return self._registry.get_best_matches(module_name, text)
+
+    def extract_fixtures(
+        self, module_name: str, step_kwd: StepKeyword, text: str, **kwargs: Any
+    ) -> Mapping[str, Any]:
+        """
+        Extract fixture for a step from the given pytest fixtures of the test function.
+
+        :param step_kwd: gherkin step to match.
+        :param text: text to match the definition.
+        :param kwargs: the fixtures pytest fixtures from the test function.
+        :return: the fixtures for the step handler.
+        """
+        step = self._registry.get_step(module_name, step_kwd, text)
+        if step is None:
+            raise Unregistered(module_name, self, step_kwd, text)
+        return step.pattern.extract_fixtures(text) or {}
 
     def run_step(
-        self, tursu_runner: "TursuRunner", step: StepKeyword, text: str, **kwargs: Any
+        self,
+        tursu_runner: "TursuRunner",
+        step_kwd: StepKeyword,
+        text: str,
+        **kwargs: Any,
     ) -> None:
         """
         Run the step that match the parameter and emit information to the runner.
 
         :param tursu_runner: the fixtures pytest fixtures from the test function.
-        :param step: gherkin step to match.
+        :param step_kwd: gherkin step to match.
         :param text: text to match the definition.
         :param kwargs: the fixtures pytest fixtures from the test function.
         """
-        handlers = self._handlers[step]
-        for handler in handlers:
-            matches = handler.pattern.get_matches(text, kwargs)
-            if matches is not None:
-                tursu_runner.emit_running(step, handler, matches)
-                try:
-                    handler(**matches)
-                except Exception:
-                    tursu_runner.emit_error(step, handler, matches)
-                    raise
-                else:
-                    tursu_runner.emit_success(step, handler, matches)
-                break
+        handler, matches = self._registry.get_matched_step(
+            tursu_runner.module_name, step_kwd, text, kwargs
+        )
+        if handler:
+            tursu_runner.emit_running(step_kwd, handler, matches)
+            try:
+                handler(**matches)
+            except Exception:
+                tursu_runner.emit_error(step_kwd, handler, matches)
+                raise
+            else:
+                tursu_runner.emit_success(step_kwd, handler, matches)
         else:
             tursu_runner.emit_error(
-                step, Step(text, lambda: None), {}, unregistered=True
+                step_kwd, Step(text, lambda: None), {}, unregistered=True
             )
-            raise Unregistered(self, step, text)
-
-    def extract_fixtures(
-        self, step: StepKeyword, text: str, **kwargs: Any
-    ) -> Mapping[str, Any]:
-        """
-        Extract fixture for a step from the given pytest fixtures of the test function.
-
-        :param step: gherkin step to match.
-        :param text: text to match the definition.
-        :param kwargs: the fixtures pytest fixtures from the test function.
-        :return: the fixtures for the step handler.
-        """
-        handlers = self._handlers[step]
-        for handler in handlers:
-            fixtures = handler.pattern.extract_fixtures(text)
-            if fixtures is not None:
-                return fixtures
-                break
-        else:
-            raise Unregistered(self, step, text)
+            raise Unregistered(tursu_runner.module_name, self, step_kwd, text)
 
     def scan(self, mod: ModuleType | None = None) -> "Tursu":
         """

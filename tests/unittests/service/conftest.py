@@ -6,6 +6,20 @@ from tursu.domain.model.gherkin import GherkinDocument
 from tursu.runtime.runner import Tursu
 
 
+@pytest.fixture()
+def gherkin_test_package(root_dir: Path, request: pytest.FixtureRequest):
+    dir = pytest.Dir.from_parent(request.session, path=root_dir)
+    pkg = pytest.Package.from_parent(dir, path=root_dir / "tests")
+    pkg = pytest.Package.from_parent(pkg, path=root_dir / "tests" / "unittests")
+    pkg = pytest.Package.from_parent(
+        pkg, path=root_dir / "tests" / "unittests" / "service"
+    )
+    pkg = pytest.Package.from_parent(
+        pkg, path=root_dir / "tests" / "unittests" / "service" / "fixtures"
+    )
+    return pkg
+
+
 @pytest.fixture
 def doc():
     return GherkinDocument.from_file(

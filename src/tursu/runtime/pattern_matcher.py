@@ -224,7 +224,11 @@ class RegexBasePattern(AbstractPatternMatcher):
         return None
 
     def extract_fixtures(self, text: str) -> Mapping[str, Any] | None:
-        """Get the fixtures list to use from the text."""
+        """
+        Get the fixtures list to use from the text.
+
+        :param text: the text from a gherkin step in a scenario.
+        """
         matches = self.re_pattern.match(text)
         if matches:
             res = {}

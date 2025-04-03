@@ -19,12 +19,17 @@ class TestModuleWriter:
     """
 
     def __init__(
-        self, feature: GherkinFeature, registry: Tursu, stack: Sequence[Any]
+        self,
+        feature: GherkinFeature,
+        registry: Tursu,
+        stack: Sequence[Any],
+        package_name: str,
     ) -> None:
         self.feature = feature
         self.fixtures: dict[str, type] = {}
         self.registry = registry
 
+        self.package_name = package_name
         self.module_name = stack[0].name
         self.tests_fn: list[ast.stmt] = []
 
@@ -60,7 +65,7 @@ class TestModuleWriter:
                 level=0,
             ),
         ]
-        for typ, alias in self.registry.models_types.items():
+        for typ, alias in self.registry.get_models_types(self.package_name).items():
             import_mods.append(
                 ast.ImportFrom(
                     module=typ.__module__,
@@ -71,7 +76,7 @@ class TestModuleWriter:
                 )
             )
 
-        fixtures = self.registry.get_fixtures()
+        fixtures = self.registry.get_fixtures(self.package_name)
 
         for key, _typ in self.fixtures.items():
             # register fixture that are declared with their step definition

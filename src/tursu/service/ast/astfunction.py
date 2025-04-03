@@ -49,6 +49,7 @@ class TestFunctionWriter:
     :param registry: tursu registry containing steps definition.
     :param steps: steps to include, including the one from the background.
     :param stack: tursu compilation current stack.
+    :param package_name: package name where the scenario lives in.
     """
 
     def __init__(
@@ -57,9 +58,11 @@ class TestFunctionWriter:
         registry: Tursu,
         steps: Sequence[GherkinStep],
         stack: Sequence[Any],
+        package_name: str,
     ) -> None:
         self.registry = registry
         self.gherkin_keyword: StepKeyword | None = None
+        self.package_name = package_name
 
         self.fixtures = self.build_fixtures(steps, registry)
         decorator_list = self.build_tags_decorators(stack)
@@ -205,7 +208,11 @@ class TestFunctionWriter:
                 step_last_keyword = step.keyword
             assert is_step_keyword(step_last_keyword)
 
-            fixtures.update(registry.extract_fixtures(step_last_keyword, step.text))
+            fixtures.update(
+                registry.extract_fixtures(
+                    self.package_name, step_last_keyword, step.text
+                )
+            )
         return fixtures
 
     def build_tags_decorators(self, stack: Sequence[Any]) -> list[ast.expr]:
@@ -317,7 +324,9 @@ class TestFunctionWriter:
     def parse_doc_string(
         self, step_keyword: StepKeyword, stp: GherkinStep
     ) -> ast.keyword:
-        registry_step = self.registry.get_step(step_keyword, stp.text)
+        registry_step = self.registry.get_step(
+            self.package_name, step_keyword, stp.text
+        )
 
         assert registry_step, "Step not found"
         assert stp.doc_string, "Step has not doc_string"
@@ -367,7 +376,9 @@ class TestFunctionWriter:
                     doc_string_models.append(
                         ast.Call(
                             func=ast.Name(
-                                id=self.registry.models_types[typ],
+                                id=self.registry.get_models_type(
+                                    self.package_name, typ
+                                ),
                                 ctx=ast.Load(),
                             ),
                             keywords=doc_string_keywords,
@@ -387,7 +398,7 @@ class TestFunctionWriter:
                 param_origin = get_origin(anon)
                 call_doc_string_node = ast.Call(
                     func=ast.Name(
-                        id=self.registry.models_types[typ],
+                        id=self.registry.get_models_type(self.package_name, typ),
                         ctx=ast.Load(),
                     ),
                     keywords=doc_string_keywords,
@@ -408,7 +419,9 @@ class TestFunctionWriter:
         :param stp: the step to analyse.
             the step must have a definved data_table.
         """
-        registry_step = self.registry.get_step(step_keyword, stp.text)
+        registry_step = self.registry.get_step(
+            self.package_name, step_keyword, stp.text
+        )
 
         assert registry_step, "Step not found"
         assert stp.data_table, "Step has no data_table"
@@ -463,7 +476,7 @@ class TestFunctionWriter:
             ]
             call_rev_datatable_node = ast.Call(
                 func=ast.Name(
-                    id=self.registry.models_types[typ],
+                    id=self.registry.get_models_type(self.package_name, typ),
                     ctx=ast.Load(),
                 ),
                 keywords=datatable_keywords,
@@ -488,7 +501,7 @@ class TestFunctionWriter:
                 call_datatable_node.append(
                     ast.Call(
                         func=ast.Name(
-                            id=self.registry.models_types[typ],
+                            id=self.registry.get_models_type(self.package_name, typ),
                             ctx=ast.Load(),
                         ),
                         keywords=datatable_keywords,
@@ -511,7 +524,9 @@ class TestFunctionWriter:
         :return: ast values for the step keyword argument.
         """
         py_kwargs = []
-        step_fixtures = self.registry.extract_fixtures(step_keyword, stp.text)
+        step_fixtures = self.registry.extract_fixtures(
+            self.package_name, step_keyword, stp.text
+        )
         for key, _val in step_fixtures.items():
             py_kwargs.append(
                 ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))

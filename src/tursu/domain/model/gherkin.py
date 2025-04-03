@@ -218,6 +218,11 @@ class GherkinDocument(BaseModel):
 
     @classmethod
     def from_file(cls, file: Path) -> "GherkinDocument":
+        """
+        Parse .scenario file from the given path and build the gherkin document.
+
+        :param file: path on disk to the scenario file.
+        """
         official_doc = Parser().parse(file.read_text())
         return GherkinDocument(
             name=file.name[: -len(".feature")],

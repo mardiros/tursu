@@ -48,7 +48,7 @@
 
 ### API
 
-`````{py:class} TestFunctionWriter(scenario: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline, registry: tursu.runtime.registry.Tursu, steps: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinStep], stack: collections.abc.Sequence[typing.Any])
+`````{py:class} TestFunctionWriter(scenario: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline, registry: tursu.runtime.registry.Tursu, steps: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinStep], stack: collections.abc.Sequence[typing.Any], package_name: str)
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter
