@@ -201,16 +201,16 @@ class ModRegistry:
         ]
         return scored_matches
 
-    def get_step(self, step: StepKeyword, text: str) -> StepDefinition | None:
+    def get_step(self, keyword: StepKeyword, text: str) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
-        :param type: gherkin keyword for the definition.
+        :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
         :return: the register step if exists otherwise None.
         """
 
-        handlers = self._handlers[step]
+        handlers = self._handlers[keyword]
         for handler in handlers:
             if handler.pattern.match(text):
                 return handler
@@ -223,8 +223,10 @@ class Registry:
     def __init__(self) -> None:
         self._handlers: dict[str, ModRegistry] = defaultdict(ModRegistry)
 
-    def append(self, module_name: str, stp: StepKeyword, step: StepDefinition) -> None:
-        self._handlers[module_name].append(stp, step)
+    def append(
+        self, module_name: str, keyword: StepKeyword, step: StepDefinition
+    ) -> None:
+        self._handlers[module_name].append(keyword, step)
 
     def get_fixtures(self, module_name: str) -> Mapping[str, type]:
         fixtures: dict[str, type] = {}
@@ -262,13 +264,13 @@ class Registry:
         return model_types
 
     def get_step(
-        self, module_name: str, step_kwd: StepKeyword, text: str
+        self, module_name: str, keyword: StepKeyword, text: str
     ) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
         :param module_name: the name of the current module.
-        :param type: gherkin keyword for the definition.
+        :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
         :return: the register step if exists otherwise None.
         """
@@ -276,7 +278,7 @@ class Registry:
         while parts:
             mod_path = ".".join(parts)
             if mod_path in self._handlers:
-                if handle := self._handlers[mod_path].get_step(step_kwd, text):
+                if handle := self._handlers[mod_path].get_step(keyword, text):
                     return handle
             parts.pop()
         return None
@@ -284,7 +286,7 @@ class Registry:
     def get_matched_step(
         self,
         module_name: str,
-        step_kwd: StepKeyword,
+        keyword: StepKeyword,
         text: str,
         fixtures: Mapping[str, Any],
     ) -> tuple[StepDefinition | None, Mapping[str, Any]]:
@@ -292,11 +294,11 @@ class Registry:
         Get the first registered step that match the text.
 
         :param module_name: the name of the current module.
-        :param type: gherkin keyword for the definition.
+        :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
         :return: the register step if exists otherwise None.
         """
-        step_def = self.get_step(module_name, step_kwd, text)
+        step_def = self.get_step(module_name, keyword, text)
         if step_def:
             matches = step_def.pattern.get_matches(text, fixtures)
             return step_def, matches or {}
@@ -348,7 +350,7 @@ class Tursu:
     def register_handler(
         self,
         module_name: str,
-        type: StepKeyword,
+        keyword: StepKeyword,
         pattern: str | AbstractPattern,
         handler: Handler,
     ) -> None:
@@ -358,25 +360,25 @@ class Tursu:
         This method is the primitive for [@given](#tursu.given),
         [@when](#tursu.when) and [@then](#tursu.then) decorators.
 
-        :param type: gherkin keyword for the definition.
+        :param keyword: gherkin keyword for the definition.
         :param pattern: pattern to match the definition.
         :param handler: function called when a step in a scenario match the pattern.
         """
         step = StepDefinition(pattern, handler)
-        self._registry.append(module_name, type, step)
+        self._registry.append(module_name, keyword, step)
 
     def get_step(
-        self, module_name: str, step: StepKeyword, text: str
+        self, module_name: str, keyword: StepKeyword, text: str
     ) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
         :param module_name: the name of the current module.
-        :param type: gherkin keyword for the definition.
+        :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
         :return: the register step if exists otherwise None.
         """
-        return self._registry.get_step(module_name, step, text)
+        return self._registry.get_step(module_name, keyword, text)
 
     def get_models_types(self, module_name: str) -> dict[type, str]:
         return self._registry.get_models_types(module_name)
@@ -388,25 +390,25 @@ class Tursu:
         return self._registry.get_best_matches(module_name, text)
 
     def extract_fixtures(
-        self, module_name: str, step_kwd: StepKeyword, text: str, **kwargs: Any
+        self, module_name: str, keyword: StepKeyword, text: str, **kwargs: Any
     ) -> Mapping[str, Any]:
         """
         Extract fixture for a step from the given pytest fixtures of the test function.
 
-        :param step_kwd: gherkin step to match.
+        :param keyword: gherkin step to match.
         :param text: text to match the definition.
         :param kwargs: the fixtures pytest fixtures from the test function.
         :return: the fixtures for the step handler.
         """
-        step = self._registry.get_step(module_name, step_kwd, text)
+        step = self._registry.get_step(module_name, keyword, text)
         if step is None:
-            raise Unregistered(module_name, self, step_kwd, text)
+            raise Unregistered(module_name, self, keyword, text)
         return step.pattern.extract_fixtures(text) or {}
 
     def run_step(
         self,
         tursu_runner: "TursuRunner",
-        step_kwd: StepKeyword,
+        keyword: StepKeyword,
         text: str,
         **kwargs: Any,
     ) -> None:
@@ -414,27 +416,27 @@ class Tursu:
         Run the step that match the parameter and emit information to the runner.
 
         :param tursu_runner: the fixtures pytest fixtures from the test function.
-        :param step_kwd: gherkin step to match.
+        :param keyword: gherkin step to match.
         :param text: text to match the definition.
         :param kwargs: the fixtures pytest fixtures from the test function.
         """
         handler, matches = self._registry.get_matched_step(
-            tursu_runner.module_name, step_kwd, text, kwargs
+            tursu_runner.module_name, keyword, text, kwargs
         )
         if handler:
-            tursu_runner.emit_running(step_kwd, handler, matches)
+            tursu_runner.emit_running(keyword, handler, matches)
             try:
                 handler(**matches)
             except Exception:
-                tursu_runner.emit_error(step_kwd, handler, matches)
+                tursu_runner.emit_error(keyword, handler, matches)
                 raise
             else:
-                tursu_runner.emit_success(step_kwd, handler, matches)
+                tursu_runner.emit_success(keyword, handler, matches)
         else:
             tursu_runner.emit_error(
-                step_kwd, StepDefinition(text, lambda: None), {}, unregistered=True
+                keyword, StepDefinition(text, lambda: None), {}, unregistered=True
             )
-            raise Unregistered(tursu_runner.module_name, self, step_kwd, text)
+            raise Unregistered(tursu_runner.module_name, self, keyword, text)
 
     def scan(self, mod: ModuleType | None = None) -> "Tursu":
         """
