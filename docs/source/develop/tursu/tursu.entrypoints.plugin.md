@@ -29,6 +29,11 @@
 :class: autosummary longtable
 :align: left
 
+* - {py:obj}`build_pkg <tursu.entrypoints.plugin.build_pkg>`
+  - ```{autodoc2-docstring} tursu.entrypoints.plugin.build_pkg
+    :parser: myst
+    :summary:
+    ```
 * - {py:obj}`tursu <tursu.entrypoints.plugin.tursu>`
   - ```{autodoc2-docstring} tursu.entrypoints.plugin.tursu
     :parser: myst
@@ -43,7 +48,7 @@
 
 ### API
 
-`````{py:class} GherkinTestModule(path: pathlib.Path, tursu: tursu.runtime.registry.Tursu, **kwargs: typing.Any)
+`````{py:class} GherkinTestModule(path: pathlib.Path, tursu: tursu.runtime.registry.Tursu, parent: pytest.Module | None = None, **kwargs: typing.Any)
 :canonical: tursu.entrypoints.plugin.GherkinTestModule
 
 Bases: {py:obj}`pytest.Module`
@@ -74,6 +79,14 @@ Bases: {py:obj}`pytest.Module`
 ````
 
 `````
+
+````{py:function} build_pkg(node: typing.Any) -> str
+:canonical: tursu.entrypoints.plugin.build_pkg
+
+```{autodoc2-docstring} tursu.entrypoints.plugin.build_pkg
+:parser: myst
+```
+````
 
 ````{py:function} tursu() -> tursu.runtime.registry.Tursu
 :canonical: tursu.entrypoints.plugin.tursu

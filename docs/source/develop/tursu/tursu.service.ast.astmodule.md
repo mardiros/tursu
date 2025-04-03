@@ -25,7 +25,7 @@
 
 ### API
 
-`````{py:class} TestModuleWriter(feature: tursu.domain.model.gherkin.GherkinFeature, registry: tursu.runtime.registry.Tursu, stack: collections.abc.Sequence[typing.Any])
+`````{py:class} TestModuleWriter(feature: tursu.domain.model.gherkin.GherkinFeature, registry: tursu.runtime.registry.Tursu, stack: collections.abc.Sequence[typing.Any], package_name: str)
 :canonical: tursu.service.ast.astmodule.TestModuleWriter
 
 ```{autodoc2-docstring} tursu.service.ast.astmodule.TestModuleWriter
