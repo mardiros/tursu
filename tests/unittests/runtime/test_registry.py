@@ -18,7 +18,7 @@ from tests.unittests.runtime.fixtures.steps import (
     create_mailbox,
     give_user,
 )
-from tursu.domain.model.steps import Step, StepKeyword
+from tursu.domain.model.steps import StepDefinition, StepKeyword
 from tursu.runtime.registry import (
     ModRegistry,
     Tursu,
@@ -79,33 +79,33 @@ def test_scan():
     registry = Tursu()
     registry.scan()
 
-    assert registry._registry._handlers.keys() == {"tests.unittests.runtime.fixtures"}
-    assert registry._registry._handlers[
+    assert registry._registry._step_defs.keys() == {"tests.unittests.runtime.fixtures"}
+    assert registry._registry._step_defs[
         "tests.unittests.runtime.fixtures"
-    ]._handlers == {
+    ]._step_defs == {
         "Given": [
-            Step("a set of users:", a_set_of_users),
-            Step("a user {username}", give_user),
+            StepDefinition("a set of users:", a_set_of_users),
+            StepDefinition("a user {username}", give_user),
         ],
         "Then": [
-            Step("the users dataset is", assert_dataset),
-            Step("the API for {username} respond", assert_api_response),
-            Step("the users raw dataset is", assert_dataset_raw),
-            Step(
+            StepDefinition("the users dataset is", assert_dataset),
+            StepDefinition("the API for {username} respond", assert_api_response),
+            StepDefinition("the users raw dataset is", assert_dataset_raw),
+            StepDefinition(
                 'the mailbox {email} "{subject}" message is',
                 assert_mailbox_contains,
             ),
-            Step("{username} see a mailbox {email}", assert_user_has_mailbox),
+            StepDefinition("{username} see a mailbox {email}", assert_user_has_mailbox),
         ],
         "When": [
-            Step("{username} create a mailbox {email}", create_mailbox),
+            StepDefinition("{username} create a mailbox {email}", create_mailbox),
         ],
     }
 
 
 def test_registry_get_step(registry: Tursu):
     step = registry.get_step("tests.unittests.runtime.fixtures", "Given", "a user Bob")
-    assert step == Step("a user {username}", give_user)
+    assert step == StepDefinition("a user {username}", give_user)
 
 
 def test_registry_get_step_none(registry: Tursu):
@@ -114,13 +114,15 @@ def test_registry_get_step_none(registry: Tursu):
 
 
 def test_registry_datatable(mod_registry: ModRegistry):
-    mod_registry.register_data_table(Step("the users dataset is", assert_dataset))
+    mod_registry.register_data_table(
+        StepDefinition("the users dataset is", assert_dataset)
+    )
     assert mod_registry.models_types[Dataset] == "Dataset1"
 
 
 def test_registry_doc_string(mod_registry: ModRegistry):
     mod_registry.register_doc_string(
-        Step("the API for {username} respond", assert_dataset)
+        StepDefinition("the API for {username} respond", assert_dataset)
     )
     assert mod_registry.models_types[DummyMail] == "DummyMail2"
 
@@ -252,7 +254,7 @@ def test_get_best_match(steps: list[str], text: str, expected: Sequence[str]):
     registry = Tursu()
     for step in steps:
         stp, rest = step.split(" ", 1)
-        registry.register_handler(
+        registry.register_step_definition(
             "tests.unittests.runtime.fixtures",
             cast(StepKeyword, stp),
             rest,

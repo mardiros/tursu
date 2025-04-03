@@ -127,7 +127,7 @@ def test_emit_running(
 ):
     tursu_runner.verbose = verbose
     tursu_runner.emit_running(
-        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._step_defs["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[90m⏳ Given a user \x1b[36mbob\x1b[90m\x1b[0m",
@@ -148,7 +148,7 @@ def test_emit_error(
     tursu_runner.verbose = verbose
     tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_error(
-        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._step_defs["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[91m❌ Given\x1b[0m a user \x1b[36mbob\x1b[91m\x1b[0m",
@@ -171,7 +171,7 @@ def test_emit_success(
     tursu_runner.verbose = verbose
     tursu_runner.start_time = time.perf_counter()
     tursu_runner.emit_success(
-        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._step_defs["Given"][1], matches={"username": "bob"}
     )
     assert tursu_runner.runned == [
         "\x1b[92m✅ Given a user \x1b[36mbob\x1b[92m\x1b[0m",
@@ -196,6 +196,6 @@ def test_emit_success_color(
     tursu_runner.verbose = 1
     tursu_runner.start_time = time.perf_counter() - start_shift / 1000
     tursu_runner.emit_success(
-        "Given", mod_registry._handlers["Given"][1], matches={"username": "bob"}
+        "Given", mod_registry._step_defs["Given"][1], matches={"username": "bob"}
     )
     assert expected in tursu_runner.runned[0]

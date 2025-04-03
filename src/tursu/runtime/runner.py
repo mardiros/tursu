@@ -10,7 +10,7 @@ from typing import Self
 import pytest
 from typing_extensions import Any
 
-from tursu.domain.model.steps import Step, StepKeyword
+from tursu.domain.model.steps import StepDefinition, StepKeyword
 from tursu.runtime.registry import Tursu
 
 # Set up the logger
@@ -142,7 +142,7 @@ class TursuRunner:
     def emit_running(
         self,
         keyword: StepKeyword,
-        step: Step,
+        step: StepDefinition,
         matches: Mapping[str, Any],
     ) -> None:
         """
@@ -160,7 +160,7 @@ class TursuRunner:
     def emit_error(
         self,
         keyword: StepKeyword,
-        step: Step,
+        step: StepDefinition,
         matches: Mapping[str, Any],
         *,
         unregistered: bool = False,
@@ -190,7 +190,7 @@ class TursuRunner:
         self.log("-" * (len(self.name) + 2), end="")
 
     def emit_success(
-        self, keyword: StepKeyword, step: Step, matches: Mapping[str, Any]
+        self, keyword: StepKeyword, step: StepDefinition, matches: Mapping[str, Any]
     ) -> None:
         """
         Update state when a step is marked as success.
