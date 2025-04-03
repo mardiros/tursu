@@ -114,7 +114,9 @@ def test_registry_get_step_none(registry: Tursu):
 
 
 def test_registry_datatable(mod_registry: ModRegistry):
-    mod_registry.register_data_table(StepDefinition("the users dataset is", assert_dataset))
+    mod_registry.register_data_table(
+        StepDefinition("the users dataset is", assert_dataset)
+    )
     assert mod_registry.models_types[Dataset] == "Dataset1"
 
 
@@ -252,7 +254,7 @@ def test_get_best_match(steps: list[str], text: str, expected: Sequence[str]):
     registry = Tursu()
     for step in steps:
         stp, rest = step.split(" ", 1)
-        registry.register_handler(
+        registry.register_step_definition(
             "tests.unittests.runtime.fixtures",
             cast(StepKeyword, stp),
             rest,

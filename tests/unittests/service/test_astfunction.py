@@ -569,7 +569,7 @@ def test_build_step_kwargs(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(
+    registry.register_step_definition(
         "tests.unittests.service.fixtures", step_keyword, step.text, handler
     )
     fn = TestFunctionWriter(
@@ -952,7 +952,7 @@ def test_parse_data_table(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(
+    registry.register_step_definition(
         "tests.unittests.service.fixtures", step_keyword, step.text, handler
     )
     fn = TestFunctionWriter(
@@ -1219,7 +1219,7 @@ def test_parse_docstring(
 ):
     registry = Tursu()
     step_keyword = cast(StepKeyword, step.keyword)
-    registry.register_handler(
+    registry.register_step_definition(
         "tests.unittests.service.fixtures", step_keyword, step.text, handler
     )
     fn = TestFunctionWriter(

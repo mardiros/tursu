@@ -1,6 +1,7 @@
 # {py:mod}`tursu.runtime.registry`
 
 ```{py:module} tursu.runtime.registry
+
 ```
 
 ```{autodoc2-docstring} tursu.runtime.registry
@@ -318,10 +319,10 @@
 
 ````
 
-````{py:method} register_handler(module_name: str, type: tursu.domain.model.steps.StepKeyword, pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, handler: tursu.domain.model.steps.Handler) -> None
-:canonical: tursu.runtime.registry.Tursu.register_handler
+````{py:method} register_step_definition(module_name: str, type: tursu.domain.model.steps.StepKeyword, pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, handler: tursu.domain.model.steps.Handler) -> None
+:canonical: tursu.runtime.registry.Tursu.register_step_definition
 
-```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_handler
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_step_definition
 :parser: myst
 ```
 

@@ -20,9 +20,7 @@ def assert_user_has_mailbox_with_fixture(app: DummyApp, email: str, username: st
     assert email in app.mailboxes[username]
 
 
-@then(
-    RegEx(r'the mailbox (?P<email>[^\s]+) contains "(?P<subject>[^\"]+)"')
-)
+@then(RegEx(r'the mailbox (?P<email>[^\s]+) contains "(?P<subject>[^\"]+)"'))
 def assert_mailbox_contains_with_fixture(app: DummyApp, email: str, subject: str):
     for mailbox in app.mailboxes.values():
         if email in mailbox:

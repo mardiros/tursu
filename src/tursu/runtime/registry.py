@@ -44,7 +44,7 @@ def normalize_module_name(module_name: str) -> str:
 
 
 def _step(
-    step_name: str, step_pattern: str | AbstractPattern
+    keyword: StepKeyword, step_pattern: str | AbstractPattern
 ) -> Callable[[Handler], Handler]:
     def wrapper(wrapped: Handler) -> Handler:
         def callback(scanner: venusian.Scanner, name: str, ob: Handler) -> None:
@@ -53,8 +53,8 @@ def _step(
 
             step_module = normalize_module_name(ob.__module__)
 
-            scanner.registry.register_handler(  # type: ignore
-                step_module, step_name, step_pattern, wrapped
+            scanner.registry.register_step_definition(  # type: ignore
+                step_module, keyword, step_pattern, wrapped
             )
 
         venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)
@@ -103,6 +103,13 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
 
 
 class ModRegistry:
+    """
+    Registry for a package.
+
+    In a layered tests suite, step definitions are inherits from parent directories,
+    so step definitions are saved per directory, or package.
+    """
+
     def __init__(self) -> None:
         self._handlers: dict[StepKeyword, list[StepDefinition]] = {
             "Given": [],
@@ -124,6 +131,9 @@ class ModRegistry:
         return self._models_types
 
     def append(self, stp: StepKeyword, step: StepDefinition) -> None:
+        """
+        Append a step definition to the registry.
+        """
         self._handlers[stp].append(step)
         self.register_data_table(step)
         self.register_doc_string(step)
@@ -138,6 +148,8 @@ class ModRegistry:
     def register_model(self, parameter: Parameter | None) -> None:
         """
         Register the model in the parameter of a signature for data_table or doc_string.
+
+        :param parameter: the parameter from the signature.
         """
         if parameter and parameter.annotation:
             param_origin = get_origin(parameter.annotation)
@@ -218,7 +230,11 @@ class ModRegistry:
 
 
 class Registry:
-    """Step definition registry stacked"""
+    """
+    Layered step definitions registry.
+
+    A facade for {class}`ModRegistry` to have step definitions in a tree.
+    """
 
     def __init__(self) -> None:
         self._handlers: dict[str, ModRegistry] = defaultdict(ModRegistry)
@@ -226,9 +242,22 @@ class Registry:
     def append(
         self, module_name: str, keyword: StepKeyword, step: StepDefinition
     ) -> None:
+        """
+        Append the step definition to the module name registry.
+
+        :param module_name: the name of the module of the step is registered.
+        :param keyword: gherkin keyword for the definition.
+        :param step: step definition to append.
+        """
         self._handlers[module_name].append(keyword, step)
 
     def get_fixtures(self, module_name: str) -> Mapping[str, type]:
+        """
+        Return the list of fixtures that has to be imported at the module.
+
+        :return: a mapping where the key is the alias name and value is the
+            type to import.
+        """
         fixtures: dict[str, type] = {}
 
         parts = module_name.split(".")
@@ -248,6 +277,9 @@ class Registry:
         The type are aliased during registration to avoid conflict name at import time
         during the ast generation.
 
+        :param module_name: the name of the module the step is retrieve,
+            and lookup from the current module to its ancestors,
+            retrieving the first that match.
         :return: type as key, alias as value.
         """
         model_types: dict[type, str] = {}
@@ -269,7 +301,9 @@ class Registry:
         """
         Get the first registered step that match the text.
 
-        :param module_name: the name of the current module.
+        :param module_name: the name of the module the step is retrieve,
+            and lookup from the current module to its ancestors,
+            retrieving the first that match.
         :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
         :return: the register step if exists otherwise None.
@@ -293,10 +327,13 @@ class Registry:
         """
         Get the first registered step that match the text.
 
-        :param module_name: the name of the current module.
+        :param module_name: the name of the module the step is retrieve,
+            and lookup from the current module to its ancestors,
+            retrieving the first that match.
         :param keyword: gherkin keyword for the definition.
         :param text: text to match the definition.
-        :return: the register step if exists otherwise None.
+        :return: the register step if exists otherwise None with its associated step
+            definition parameters.
         """
         step_def = self.get_step(module_name, keyword, text)
         if step_def:
@@ -309,6 +346,13 @@ class Registry:
         module_name: str,
         text: str,
     ) -> list[str]:
+        """
+        Get the first registered step that match the text.
+
+        :param module_name: use the module and all its ancestors to retrieve a match.
+        :param text: text to match the definition.
+        :return: the list of steps that could be usefull.
+        """
         parts = module_name.split(".")
         matches: list[tuple[float, str]] = []
         while parts:
@@ -345,9 +389,15 @@ class Tursu:
         self._registry = Registry()
 
     def get_fixtures(self, module_name: str) -> Mapping[str, type]:
+        """
+        Return the list of fixtures that has to be imported at the module.
+
+        :return: a mapping where the key is the alias name and value is the
+            type to import.
+        """
         return self._registry.get_fixtures(module_name)
 
-    def register_handler(
+    def register_step_definition(
         self,
         module_name: str,
         keyword: StepKeyword,
@@ -360,6 +410,7 @@ class Tursu:
         This method is the primitive for [@given](#tursu.given),
         [@when](#tursu.when) and [@then](#tursu.then) decorators.
 
+        :param module_name: the name of the module of the step is registered.
         :param keyword: gherkin keyword for the definition.
         :param pattern: pattern to match the definition.
         :param handler: function called when a step in a scenario match the pattern.
@@ -381,9 +432,29 @@ class Tursu:
         return self._registry.get_step(module_name, keyword, text)
 
     def get_models_types(self, module_name: str) -> dict[type, str]:
+        """
+        Registered data types, used in order to build imports on tests.
+        The type are aliased during registration to avoid conflict name at import time
+        during the ast generation.
+
+        :param module_name: the name of the module the step is retrieve,
+            and lookup from the current module to its ancestors,
+            retrieving the first that match.
+        :return: type as key, alias as value.
+        """
         return self._registry.get_models_types(module_name)
 
     def get_models_type(self, module_name: str, typ: type[Any]) -> str:
+        """
+        Get the alias name of a given type used to build the model type
+        during AST compilation.
+
+        :param module_name: the name of the module the step is retrieve,
+            and lookup from the current module to its ancestors,
+            retrieving the first that match.
+        :param typ: the type of the model.
+        :return: alias of the type.
+        """
         return self._registry.get_models_types(module_name)[typ]
 
     def get_best_matches(self, module_name: str, text: str) -> list[str]:
@@ -395,6 +466,7 @@ class Tursu:
         """
         Extract fixture for a step from the given pytest fixtures of the test function.
 
+        :param module_name: module name where the step has to be found.
         :param keyword: gherkin step to match.
         :param text: text to match the definition.
         :param kwargs: the fixtures pytest fixtures from the test function.
@@ -442,6 +514,7 @@ class Tursu:
         """
         Scan the module (or modules) containing steps.
 
+        :param mod: optionally module to import, usually the function caller module.
         :return: the current tursu registry for multiple scan purpose.
         """
         if mod is None:
