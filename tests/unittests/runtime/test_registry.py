@@ -79,10 +79,10 @@ def test_scan():
     registry = Tursu()
     registry.scan()
 
-    assert registry._registry._handlers.keys() == {"tests.unittests.runtime.fixtures"}
-    assert registry._registry._handlers[
+    assert registry._registry._step_defs.keys() == {"tests.unittests.runtime.fixtures"}
+    assert registry._registry._step_defs[
         "tests.unittests.runtime.fixtures"
-    ]._handlers == {
+    ]._step_defs == {
         "Given": [
             StepDefinition("a set of users:", a_set_of_users),
             StepDefinition("a user {username}", give_user),

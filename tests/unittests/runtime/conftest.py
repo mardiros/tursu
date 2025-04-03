@@ -46,4 +46,4 @@ def gherkin_test_module(
 
 @pytest.fixture()
 def mod_registry(registry: Tursu) -> ModRegistry:
-    return registry._registry._handlers["tests.unittests.runtime.fixtures"]
+    return registry._registry._step_defs["tests.unittests.runtime.fixtures"]

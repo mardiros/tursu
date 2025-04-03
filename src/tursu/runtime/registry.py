@@ -111,7 +111,7 @@ class ModRegistry:
     """
 
     def __init__(self) -> None:
-        self._handlers: dict[StepKeyword, list[StepDefinition]] = {
+        self._step_defs: dict[StepKeyword, list[StepDefinition]] = {
             "Given": [],
             "When": [],
             "Then": [],
@@ -134,15 +134,15 @@ class ModRegistry:
         """
         Append a step definition to the registry.
         """
-        self._handlers[stp].append(step)
+        self._step_defs[stp].append(step)
         self.register_data_table(step)
         self.register_doc_string(step)
 
     def get_fixtures(self) -> Mapping[str, type]:
         fixtures: dict[str, type] = {}
-        for handlers in self._handlers.values():
-            for handler in handlers:
-                fixtures.update(handler.fixtures)
+        for step_defs in self._step_defs.values():
+            for stp in step_defs:
+                fixtures.update(stp.fixtures)
         return fixtures
 
     def register_model(self, parameter: Parameter | None) -> None:
@@ -201,9 +201,9 @@ class ModRegistry:
         :param text: text to match the definition.
         """
         possibilities = [
-            *[f"Given {hdl.pattern.pattern}" for hdl in self._handlers["Given"]],
-            *[f"When {hdl.pattern.pattern}" for hdl in self._handlers["When"]],
-            *[f"Then {hdl.pattern.pattern}" for hdl in self._handlers["Then"]],
+            *[f"Given {stp.pattern.pattern}" for stp in self._step_defs["Given"]],
+            *[f"When {stp.pattern.pattern}" for stp in self._step_defs["When"]],
+            *[f"Then {stp.pattern.pattern}" for stp in self._step_defs["Then"]],
         ]
         matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
 
@@ -222,10 +222,10 @@ class ModRegistry:
         :return: the register step if exists otherwise None.
         """
 
-        handlers = self._handlers[keyword]
-        for handler in handlers:
-            if handler.pattern.match(text):
-                return handler
+        step_defs = self._step_defs[keyword]
+        for stp in step_defs:
+            if stp.pattern.match(text):
+                return stp
         return None
 
 
@@ -237,7 +237,7 @@ class Registry:
     """
 
     def __init__(self) -> None:
-        self._handlers: dict[str, ModRegistry] = defaultdict(ModRegistry)
+        self._step_defs: dict[str, ModRegistry] = defaultdict(ModRegistry)
 
     def append(
         self, module_name: str, keyword: StepKeyword, step: StepDefinition
@@ -249,7 +249,7 @@ class Registry:
         :param keyword: gherkin keyword for the definition.
         :param step: step definition to append.
         """
-        self._handlers[module_name].append(keyword, step)
+        self._step_defs[module_name].append(keyword, step)
 
     def get_fixtures(self, module_name: str) -> Mapping[str, type]:
         """
@@ -263,8 +263,8 @@ class Registry:
         parts = module_name.split(".")
         module_name = parts.pop(0)
         while True:
-            if module_name in self._handlers:
-                fixtures.update(self._handlers[module_name].get_fixtures())
+            if module_name in self._step_defs:
+                fixtures.update(self._step_defs[module_name].get_fixtures())
             if parts:
                 module_name = f"{module_name}.{parts.pop(0)}"
             else:
@@ -287,8 +287,8 @@ class Registry:
         parts = module_name.split(".")
         module_name = parts.pop(0)
         while True:
-            if module_name in self._handlers:
-                model_types.update(self._handlers[module_name].models_types)
+            if module_name in self._step_defs:
+                model_types.update(self._step_defs[module_name].models_types)
             if parts:
                 module_name = f"{module_name}.{parts.pop(0)}"
             else:
@@ -311,8 +311,8 @@ class Registry:
         parts = module_name.split(".")
         while parts:
             mod_path = ".".join(parts)
-            if mod_path in self._handlers:
-                if handle := self._handlers[mod_path].get_step(keyword, text):
+            if mod_path in self._step_defs:
+                if handle := self._step_defs[mod_path].get_step(keyword, text):
                     return handle
             parts.pop()
         return None
@@ -357,8 +357,8 @@ class Registry:
         matches: list[tuple[float, str]] = []
         while parts:
             mod_path = ".".join(parts)
-            if mod_path in self._handlers:
-                matches += self._handlers[mod_path].get_best_matches(text)
+            if mod_path in self._step_defs:
+                matches += self._step_defs[mod_path].get_best_matches(text)
             parts.pop()
         matches = list(set(matches))
         matches.sort(reverse=True)

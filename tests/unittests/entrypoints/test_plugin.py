@@ -53,15 +53,15 @@ def test_tursu_collect_file(
     tursu_collect_file()
     assert "pytest_collect_file" in globals()
     globals()["pytest_collect_file"](gherkin_test_package, doc.filepath)
-    repr_handlers = {
+    repr_steps = {
         mod: {
-            "Given": [repr(h) for h in r._handlers["Given"]],
-            "Then": [repr(h) for h in r._handlers["Then"]],
-            "When": [repr(h) for h in r._handlers["When"]],
+            "Given": [repr(stp) for stp in r._step_defs["Given"]],
+            "Then": [repr(stp) for stp in r._step_defs["Then"]],
+            "When": [repr(stp) for stp in r._step_defs["When"]],
         }
-        for mod, r in tursu._registry._handlers.items()
+        for mod, r in tursu._registry._step_defs.items()
     }
-    assert repr_handlers == {
+    assert repr_steps == {
         "tests.unittests.entrypoints.fixtures": {
             "Given": [
                 'StepDefinition("a set of users:", a_set_of_users)',
