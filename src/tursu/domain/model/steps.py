@@ -38,7 +38,7 @@ def discover_fixtures(hook: Callable[..., None]) -> dict[str, type]:
     return fixtures
 
 
-class Step:
+class StepDefinition:
     """
     Step definition.
 
@@ -59,12 +59,12 @@ class Step:
         self.fixtures: Mapping[str, type] = discover_fixtures(hook)
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Step):
+        if not isinstance(other, StepDefinition):
             return False
         return self.pattern == other.pattern and self.hook == other.hook
 
     def __repr__(self) -> str:
-        return f'Step("{self.pattern}", {self.hook.__qualname__})'
+        return f'StepDefinition("{self.pattern}", {self.hook.__qualname__})'
 
     def __call__(self, **kwargs: Any) -> None:
         """Will call the hook with the given parameter."""

@@ -64,14 +64,14 @@ def test_tursu_collect_file(
     assert repr_handlers == {
         "tests.unittests.entrypoints.fixtures": {
             "Given": [
-                'Step("a set of users:", a_set_of_users)',
+                'StepDefinition("a set of users:", a_set_of_users)',
             ],
             "Then": [
-                'Step("the user is connected with username {username}", assert_connected)',
-                'Step("the user is not connected", assert_not_connected)',
+                'StepDefinition("the user is connected with username {username}", assert_connected)',
+                'StepDefinition("the user is not connected", assert_not_connected)',
             ],
             "When": [
-                'Step("{username} login with password {password}", login)',
+                'StepDefinition("{username} login with password {password}", login)',
             ],
         }
     }

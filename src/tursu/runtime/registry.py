@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
 import venusian
 from typing_extensions import Any
 
-from tursu.domain.model.steps import Handler, Step, StepKeyword
+from tursu.domain.model.steps import Handler, StepDefinition, StepKeyword
 from tursu.runtime.pattern_matcher import AbstractPattern
 
 if TYPE_CHECKING:
@@ -104,7 +104,7 @@ def then(pattern: str | AbstractPattern) -> Callable[[Handler], Handler]:
 
 class ModRegistry:
     def __init__(self) -> None:
-        self._handlers: dict[StepKeyword, list[Step]] = {
+        self._handlers: dict[StepKeyword, list[StepDefinition]] = {
             "Given": [],
             "When": [],
             "Then": [],
@@ -123,7 +123,7 @@ class ModRegistry:
 
         return self._models_types
 
-    def append(self, stp: StepKeyword, step: Step) -> None:
+    def append(self, stp: StepKeyword, step: StepDefinition) -> None:
         self._handlers[stp].append(step)
         self.register_data_table(step)
         self.register_doc_string(step)
@@ -159,7 +159,7 @@ class ModRegistry:
             if typ.__module__ != "builtins" and typ not in self._models_types:
                 self._models_types[typ] = f"{typ.__name__}{len(self._models_types)}"
 
-    def register_data_table(self, step: Step) -> None:
+    def register_data_table(self, step: StepDefinition) -> None:
         """
         This method register the data table as a model.
 
@@ -167,7 +167,7 @@ class ModRegistry:
         """
         self.register_model(step.pattern.signature.parameters.get("data_table"))
 
-    def register_doc_string(self, step: Step) -> None:
+    def register_doc_string(self, step: StepDefinition) -> None:
         """
         This method register the doc string as a model.
 
@@ -201,7 +201,7 @@ class ModRegistry:
         ]
         return scored_matches
 
-    def get_step(self, step: StepKeyword, text: str) -> Step | None:
+    def get_step(self, step: StepKeyword, text: str) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
@@ -223,7 +223,7 @@ class Registry:
     def __init__(self) -> None:
         self._handlers: dict[str, ModRegistry] = defaultdict(ModRegistry)
 
-    def append(self, module_name: str, stp: StepKeyword, step: Step) -> None:
+    def append(self, module_name: str, stp: StepKeyword, step: StepDefinition) -> None:
         self._handlers[module_name].append(stp, step)
 
     def get_fixtures(self, module_name: str) -> Mapping[str, type]:
@@ -263,7 +263,7 @@ class Registry:
 
     def get_step(
         self, module_name: str, step_kwd: StepKeyword, text: str
-    ) -> Step | None:
+    ) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
@@ -287,7 +287,7 @@ class Registry:
         step_kwd: StepKeyword,
         text: str,
         fixtures: Mapping[str, Any],
-    ) -> tuple[Step | None, Mapping[str, Any]]:
+    ) -> tuple[StepDefinition | None, Mapping[str, Any]]:
         """
         Get the first registered step that match the text.
 
@@ -362,10 +362,12 @@ class Tursu:
         :param pattern: pattern to match the definition.
         :param handler: function called when a step in a scenario match the pattern.
         """
-        step = Step(pattern, handler)
+        step = StepDefinition(pattern, handler)
         self._registry.append(module_name, type, step)
 
-    def get_step(self, module_name: str, step: StepKeyword, text: str) -> Step | None:
+    def get_step(
+        self, module_name: str, step: StepKeyword, text: str
+    ) -> StepDefinition | None:
         """
         Get the first registered step that match the text.
 
@@ -430,7 +432,7 @@ class Tursu:
                 tursu_runner.emit_success(step_kwd, handler, matches)
         else:
             tursu_runner.emit_error(
-                step_kwd, Step(text, lambda: None), {}, unregistered=True
+                step_kwd, StepDefinition(text, lambda: None), {}, unregistered=True
             )
             raise Unregistered(tursu_runner.module_name, self, step_kwd, text)
 
