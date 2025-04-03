@@ -35,6 +35,7 @@ class Unregistered(RuntimeError):
     """
     Raised when no step definition are found from a gherkin step.
 
+    :param module_name: the test module where the step definition is not registered.
     :param registry: the tursu registry.
     :param step: Keyworkd of the step.
     :param text: the text that did not match any step definition.

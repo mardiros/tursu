@@ -180,9 +180,7 @@ class ModRegistry:
         text: str,
         n: int = 5,
         cutoff: float = 0.3,
-        lgtm_threshold: float = 0.4,
-        sure_threshold: float = 0.7,
-    ) -> Sequence[str]:
+    ) -> Sequence[tuple[float, str]]:
         """
         Return the gherkin steps from the registry that look like the given text.
         This method is called if no step definition matches to build a proper hint
@@ -196,18 +194,12 @@ class ModRegistry:
             *[f"Then {hdl.pattern.pattern}" for hdl in self._handlers["Then"]],
         ]
         matches = difflib.get_close_matches(text, possibilities, n=n, cutoff=cutoff)
-        if len(matches) <= 1:
-            return matches
 
         scored_matches = [
             (difflib.SequenceMatcher(None, text, match).ratio(), match)
             for match in matches
         ]
-        scored_matches.sort(reverse=True)
-
-        if scored_matches[0][0] >= sure_threshold:
-            return [match for score, match in scored_matches if score > sure_threshold]
-        return [match for score, match in scored_matches if score > lgtm_threshold]
+        return scored_matches
 
     def get_step(self, step: StepKeyword, text: str) -> Step | None:
         """
@@ -389,6 +381,9 @@ class Tursu:
 
     def get_models_type(self, module_name: str, typ: type[Any]) -> str:
         return self._registry.get_models_types(module_name)[typ]
+
+    def get_best_matches(self, module_name: str, text: str) -> list[str]:
+        return self._registry.get_best_matches(module_name, text)
 
     def extract_fixtures(
         self, module_name: str, step_kwd: StepKeyword, text: str, **kwargs: Any

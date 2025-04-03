@@ -46,6 +46,35 @@ def dummy_app() -> DummyApp:
     return DummyApp()
 
 
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        pytest.param(
+            "tests.functionals",
+            "tests.functionals",
+            id="global inline",
+        ),
+        pytest.param(
+            "tests.functionals.steps",
+            "tests.functionals",
+            id="step module",
+        ),
+        pytest.param(
+            "tests.functionals.usefixtures.steps",
+            "tests.functionals.usefixtures",
+            id="step package",
+        ),
+        pytest.param(
+            "tests.functionals.usefixtures.steps.actions",
+            "tests.functionals.usefixtures",
+            id="step package",
+        ),
+    ],
+)
+def test_normalize_module_name(name: str, expected: str):
+    assert normalize_module_name(name) == expected
+
+
 def test_scan():
     registry = Tursu()
     registry.scan()
@@ -187,7 +216,7 @@ def test_registry_step_unregistered_no_step(
 
 
 @pytest.mark.parametrize(
-    "steps, text,expected",
+    "steps,text,expected",
     [
         pytest.param(
             ["Given a user {username}"],
@@ -207,8 +236,8 @@ def test_registry_step_unregistered_no_step(
         pytest.param(
             [
                 "Given a user {name}",
-                "When the user click on the {role} {name}",
                 "When the user click on the 1st {role} {name}",
+                "When the user click on the {role} {name}",
             ],
             "Then the user click on button",
             [
@@ -223,5 +252,12 @@ def test_get_best_match(steps: list[str], text: str, expected: Sequence[str]):
     registry = Tursu()
     for step in steps:
         stp, rest = step.split(" ", 1)
-        registry.register_handler(cast(StepKeyword, stp), rest, lambda: None)
-    assert registry.get_best_matches(text) == expected
+        registry.register_handler(
+            "tests.unittests.runtime.fixtures",
+            cast(StepKeyword, stp),
+            rest,
+            lambda: None,
+        )
+    assert (
+        registry.get_best_matches("tests.unittests.runtime.fixtures", text) == expected
+    )
