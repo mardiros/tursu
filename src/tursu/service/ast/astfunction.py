@@ -1,6 +1,7 @@
 """AST helpers at the test function level."""
 
 import ast
+import inspect
 import json
 import re
 from collections.abc import Mapping, Sequence
@@ -34,6 +35,16 @@ def is_step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
     :param value: any gherkin keyword input
     """
     return value in get_args(StepKeyword)
+
+
+def is_mapping(value: type[Any] | None) -> TypeGuard[Mapping[Any, Any]]:
+    """Inspect type to define if it is a Mapping, such as dict or MutableMapping."""
+    return value is not None and inspect.isclass(value) and issubclass(value, Mapping)
+
+
+def is_sequence(value: type[Any] | None) -> TypeGuard[Sequence[Any]]:
+    """Inspect type to define if it is a Sequence, such as list or MutableSequence."""
+    return value is not None and inspect.isclass(value) and issubclass(value, Sequence)
 
 
 def sanitize(name: str) -> str:
@@ -324,32 +335,30 @@ class TestFunctionWriter:
     def parse_doc_string(
         self, step_keyword: StepKeyword, stp: GherkinStep
     ) -> ast.keyword:
-        registry_step = self.registry.get_step(
-            self.package_name, step_keyword, stp.text
-        )
+        step_def = self.registry.get_step(self.package_name, step_keyword, stp.text)
 
-        assert registry_step, "Step not found"
+        assert step_def, "Step not found"
         assert stp.doc_string, "Step has not doc_string"
 
         typ = None
         is_list = False
-        anon = registry_step.pattern.signature.parameters["doc_string"].annotation
+        anon = step_def.pattern.signature.parameters["doc_string"].annotation
         if anon:
             param_origin = get_origin(anon)
             if param_origin is Annotated:
                 # we are in a factory
                 typ = get_args(anon)[-1]
-            elif param_origin and issubclass(param_origin, Sequence):
+            elif is_sequence(param_origin):
                 is_list = True
                 typ = get_args(anon)[0]
                 orig = get_origin(typ)
-                if orig is dict:
+                if is_mapping(orig):
                     typ = None
                 elif orig is Annotated:
                     typ = get_args(typ)[-1]
             else:
                 orig = get_origin(anon)
-                if orig is dict:
+                if is_mapping(orig):
                     typ = None
                 else:
                     typ = anon
@@ -419,32 +428,30 @@ class TestFunctionWriter:
         :param stp: the step to analyse.
             the step must have a definved data_table.
         """
-        registry_step = self.registry.get_step(
-            self.package_name, step_keyword, stp.text
-        )
+        step_def = self.registry.get_step(self.package_name, step_keyword, stp.text)
 
-        assert registry_step, "Step not found"
+        assert step_def, "Step not found"
         assert stp.data_table, "Step has no data_table"
         typ: type | None = None
         is_reversed = False
-        anon = registry_step.pattern.signature.parameters["data_table"].annotation
+        anon = step_def.pattern.signature.parameters["data_table"].annotation
         if anon:
             param_origin = get_origin(anon)
             if param_origin is Annotated:
                 # we are in a factory
                 is_reversed = True
                 typ = get_args(anon)[-1]
-            elif param_origin and issubclass(param_origin, Sequence):
+            elif is_sequence(param_origin):
                 typ = get_args(anon)[0]
                 orig = get_origin(typ)
-                if orig is dict:
+                if is_mapping(orig):
                     typ = None
                 elif orig is Annotated:
                     typ = get_args(typ)[-1]
             else:
                 is_reversed = True
                 orig = get_origin(anon)
-                if orig is dict:
+                if is_mapping(orig):
                     typ = None
                 else:
                     typ = anon
