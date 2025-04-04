@@ -1,7 +1,6 @@
 # {py:mod}`tursu.runtime.registry`
 
 ```{py:module} tursu.runtime.registry
-
 ```
 
 ```{autodoc2-docstring} tursu.runtime.registry
@@ -96,7 +95,7 @@
 :parser: myst
 ```
 
-````{py:method} append(stp: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.Step) -> None
+````{py:method} append(stp: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.StepDefinition) -> None
 :canonical: tursu.runtime.registry.ModRegistry.append
 
 ```{autodoc2-docstring} tursu.runtime.registry.ModRegistry.append
@@ -123,7 +122,7 @@
 
 ````
 
-````{py:method} get_step(step: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.Step | None
+````{py:method} get_step(keyword: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.StepDefinition | None
 :canonical: tursu.runtime.registry.ModRegistry.get_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.ModRegistry.get_step
@@ -142,7 +141,7 @@
 
 ````
 
-````{py:method} register_data_table(step: tursu.domain.model.steps.Step) -> None
+````{py:method} register_data_table(step: tursu.domain.model.steps.StepDefinition) -> None
 :canonical: tursu.runtime.registry.ModRegistry.register_data_table
 
 ```{autodoc2-docstring} tursu.runtime.registry.ModRegistry.register_data_table
@@ -151,7 +150,7 @@
 
 ````
 
-````{py:method} register_doc_string(step: tursu.domain.model.steps.Step) -> None
+````{py:method} register_doc_string(step: tursu.domain.model.steps.StepDefinition) -> None
 :canonical: tursu.runtime.registry.ModRegistry.register_doc_string
 
 ```{autodoc2-docstring} tursu.runtime.registry.ModRegistry.register_doc_string
@@ -185,7 +184,7 @@
 :parser: myst
 ```
 
-````{py:method} append(module_name: str, stp: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.Step) -> None
+````{py:method} append(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, step: tursu.domain.model.steps.StepDefinition) -> None
 :canonical: tursu.runtime.registry.Registry.append
 
 ```{autodoc2-docstring} tursu.runtime.registry.Registry.append
@@ -212,7 +211,7 @@
 
 ````
 
-````{py:method} get_matched_step(module_name: str, step_kwd: tursu.domain.model.steps.StepKeyword, text: str, fixtures: collections.abc.Mapping[str, typing_extensions.Any]) -> tuple[tursu.domain.model.steps.Step | None, collections.abc.Mapping[str, typing_extensions.Any]]
+````{py:method} get_matched_step(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, fixtures: collections.abc.Mapping[str, typing_extensions.Any]) -> tuple[tursu.domain.model.steps.StepDefinition | None, collections.abc.Mapping[str, typing_extensions.Any]]
 :canonical: tursu.runtime.registry.Registry.get_matched_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Registry.get_matched_step
@@ -230,7 +229,7 @@
 
 ````
 
-````{py:method} get_step(module_name: str, step_kwd: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.Step | None
+````{py:method} get_step(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.StepDefinition | None
 :canonical: tursu.runtime.registry.Registry.get_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Registry.get_step
@@ -265,7 +264,7 @@
 
 ````
 
-````{py:method} extract_fixtures(module_name: str, step_kwd: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
+````{py:method} extract_fixtures(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
 :canonical: tursu.runtime.registry.Tursu.extract_fixtures
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.extract_fixtures
@@ -310,7 +309,7 @@
 
 ````
 
-````{py:method} get_step(module_name: str, step: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.Step | None
+````{py:method} get_step(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str) -> tursu.domain.model.steps.StepDefinition | None
 :canonical: tursu.runtime.registry.Tursu.get_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.get_step
@@ -319,7 +318,7 @@
 
 ````
 
-````{py:method} register_step_definition(module_name: str, type: tursu.domain.model.steps.StepKeyword, pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, handler: tursu.domain.model.steps.Handler) -> None
+````{py:method} register_step_definition(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, handler: tursu.domain.model.steps.Handler) -> None
 :canonical: tursu.runtime.registry.Tursu.register_step_definition
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.register_step_definition
@@ -328,7 +327,7 @@
 
 ````
 
-````{py:method} run_step(tursu_runner: tursu.runtime.runner.TursuRunner, step_kwd: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+````{py:method} run_step(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
 :canonical: tursu.runtime.registry.Tursu.run_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.run_step

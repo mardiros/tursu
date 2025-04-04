@@ -48,10 +48,10 @@ tests/
 │   │   ├── login.feature
 │   │   ├── signup.feature
 │   │   ├── __init__.py  # unsure the tests is discovered has a package
+│   │   ├── conftest.py    # (Optional) Fixtures for this module
 │   │   ├── steps/
 │   │   │   ├── __init__.py  # unsure the tests is discovered has a package
 │   │   │   ├── assertions.py  # (exemple) validate outcomes
-│   │   │   ├── conftest.py    # (Optional) Fixtures for this module
 │   │   │   ├── context.py     # (exemple) reusable context
 │   │   │   ├── forms.py       # (exemple) filling forms
 │   │
@@ -96,7 +96,6 @@ tests/
 │   │   ├── add_to_cart.feature
 │   │   ├── steps/  # steps available for add_to_cart, payment and shipping only
 │   │   │   ├── __init__.py
-│   │   │   ├── conftest.py
 │   │   │   ├── add_to_cart.py
 │   │   │   ├── payment.py
 │   │   │   ├── shipping.py
@@ -111,3 +110,7 @@ with the features, in a single module that may contain fixture and all the steps
 The cart checkout features has been splitted in a sub directory, that may
 contains its own steps, but for the example, they are also in the cart steps,
 only because checkout is a subdirectory of the cart.
+
+```{important}
+A steps module can't contains a `conftest.py` file, only its parent directory.
+```

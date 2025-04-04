@@ -29,6 +29,16 @@
 :class: autosummary longtable
 :align: left
 
+* - {py:obj}`is_mapping <tursu.service.ast.astfunction.is_mapping>`
+  - ```{autodoc2-docstring} tursu.service.ast.astfunction.is_mapping
+    :parser: myst
+    :summary:
+    ```
+* - {py:obj}`is_sequence <tursu.service.ast.astfunction.is_sequence>`
+  - ```{autodoc2-docstring} tursu.service.ast.astfunction.is_sequence
+    :parser: myst
+    :summary:
+    ```
 * - {py:obj}`is_step_keyword <tursu.service.ast.astfunction.is_step_keyword>`
   - ```{autodoc2-docstring} tursu.service.ast.astfunction.is_step_keyword
     :parser: myst
@@ -162,6 +172,22 @@
 ````
 
 `````
+
+````{py:function} is_mapping(value: type[typing.Any] | None) -> typing.TypeGuard[collections.abc.Mapping[typing.Any, typing.Any]]
+:canonical: tursu.service.ast.astfunction.is_mapping
+
+```{autodoc2-docstring} tursu.service.ast.astfunction.is_mapping
+:parser: myst
+```
+````
+
+````{py:function} is_sequence(value: type[typing.Any] | None) -> typing.TypeGuard[collections.abc.Sequence[typing.Any]]
+:canonical: tursu.service.ast.astfunction.is_sequence
+
+```{autodoc2-docstring} tursu.service.ast.astfunction.is_sequence
+:parser: myst
+```
+````
 
 ````{py:function} is_step_keyword(value: tursu.domain.model.gherkin.GherkinKeyword) -> typing.TypeGuard[tursu.domain.model.steps.StepKeyword]
 :canonical: tursu.service.ast.astfunction.is_step_keyword

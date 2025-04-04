@@ -16,8 +16,8 @@
 :class: autosummary longtable
 :align: left
 
-* - {py:obj}`Step <tursu.domain.model.steps.Step>`
-  - ```{autodoc2-docstring} tursu.domain.model.steps.Step
+* - {py:obj}`StepDefinition <tursu.domain.model.steps.StepDefinition>`
+  - ```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition
     :parser: myst
     :summary:
     ```
@@ -67,43 +67,43 @@
 
 ````
 
-`````{py:class} Step(pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, hook: tursu.domain.model.steps.Handler)
-:canonical: tursu.domain.model.steps.Step
+`````{py:class} StepDefinition(pattern: str | tursu.runtime.pattern_matcher.AbstractPattern, hook: tursu.domain.model.steps.Handler)
+:canonical: tursu.domain.model.steps.StepDefinition
 
-```{autodoc2-docstring} tursu.domain.model.steps.Step
+```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition
 :parser: myst
 ```
 
 ```{rubric} Initialization
 ```
 
-```{autodoc2-docstring} tursu.domain.model.steps.Step.__init__
+```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition.__init__
 :parser: myst
 ```
 
 ````{py:method} __call__(**kwargs: typing.Any) -> None
-:canonical: tursu.domain.model.steps.Step.__call__
+:canonical: tursu.domain.model.steps.StepDefinition.__call__
 
-```{autodoc2-docstring} tursu.domain.model.steps.Step.__call__
+```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition.__call__
 :parser: myst
 ```
 
 ````
 
 ````{py:method} __eq__(other: typing.Any) -> bool
-:canonical: tursu.domain.model.steps.Step.__eq__
+:canonical: tursu.domain.model.steps.StepDefinition.__eq__
 
 ````
 
 ````{py:method} __repr__() -> str
-:canonical: tursu.domain.model.steps.Step.__repr__
+:canonical: tursu.domain.model.steps.StepDefinition.__repr__
 
 ````
 
 ````{py:method} highlight(matches: collections.abc.Mapping[str, typing.Any], color: str = '\x1b[36m', reset: str = '\x1b[0m') -> str
-:canonical: tursu.domain.model.steps.Step.highlight
+:canonical: tursu.domain.model.steps.StepDefinition.highlight
 
-```{autodoc2-docstring} tursu.domain.model.steps.Step.highlight
+```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition.highlight
 :parser: myst
 ```
 
