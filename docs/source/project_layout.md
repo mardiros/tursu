@@ -1,3 +1,5 @@
+(project-layout)=
+
 # Project Structure and Feature File Organization
 
 We called step definition, the python function that has to be written
