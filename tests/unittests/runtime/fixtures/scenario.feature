@@ -13,6 +13,10 @@ Feature: Discover Scenario
         """
         ...
         """
+      And the raw API for Bob respond
+        """json
+        [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]
+        """
       And the API for Bob respond
         """json
         [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]

@@ -12,6 +12,7 @@ from tests.unittests.runtime.fixtures.dataset_factory import (
 )
 from tests.unittests.runtime.fixtures.steps import (
     assert_api_response,
+    assert_api_response_json_as_any,
     assert_dataset_raw,
     assert_mailbox_contains,
     assert_user_has_mailbox,
@@ -90,6 +91,9 @@ def test_scan():
         "Then": [
             StepDefinition("the users dataset is", assert_dataset),
             StepDefinition("the API for {username} respond", assert_api_response),
+            StepDefinition(
+                "the raw API for {username} respond", assert_api_response_json_as_any
+            ),
             StepDefinition("the users raw dataset is", assert_dataset_raw),
             StepDefinition(
                 'the mailbox {email} "{subject}" message is',

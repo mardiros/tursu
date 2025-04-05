@@ -1,7 +1,6 @@
 """AST helpers at the test function level."""
 
 import ast
-import inspect
 import json
 import re
 from collections.abc import Mapping, Sequence
@@ -18,6 +17,7 @@ from tursu.domain.model.gherkin import (
 )
 from tursu.domain.model.steps import StepKeyword
 from tursu.runtime.registry import Tursu
+from tursu.shared.utils import is_mapping, is_sequence, is_union
 
 
 def repr_stack(stack: Sequence[Any]) -> Sequence[str]:
@@ -35,16 +35,6 @@ def is_step_keyword(value: GherkinKeyword) -> TypeGuard[StepKeyword]:
     :param value: any gherkin keyword input
     """
     return value in get_args(StepKeyword)
-
-
-def is_mapping(value: type[Any] | None) -> TypeGuard[Mapping[Any, Any]]:
-    """Inspect type to define if it is a Mapping, such as dict or MutableMapping."""
-    return value is not None and inspect.isclass(value) and issubclass(value, Mapping)
-
-
-def is_sequence(value: type[Any] | None) -> TypeGuard[Sequence[Any]]:
-    """Inspect type to define if it is a Sequence, such as list or MutableSequence."""
-    return value is not None and inspect.isclass(value) and issubclass(value, Sequence)
 
 
 def sanitize(name: str) -> str:
@@ -345,7 +335,9 @@ class TestFunctionWriter:
         anon = step_def.pattern.signature.parameters["doc_string"].annotation
         if anon:
             param_origin = get_origin(anon)
-            if param_origin is Annotated:
+            if is_union(anon):
+                typ = None
+            elif param_origin is Annotated:
                 # we are in a factory
                 typ = get_args(anon)[-1]
             elif is_sequence(param_origin):
