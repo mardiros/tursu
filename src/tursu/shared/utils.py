@@ -1,6 +1,7 @@
 """
 Utilities functions for introspection.
 """
+
 import inspect
 from collections.abc import Mapping, Sequence
 from types import UnionType
@@ -14,7 +15,11 @@ def is_mapping(value: type[Any] | None) -> TypeGuard[Mapping[Any, Any]]:
 
 def is_sequence(value: type[Any] | None) -> TypeGuard[Sequence[Any]]:
     """Inspect type to define if it is a Sequence, such as list or MutableSequence."""
-    return value is not None and inspect.isclass(value) and issubclass(value, Sequence)
+    if value is None or not inspect.isclass(value):
+        return False
+    if issubclass(value, str):
+        return False
+    return issubclass(value, Sequence)
 
 
 def is_union(typ: type[Any]) -> bool:
