@@ -1,3 +1,8 @@
+0.15.1 - Released on 2025-04-05
+-------------------------------
+* Fix type inference for union types on data_table and doc_string.
+  It will not raise an error anymore but they will never be interpreted.
+
 0.15.0 - Released on 2025-04-04
 -------------------------------
 * Breaking change: Step definitions are not globals anymore,
