@@ -15,6 +15,7 @@ from typing_extensions import Any
 
 from tursu.domain.model.steps import Handler, StepDefinition, StepKeyword
 from tursu.runtime.pattern_matcher import AbstractPattern
+from tursu.shared.utils import is_mapping, is_sequence, is_union
 
 if TYPE_CHECKING:
     from tursu.runtime.runner import TursuRunner
@@ -152,20 +153,23 @@ class ModRegistry:
         :param parameter: the parameter from the signature.
         """
         if parameter and parameter.annotation:
+            if is_union(parameter.annotation):
+                # we don't register union types.
+                return
+
             param_origin = get_origin(parameter.annotation)
             if param_origin is Annotated:
                 # we are in a factory
                 typ = get_args(parameter.annotation)[-1]
-            elif param_origin and issubclass(param_origin, Sequence):
+            elif param_origin and is_sequence(param_origin):
                 # we are in a list
                 typ = get_args(parameter.annotation)[0]
                 item_orig = get_origin(typ)
-                if item_orig is not dict:
+                if not is_mapping(item_orig):
                     if item_orig is Annotated:
                         # the list has a factory
                         typ = get_args(typ)[-1]
             else:
-                # this is a reversed data_table, there should be two column
                 typ = parameter.annotation
 
             if typ.__module__ != "builtins" and typ not in self._models_types:

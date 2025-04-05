@@ -7,4 +7,5 @@ develop/tursu/tursu.domain
 develop/tursu/tursu.entrypoints
 develop/tursu/tursu.runtime
 develop/tursu/tursu.service
+develop/tursu/tursu.shared
 ```

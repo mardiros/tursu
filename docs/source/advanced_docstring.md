@@ -123,6 +123,30 @@ doc_string looks like
 ```
 ````
 
+## Union types
+
+The union type **is not supported** on doc_string casting.
+
+The returned value will be python literals.
+
+Example:
+
+```python
+
+@then("the API respond")
+def assert_api_response_json_as_any(
+    doc_string: list[dict[str, str]] | dict[str, str],
+):
+  ...
+
+```
+
+
+```{important}
+  A docstring can't have union types of pydantic models or dataclass,
+  they will be ignored and the returned value is a python literals (dict, list, str, ...).
+```
+
 # Doc String With AST literals
 
 Docstring can also be pure python literals,
