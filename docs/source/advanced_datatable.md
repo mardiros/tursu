@@ -41,7 +41,7 @@ class User(BaseModel):
 
 ```
 
-## Usage of model based class.
+## Usage of model based class
 
 After the type has been devined, we can replace it in step definitions,
 like this:
@@ -140,3 +140,11 @@ data_table looks like
 ]
 ```
 ````
+
+
+## Union types
+
+Union types can't be used to define a data_table.
+
+A step cannot be a data table or a reversed data table, two steps must be created
+with their proper types.

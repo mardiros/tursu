@@ -1,3 +1,6 @@
+"""
+Utilities functions for introspection.
+"""
 import inspect
 from collections.abc import Mapping, Sequence
 from types import UnionType
