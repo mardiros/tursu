@@ -71,7 +71,7 @@ def test_tursu_collect_file(
                 'StepDefinition("the user is not connected", assert_not_connected)',
             ],
             "When": [
-                'StepDefinition("{username} login with password {password}", login)',
+                'StepDefinition("{username} signs in with password {password}", login)',
             ],
         }
     }

@@ -1,4 +1,4 @@
-Feature: User login with their own password
+Feature: User sign in with their own password
 
   Background:
     Given a set of users:
@@ -7,15 +7,15 @@ Feature: User login with their own password
       | Alice    | anothersecret |
 
   Scenario: User can login
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then the user is connected with username Bob
 
   Scenario: User can't login with wrong password
-    When Bob login with password notthat
+    When Bob signs in with password notthat
     Then the user is not connected
 
   Scenario Outline: User can't login with someone else username
-    When <username> login with password <password>
+    When <username> signs in with password <password>
     Then the user is not connected
 
     Examples:

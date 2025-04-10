@@ -7,8 +7,8 @@ Feature: Discover Scenario
 
     @wip
     Scenario: I can find scenario based on tag
-      When Bob create a mailbox bob@alice.net
-      Then Bob see a mailbox bob@alice.net
+      When Bob creates a mailbox bob@alice.net
+      Then Bob sees a mailbox bob@alice.net
       And the mailbox bob@alice.net "Welcome Bob" message is
         """
         ...
@@ -17,7 +17,7 @@ Feature: Discover Scenario
         """json
         [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]
         """
-      And the API for Bob respond
+      And the API for Bob is responding
         """json
         [{"email": "bob@alice.net", "subject": "Welcome Bob", "body": "..."}]
         """

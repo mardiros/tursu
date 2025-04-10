@@ -90,19 +90,19 @@ def test_scan():
         ],
         "Then": [
             StepDefinition("the users dataset is", assert_dataset),
-            StepDefinition("the API for {username} respond", assert_api_response),
+            StepDefinition("the API for {username} is responding", assert_api_response),
             StepDefinition(
-                "the raw API for {username} respond", assert_api_response_json_as_any
+                "the raw API for {username} is responding", assert_api_response_json_as_any
             ),
             StepDefinition("the users raw dataset is", assert_dataset_raw),
             StepDefinition(
                 'the mailbox {email} "{subject}" message is',
                 assert_mailbox_contains,
             ),
-            StepDefinition("{username} see a mailbox {email}", assert_user_has_mailbox),
+            StepDefinition("{username} sees a mailbox {email}", assert_user_has_mailbox),
         ],
         "When": [
-            StepDefinition("{username} create a mailbox {email}", create_mailbox),
+            StepDefinition("{username} creates a mailbox {email}", create_mailbox),
         ],
     }
 
@@ -126,7 +126,7 @@ def test_registry_datatable(mod_registry: ModRegistry):
 
 def test_registry_doc_string(mod_registry: ModRegistry):
     mod_registry.register_doc_string(
-        StepDefinition("the API for {username} respond", assert_dataset)
+        StepDefinition("the API for {username} is responding", assert_dataset)
     )
     assert mod_registry.models_types[DummyMail] == "DummyMail2"
 
@@ -135,19 +135,19 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     tursu_runner.verbose = 0
     registry.run_step(tursu_runner, "Given", "a user Bob", dummy_app=dummy_app)
     registry.run_step(
-        tursu_runner, "When", "Bob create a mailbox bob@alice.net", dummy_app=dummy_app
+        tursu_runner, "When", "Bob creates a mailbox bob@alice.net", dummy_app=dummy_app
     )
     registry.run_step(
         tursu_runner,
         "Then",
-        "Bob see a mailbox bob@alice.net",
+        "Bob sees a mailbox bob@alice.net",
         dummy_app=dummy_app,
     )
 
     registry.run_step(
         tursu_runner,
         "Then",
-        "the API for Bob respond",
+        "the API for Bob is responding",
         dummy_app=dummy_app,
         doc_string=[
             DummyMail(email="bob@alice.net", subject="Welcome Bob", body="...")
@@ -161,39 +161,39 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
     }
 
     with pytest.raises(Unregistered) as ctx:
-        registry.run_step(tursu_runner, "When", 'Bob see a mailbox "bob@alice.net"')
+        registry.run_step(tursu_runner, "When", 'Bob sees a mailbox "bob@alice.net"')
 
     assert str(ctx.value) == textwrap.dedent(
         """\
 
         Unregistered step:
 
-            When Bob see a mailbox "bob@alice.net"
+            When Bob sees a mailbox "bob@alice.net"
 
         Maybe you look for:
 
-            Then {username} see a mailbox {email}
-            When {username} create a mailbox {email}
+            Then {username} sees a mailbox {email}
+            When {username} creates a mailbox {email}
 
         Otherwise, to register this new step:
 
-            @when("Bob see a mailbox \\"bob@alice.net\\"")
+            @when("Bob sees a mailbox \\"bob@alice.net\\"")
             def step_definition(): ...
 
         """
     )
-
+    table = tursu_runner.remove_ansi_escape_sequences(tursu_runner.fancy())
     assert (
-        tursu_runner.remove_ansi_escape_sequences(tursu_runner.fancy())
+        table
         == """
-┌────────────────────────────────────────────┐
-│ 📄 Document: ...                           │
-│ ✅ Given a user Bob                        │
-│ ✅ When Bob create a mailbox bob@alice.net │
-│ ✅ Then Bob see a mailbox bob@alice.net    │
-│ ✅ Then the API for Bob respond            │
-│ ❌ When Bob see a mailbox "bob@alice.net"  │
-└────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ 📄 Document: ...                            │
+│ ✅ Given a user Bob                         │
+│ ✅ When Bob creates a mailbox bob@alice.net │
+│ ✅ Then Bob sees a mailbox bob@alice.net    │
+│ ✅ Then the API for Bob is responding       │
+│ ❌ When Bob sees a mailbox "bob@alice.net"  │
+└─────────────────────────────────────────────┘
 """
     )
 

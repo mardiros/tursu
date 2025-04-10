@@ -34,7 +34,7 @@ def a_set_of_users(app: DummyApp, data_table: list[User]):
         app.users[user.username] = user.password
 
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 

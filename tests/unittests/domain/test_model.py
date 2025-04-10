@@ -13,7 +13,7 @@ def test_model(doc: GherkinDocument):
             "column": 1,
             "line": 1,
         },
-        "name": "User login with their own password",
+        "name": "User sign in with their own password",
         "tags": [],
     }
     assert len(childrens) == 4
@@ -149,7 +149,7 @@ def test_model_scenario(doc: GherkinDocument):
                         "column": 5,
                         "line": 10,
                     },
-                    "text": "Bob login with password dumbsecret",
+                    "text": "Bob signs in with password dumbsecret",
                 },
                 {
                     "id": "6",
@@ -273,7 +273,7 @@ def test_model_outlined(doc: GherkinDocument):
                         "column": 5,
                         "line": 18,
                     },
-                    "text": "<username> login with password <password>",
+                    "text": "<username> signs in with password <password>",
                 },
                 {
                     "id": "12",

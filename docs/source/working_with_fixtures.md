@@ -41,11 +41,11 @@ class DummyApp:
 So, we can create a simple gherkin scenario for the login:
 
 ```Gherkin
-Feature: User login with their own password
+Feature: User sign in with their own password
 
   Scenario: User Bob can login
-    Given a user Bob login with password dumbsecret
-    When Bob login with password dumbsecret
+    Given a user Bob signs in with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then the user is connected with username Bob
 
 ```
@@ -74,12 +74,12 @@ def app() -> DummyApp:
     return DummyApp()
 
 
-@given("a user {username} login with password {password}")
+@given("a user {username} signs in with password {password}")
 def setup_user(app: DummyApp, username: str, password: str):
     app.users[username] = password
 
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
@@ -110,7 +110,7 @@ Now lets move on and add a scenario where the username is not predictable.
 Here is my scenario:
 
 ```Gherkin
-Feature: User login with their own password
+Feature: User sign in with their own password
 
   Scenario: Random user can login
     Given a user

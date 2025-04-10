@@ -32,7 +32,7 @@ class User:
 def a_set_of_users(app: DummyApp, data_table: list[User]): ...
 
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str): ...
 
 

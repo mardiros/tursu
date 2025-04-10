@@ -5,7 +5,7 @@ Feature: doc string
 
   @wip
   Scenario: see the doc string
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then I see the docstring
     """json
     {

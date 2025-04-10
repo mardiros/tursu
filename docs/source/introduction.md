@@ -41,12 +41,12 @@ An example will be written:
 
 ```gherkin
 # tests/functionals/login.feature
-Feature: User login with their own password
+Feature: User sign in with their own password
 
   Scenario: User can login
 
     Given a user Bob with password dumbsecret
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then the user Bob is connected
 ```
 
@@ -64,7 +64,7 @@ def give_user(app: DummyApp, username: str, password: str):
     app.users[username] = password
 
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
@@ -99,12 +99,12 @@ def test_3_I_properly_logged_in(
         tursu,
         [
             "📄 Document: login.feature",
-            "🥒 Feature: User login with their own password",
+            "🥒 Feature: User sign in with their own password",
             "🎬 Scenario: User can login",
         ],
     ) as tursu_runner:
         tursu_runner.run_step("Given", "a user Bob with password dumbsecret", app=app)
-        tursu_runner.run_step("When", "Bob login with password dumbsecret", app=app)
+        tursu_runner.run_step("When", "Bob signs in with password dumbsecret", app=app)
         tursu_runner.run_step("Then", "the user Bob is connected", app=app)
 ```
 
