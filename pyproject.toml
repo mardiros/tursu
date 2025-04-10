@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
-version = "0.15.1"
+version = "0.15.2"
 requires-python = ">=3.10"
 dependencies = [
   "gherkin-official>=32.0.0",

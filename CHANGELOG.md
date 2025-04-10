@@ -1,3 +1,7 @@
+0.15.2 - Released on 2025-04-10
+-------------------------------
+* Update Gherkin to fix third person grammar in doc and tests.
+
 0.15.1 - Released on 2025-04-05
 -------------------------------
 * Fix type inference for union types on data_table and doc_string.
