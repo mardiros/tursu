@@ -242,13 +242,13 @@ def test_registry_step_unregistered_no_step(
         pytest.param(
             [
                 "Given a user {name}",
-                "When the user click on the 1st {role} {name}",
-                "When the user click on the {role} {name}",
+                "When the user clicks on the 1st {role} {name}",
+                "When the user clicks on the {role} {name}",
             ],
             "Then the user click on button",
             [
-                "When the user click on the {role} {name}",
-                "When the user click on the 1st {role} {name}",
+                "When the user clicks on the {role} {name}",
+                "When the user clicks on the 1st {role} {name}",
             ],
             id="Many match",
         ),

@@ -1,4 +1,4 @@
-Feature: User sign in with their own password
+Feature: User signs in with the right password
 
   Scenario: User Bob can login
     Given a user Bob signs in with password dumbsecret

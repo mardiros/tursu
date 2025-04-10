@@ -41,7 +41,7 @@ class DummyApp:
 So, we can create a simple gherkin scenario for the login:
 
 ```Gherkin
-Feature: User sign in with their own password
+Feature: User signs in with the right password
 
   Scenario: User Bob can login
     Given a user Bob signs in with password dumbsecret
@@ -110,7 +110,7 @@ Now lets move on and add a scenario where the username is not predictable.
 Here is my scenario:
 
 ```Gherkin
-Feature: User sign in with their own password
+Feature: User signs in with the right password
 
   Scenario: Random user can login
     Given a user

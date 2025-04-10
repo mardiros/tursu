@@ -41,9 +41,9 @@ An example will be written:
 
 ```gherkin
 # tests/functionals/login.feature
-Feature: User sign in with their own password
+Feature: User signs in with the right password
 
-  Scenario: User can login
+  Scenario: Successful sign-in with valid credentials
 
     Given a user Bob with password dumbsecret
     When Bob signs in with password dumbsecret
@@ -92,15 +92,15 @@ def test_3_I_properly_logged_in(
     tursu: Tursu,
     app: Any,
 ):
-    """User can login"""
+    """Successful sign-in with valid credentials"""
     with TursuRunner(
         request,
         capsys,
         tursu,
         [
             "📄 Document: login.feature",
-            "🥒 Feature: User sign in with their own password",
-            "🎬 Scenario: User can login",
+            "🥒 Feature: User signs in with the right password",
+            "🎬 Scenario: Successful sign-in with valid credentials",
         ],
     ) as tursu_runner:
         tursu_runner.run_step("Given", "a user Bob with password dumbsecret", app=app)
