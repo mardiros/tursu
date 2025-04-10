@@ -27,12 +27,12 @@ def give_user(username: str):
     app.create_user(username)
 
 
-@when("{username} create a mailbox {email}")
+@when("{username} creates a mailbox {email}")
 def create_mailbox(username: str, email: str):
     app.add_mailbox(username, email)
 
 
-@then("{username} see a mailbox {email}")
+@then("{username} sees a mailbox {email}")
 def assert_user_has_mailbox(email: str, username: str):
     assert username in app.mailboxes
     assert email in app.mailboxes[username]

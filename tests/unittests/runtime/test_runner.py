@@ -98,10 +98,10 @@ def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
     tursu_runner.start_time = time.perf_counter()
     with pytest.raises(ScenarioFailed):
-        tursu_runner.run_step("Then", "X see a mailbox X", dummy_app=dummy_app)
+        tursu_runner.run_step("Then", "X sees a mailbox X", dummy_app=dummy_app)
 
     assert tursu_runner.runned == [
-        "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[91m see a mailbox "
+        "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[91m sees a mailbox "
         "\x1b[36mX\x1b[91m\x1b[0m",
     ]
 

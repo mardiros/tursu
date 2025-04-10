@@ -8,12 +8,12 @@ def give_user(dummy_app: DummyApp, username: str):
     dummy_app.create_user(username)
 
 
-@when("{username} create a mailbox {email}")
+@when("{username} creates a mailbox {email}")
 def create_mailbox(dummy_app: DummyApp, username: str, email: str):
     dummy_app.add_mailbox(username, email)
 
 
-@then("{username} see a mailbox {email}")
+@then("{username} sees a mailbox {email}")
 def assert_user_has_mailbox(dummy_app: DummyApp, email: str, username: str):
     assert username in dummy_app.mailboxes
 
@@ -24,7 +24,7 @@ def assert_mailbox_contains(
 ): ...
 
 
-@then("the API for {username} respond")
+@then("the API for {username} is responding")
 def assert_api_response(
     dummy_app: DummyApp, username: str, doc_string: list[DummyMail]
 ):

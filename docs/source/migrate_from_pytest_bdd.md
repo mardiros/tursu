@@ -60,7 +60,7 @@ index c373bd4..63c4b46 100644
 
  from .conftest import DummyApp
 @@ -27,6 +27,3 @@ def assert_connected(app: DummyApp, username: str):
- @then(parsers.parse("I am not connected"))
+ @then(parsers.parse("the user is not connected"))
  def assert_not_connected(app: DummyApp):
      assert app.connected_user is None
 -
@@ -118,7 +118,7 @@ def give_user(app: DummyApp, username: str, password: str):
 ```python
 from pytest_bdd import given, when, then, parsers
 
-@when(parsers.parse("{username} login with password {password}"))
+@when(parsers.parse("{username} signs in with password {password}"))
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
@@ -139,7 +139,7 @@ refer to the [step definition documentation](#step-definition) for help.
 ```python
 from tursu import then, when
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 

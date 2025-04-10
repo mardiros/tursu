@@ -9,12 +9,12 @@ def give_user_with_fixture(app: DummyApp, username: str):
     app.create_user(username)
 
 
-@when(RegEx(r"(?P<username>[^\s]+) create a mailbox (?P<email>[^\s]+)"))
+@when(RegEx(r"(?P<username>[^\s]+) creates a mailbox (?P<email>[^\s]+)"))
 def create_mailbox_with_fixture(app: DummyApp, username: str, email: str):
     app.add_mailbox(username, email)
 
 
-@then(RegEx(r"(?P<username>[^\s]+) see a mailbox (?P<email>[^\s]+)"))
+@then(RegEx(r"(?P<username>[^\s]+) sees a mailbox (?P<email>[^\s]+)"))
 def assert_user_has_mailbox_with_fixture(app: DummyApp, email: str, username: str):
     assert username in app.mailboxes
     assert email in app.mailboxes[username]

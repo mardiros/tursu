@@ -4,7 +4,7 @@ from tests.functionals.steps import DummyApp
 from tursu import then
 
 
-@then("{username} see a mailbox {email}")
+@then("{username} sees a mailbox {email}")
 def assert_user_has_mailbox_with_fixture(app: DummyApp, email: str, username: str):
     assert username in app.mailboxes
     assert email in app.mailboxes[username]

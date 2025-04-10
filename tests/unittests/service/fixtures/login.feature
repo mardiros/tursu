@@ -1,4 +1,4 @@
-Feature: User login with their own password
+Feature: User signs in with the right password
 
   Background:
     Given a set of users:
@@ -8,18 +8,18 @@ Feature: User login with their own password
 
   Rule: Successful login
 
-    Scenario: User can login
-      When Bob login with password dumbsecret
+    Scenario: Successful sign-in with valid credentials
+      When Bob signs in with password dumbsecret
       Then the user is connected with username Bob
 
   Rule: Failed login attempts
 
-    Scenario: User can't login with wrong password
-      When Bob login with password notthat
+    Scenario: Sign-in fails with wrong password
+      When Bob signs in with password notthat
       Then the user is not connected
 
     Scenario Outline: User can't login with someone else username
-      When <username> login with password <password>
+      When <username> signs in with password <password>
       Then the user is not connected
 
       Examples:

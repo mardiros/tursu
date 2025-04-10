@@ -4,7 +4,7 @@ Feature: doc string
     Given a user Bob with password dumbsecret
 
   Scenario: see the doc string
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then I see the docstring
     """json
     {
@@ -13,7 +13,7 @@ Feature: doc string
     """
 
   Scenario: see the doc string
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then I can parse the docstring
     """json
     {

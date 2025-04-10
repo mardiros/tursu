@@ -9,8 +9,8 @@ Feature: Discover Scenario Outline
     This scenario is complex and require a comment.
 
     Given a user <username>
-    When <username> create a mailbox <email>
-    Then <username> see a mailbox <email>
+    When <username> creates a mailbox <email>
+    Then <username> sees a mailbox <email>
 
     Examples:
       | username | email           |

@@ -1,16 +1,16 @@
-Feature: User login with their own password
+Feature: User signs in with the right password
 
   Background:
     Given a user Bob with password dumbsecret
 
   Rule: It works
 
-    Scenario: User can login
-      When Bob login with password dumbsecret
+    Scenario: Successful sign-in with valid credentials
+      When Bob signs in with password dumbsecret
       Then the user Bob is connected
 
   Rule: It does not works
 
-    Scenario: User can't login with wrong password
-      When Bob login with password notthat
-      Then I am not connected
+    Scenario: Sign-in fails with wrong password
+      When Bob signs in with password notthat
+      Then the user is not connected

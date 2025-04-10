@@ -201,7 +201,7 @@ def test_build_tags_decorators(
                     id="1",
                     location=GherkinLocation(line=1, column=1),
                     keyword="When",
-                    text="Alice login with password pwd",
+                    text="Alice signs in with password pwd",
                     keywordType="Action",
                 ),
                 GherkinStep(

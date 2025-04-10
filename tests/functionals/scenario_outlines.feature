@@ -5,7 +5,7 @@ Feature: Scenario outlines
     And a user Bob with password dumbsecret
 
   Scenario Outline: Successful login with valid credentials
-    When <username> login with password <password>
+    When <username> signs in with password <password>
     Then the user <username> is connected
 
     Examples:

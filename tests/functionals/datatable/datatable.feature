@@ -14,7 +14,7 @@ Feature: data table
       | Bob      | dumbsecret |
       | Henry    |            |
       |          |            |
-    When Bob login with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then the user Bob is connected
 
   @wip
@@ -22,5 +22,5 @@ Feature: data table
     Given a user with the following properties:
       | username | Bob        |
       | password | dumbsecret |
-    When Bob login with password dumbsecret
+      When Bob signs in with password dumbsecret
     Then the user Bob is connected

@@ -71,7 +71,7 @@ def test_tursu_collect_file(
                 'StepDefinition("the user is not connected", assert_not_connected)',
             ],
             "When": [
-                'StepDefinition("{username} login with password {password}", login)',
+                'StepDefinition("{username} signs in with password {password}", login)',
             ],
         }
     }
@@ -92,8 +92,8 @@ def test_collect_and_run(
 ):
     fns = [fn for fn in gherkin_test_module.collect()]
     assert [repr(fn) for fn in fns] == [
-        "<Function test_7_User_can_login>",
-        "<Function test_10_User_can_t_login_with_wrong_password>",
+        "<Function test_7_Successful_sign_in_with_valid_credentials>",
+        "<Function test_10_Sign_in_fails_with_wrong_password>",
         "<Function test_17_User_can_t_login_with_someone_else_username[Examples0]>",
         "<Function test_17_User_can_t_login_with_someone_else_username[Examples1]>",
     ]

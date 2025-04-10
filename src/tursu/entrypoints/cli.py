@@ -60,7 +60,7 @@ def a_set_of_users(app: DummyApp, data_table: list[User]):
         app.users[user.username] = user.password
 
 
-@when("{username} login with password {password}")
+@when("{username} signs in with password {password}")
 def login(app: DummyApp, username: str, password: str):
     app.login(username, password)
 
@@ -77,7 +77,7 @@ def assert_not_connected(app: DummyApp):
 """
 
 DEFAULT_FEATURE = """\
-Feature: User login with their own password
+Feature: User signs in with the right password
 
   Background:
     Given a set of users:
@@ -85,16 +85,16 @@ Feature: User login with their own password
       | Bob      | dumbsecret    |
       | Alice    | anothersecret |
 
-  Scenario: User can login
-    When Bob login with password dumbsecret
+  Scenario: Successful sign-in with valid credentials
+    When Bob signs in with password dumbsecret
     Then the user is connected with username Bob
 
-  Scenario: User can't login with wrong password
-    When Bob login with password notthat
+  Scenario: Sign-in fails with wrong password
+    When Bob signs in with password notthat
     Then the user is not connected
 
   Scenario Outline: User can't login with someone else username
-    When <username> login with password <password>
+    When <username> signs in with password <password>
     Then the user is not connected
 
     Examples:

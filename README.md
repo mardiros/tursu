@@ -50,11 +50,12 @@ collected 3 items
 
 <Dir tursu>
   <Package tests>
-    <Package functionals>
+    <Package funcs>
       <GherkinDocument login.feature>
-        <Function test_3_User_can_login>
-        <Function test_7_User_can_t_login_with_wrong_password>
-        <Function test_12_User_can_t_login_with_someone_else_username>
+        <Function test_7_Successful_sign_in_with_valid_credentials>
+        <Function test_10_Sign_in_fails_with_wrong_password>
+        <Function test_17_User_can_t_login_with_someone_else_username[Examples0]>
+        <Function test_17_User_can_t_login_with_someone_else_username[Examples1]>
 
 ====================== 3 tests collected in 0.01s =======================
 ```
@@ -84,27 +85,32 @@ platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
 configfile: pyproject.toml
 collected 3 items
 
-
 📄 Document: login.feature
-🥒 Feature: User login with their own password
-🎬 Scenario: User can login
-✅ Given a user Bob with password dumbsecret
-✅ When Bob login with password dumbsecret
+🥒 Feature: User signs in with the right password
+🎬 Scenario: Successful sign-in with valid credentials
+✅ Given a set of users:
+✅ When Bob signs in with password dumbsecret
 ✅ Then the user is connected with username Bob
 
 📄 Document: login.feature
-🥒 Feature: User login with their own password
-🎬 Scenario: User can't login with wrong password
-✅ Given a user Bob with password dumbsecret
-✅ When Bob login with password notthat
+🥒 Feature: User signs in with the right password
+🎬 Scenario: Sign-in fails with wrong password
+✅ Given a set of users:
+✅ When Bob signs in with password notthat
 ✅ Then the user is not connected
 
 📄 Document: login.feature
-🥒 Feature: User login with their own password
-🎬 Scenario: User can't login with someone else username
-✅ Given a user Bob with password bobsecret
-✅ Given a user Alice with password alicesecret
-✅ When Alice login with password bobsecret
+🥒 Feature: User signs in with the right password
+🎬 Scenario Outline: User can't login with someone else username
+✅ Given a set of users:
+✅ When Bob signs in with password anothersecret
+✅ Then the user is not connected
+
+📄 Document: login.feature
+🥒 Feature: User signs in with the right password
+🎬 Scenario Outline: User can't login with someone else username
+✅ Given a set of users:
+✅ When Alice signs in with password dumbsecret
 ✅ Then the user is not connected
                                                                          PASSED
 
@@ -123,36 +129,36 @@ collected 3 items
 
 tests/functionals/login.feature::test_3_User_can_login <- test_login.py
 📄 Document: login.feature
-🥒 Feature: User login with their own password
-🎬 Scenario: User can login
+🥒 Feature: User signs in with the right password
+🎬 Scenario: Successful sign-in with valid credentials
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
-⏳ When Bob login with password dumbsecret
-✅ When Bob login with password dumbsecret
+⏳ When Bob signs in with password dumbsecret
+✅ When Bob signs in with password dumbsecret
 ⏳ Then the user is connected with username Bob
 ✅ Then the user is connected with username Bob
                                                             PASSED [ 33%]
 tests/functionals/login.feature::test_7_User_can_t_login_with_wrong_password <- test_login.py
 📄 Document: login.feature
-🥒 Feature: User login with their own password
-🎬 Scenario: User can't login with wrong password
+🥒 Feature: User signs in with the right password
+🎬 Scenario: Sign-in fails with wrong password
 ⏳ Given a user Bob with password dumbsecret
 ✅ Given a user Bob with password dumbsecret
-⏳ When Bob login with password notthat
-✅ When Bob login with password notthat
+⏳ When Bob signs in with password notthat
+✅ When Bob signs in with password notthat
 ⏳ Then the user is not connected
 ✅ Then the user is not connected
                                                             PASSED [ 66%]
 tests/functionals/login.feature::test_12_User_can_t_login_with_someone_else_username <- test_login.py
 📄 Document: login.feature
-🥒 Feature: User login with their own password
+🥒 Feature: User signs in with the right password
 🎬 Scenario: User can't login with someone else username
 ⏳ Given a user Bob with password bobsecret
 ✅ Given a user Bob with password bobsecret
 ⏳ Given a user Alice with password alicesecret
 ✅ Given a user Alice with password alicesecret
-⏳ When Alice login with password bobsecret
-✅ When Alice login with password bobsecret
+⏳ When Alice signs in with password bobsecret
+✅ When Alice signs in with password bobsecret
 ⏳ Then the user is not connected
 ✅ Then the user is not connected
 
@@ -240,15 +246,15 @@ kwargs = {'app': <tests.functionals.conftest.DummyApp object at 0x76103daad940>}
             self.tursu.run_step(self, step, text, **kwargs)
         except Exception as exc:
 >           raise ScenarioFailed(self.fancy()) from exc
-E           tursu.runner.ScenarioFailed:
-E           ┌────────────────────────────────────────────────────┐
-E           │ 📄 Document: login.feature                         │
-E           │ 🥒 Feature: User login with their own password     │
-E           │ 🎬 Scenario: User can login                        │
-E           │ ✅ Given a user Bob with password dumbsecret       │
-E           │ ✅ When Bob login with password dumbsecret         │
-E           │ ❌ Then the user is connected with username Bobby  │
-E           └────────────────────────────────────────────────────┘
+E           tursu.runtime.runner.ScenarioFailed:
+E           ┌────────────────────────────────────────────────────────┐
+E           │ 📄 Document: login.feature                             │
+E           │ 🥒 Feature: User signs in with the right password      │
+E           │ 🎬 Scenario: Successful sign-in with valid credentials │
+E           │ ✅ Given a set of users:                               │
+E           │ ✅ When Bob signs in with password dumbsecret          │
+E           │ ❌ Then the user is connected with username Bobby      │
+E           └────────────────────────────────────────────────────────┘
 
 src/tursu/runner.py:81: ScenarioFailed
 ======================== short test summary info =========================
