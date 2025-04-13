@@ -12,7 +12,7 @@
 * Breaking change: Step definitions are not globals anymore,
   they are scoped like pytest fixtures. they lives in a module and all its sub modules.
   A submodules steps can be used to define the definition of the current scenario directory.
-  See the [project layout documentation](#(project-layout)) for the details.
+  See the [project layout documentation](#project-layout) for the details.
 * pytest fixtures can be created in the same modules than step definitions.
   Sometimes fixtures does not need to be shared accross submodules, they are locals of a
   part of a test, like having a [@when](#tursu.when) that save a value like downloading a file in the browser,
