@@ -10,6 +10,8 @@ on:
         required: true
         type: boolean
 
+  workflow_dispatch:
+
 jobs:
   pages:
     runs-on: ubuntu-20.04
