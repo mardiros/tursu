@@ -101,14 +101,14 @@ collected 3 items
 
 📄 Document: login.feature
 🥒 Feature: User signs in with the right password
-🎬 Scenario Outline: User can't login with someone else username
+🎬 Scenario Outline: User can\'t login with someone else username
 ✅ Given a set of users:
 ✅ When Bob signs in with password anothersecret
 ✅ Then the user is not connected
 
 📄 Document: login.feature
 🥒 Feature: User signs in with the right password
-🎬 Scenario Outline: User can't login with someone else username
+🎬 Scenario Outline: User can\'t login with someone else username
 ✅ Given a set of users:
 ✅ When Alice signs in with password dumbsecret
 ✅ Then the user is not connected
@@ -120,7 +120,7 @@ collected 3 items
 ## Choose your scenario file to test:
 
 ```bash
-𝝿 uv run pytest -vv tests/tests2/login.feature
+𝝿 uv run pytest -vv tests/functionals/login.feature
 ========================== test session starts ==========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
 configfile: pyproject.toml
@@ -152,7 +152,7 @@ tests/functionals/login.feature::test_7_User_can_t_login_with_wrong_password <- 
 tests/functionals/login.feature::test_12_User_can_t_login_with_someone_else_username <- test_login.py
 📄 Document: login.feature
 🥒 Feature: User signs in with the right password
-🎬 Scenario: User can't login with someone else username
+🎬 Scenario: User can\'t login with someone else username
 ⏳ Given a user Bob with password bobsecret
 ✅ Given a user Bob with password bobsecret
 ⏳ Given a user Alice with password alicesecret
@@ -266,7 +266,7 @@ FAILED tests/functionals/login.feature::test_3_User_can_login - tursu.runner.Sce
 If --trace is used, or -vvv, the tests files are written on the disk, and
 the `???` in the context are replaced by the generated python test function.
 
-This my be usefull in case of hard time debugging.
+This may be usefull in case of hard time debugging.
 ```
 
 ### All Gherkin features are support.
