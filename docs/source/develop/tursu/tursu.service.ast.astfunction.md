@@ -152,7 +152,7 @@
 
 ````
 
-````{py:method} to_ast() -> ast.FunctionDef
+````{py:method} to_ast() -> ast.FunctionDef | ast.AsyncFunctionDef
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.to_ast
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.to_ast

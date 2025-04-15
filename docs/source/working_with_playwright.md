@@ -1,6 +1,6 @@
 # Working with playwright
 
-Turşu does not provice playwright option, but you can works with both
+Turşu does not provide playwright option, but you can works with both
 playwright and Turşu for testing your web application.
 
 Actually, it has been develop for that!
@@ -34,7 +34,7 @@ That's it. You can just use the "Page" fixture provided by pytest-playwright dir
 ## Run the test
 
 ```bash
-uv run pytest --base-url http://localhost:8888 --browser chromium -v tests/using_playwright/
+uv run pytest --browser chromium -v tests/using_playwright/
 ```
 
 Sure this tests will fail, this is BDD :)
@@ -48,7 +48,7 @@ Sure this tests will fail, this is BDD :)
 ### Run the test
 
 ```bash
-$ uv run pytest --base-url http://localhost:8888 --browser chromium -v tests/using_playwright/
+$ uv run pytest --browser chromium -v tests/using_playwright/
 ================================= test session starts =================================
 baseurl: http://localhost:8888
 configfile: pyproject.toml
@@ -91,9 +91,9 @@ pytest-playwright does not works well with pytest-asyncio, both plugins conflict
 on the asyncio loop.
 
 To start an async application, like a FastAPI app, you can start the app in a separated
-thread.
+thread or use the asyncio version.
 
-Example with uvicorn:
+Example with FastAPI and uvicorn:
 
 ```python
 import socket
@@ -136,3 +136,6 @@ def fastapi_endpoint(app: FastAPI) -> Iterator[str]:
     server.should_exit = True
     thread.join()
 ```
+
+Alternatively, you can also run tests with asyncio, and this is the subject
+of the [next chapter](#playwright-asyncio).

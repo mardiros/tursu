@@ -291,6 +291,15 @@ Combining Turşu and [pytest-playwright](https://pypi.org/project/pytest-playwri
 is a great experience.
 See the [example in the documentation](https://mardiros.github.io/tursu/working_with_playwright.html)
 
+### Great support of asyncio.
+
+Scenario can be decorated with a `@asyncio` tag. And they will run as a
+coroutine marked with `@pytest.mark.asyncio`.
+
+And, the step definitions can be coroutine.
+
+See the [pytest-playwright-asyncio example in the documentation](https://mardiros.github.io/tursu/working_with_playwright_async.html)
+
 ### Great support of pytest fixtures and faker.
 
 See the [example in the documentation](https://mardiros.github.io/tursu/working_with_fixtures.html)

@@ -336,6 +336,16 @@
 
 ````
 
+````{py:method} run_step_async(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+:canonical: tursu.runtime.registry.Tursu.run_step_async
+:async:
+
+```{autodoc2-docstring} tursu.runtime.registry.Tursu.run_step_async
+:parser: myst
+```
+
+````
+
 ````{py:method} scan(mod: types.ModuleType | None = None) -> tursu.runtime.registry.Tursu
 :canonical: tursu.runtime.registry.Tursu.scan
 

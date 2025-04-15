@@ -310,6 +310,16 @@ Bases: {py:obj}`Exception`
 
 ````
 
+````{py:method} run_step_async(step: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+:canonical: tursu.runtime.runner.TursuRunner.run_step_async
+:async:
+
+```{autodoc2-docstring} tursu.runtime.runner.TursuRunner.run_step_async
+:parser: myst
+```
+
+````
+
 `````
 
 ````{py:data} UP

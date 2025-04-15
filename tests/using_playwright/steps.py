@@ -5,8 +5,8 @@ from tursu import given, then, when
 
 @given("anonymous user on {path}")
 @when("I visit {path}")
-def i_visit(page: Page, path: str):
-    page.goto(path)
+def i_visit(page: Page, http_server: str, path: str):
+    page.goto(f"{http_server}{path}")
 
 
 @then('I see the text "{text}"')
