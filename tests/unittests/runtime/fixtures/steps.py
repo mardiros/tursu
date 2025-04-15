@@ -1,3 +1,5 @@
+import asyncio
+
 from tursu import given, then, when
 
 from .conftest import DummyApp, DummyMail
@@ -31,11 +33,19 @@ def assert_api_response(
     assert doc_string == dummy_app.mailboxes[username]
 
 
+@then("the async API for {username} is responding")
+async def assert_async_api_response(
+    dummy_app: DummyApp, username: str, doc_string: list[DummyMail]
+):
+    await asyncio.sleep(0)
+    assert doc_string == dummy_app.mailboxes[username]
+
+
 @then("the users raw dataset is")
 def assert_dataset_raw(dummy_app: DummyApp, data_table: list[dict[str, str]]): ...
 
 
-@then("the raw API for {username} respond")
+@then("the raw API for {username} is responding")
 def assert_api_response_json_as_any(
     dummy_app: DummyApp,
     username: str,

@@ -68,11 +68,9 @@ class StepDefinition:
     def __repr__(self) -> str:
         return f'StepDefinition("{self.pattern}", {self.hook.__qualname__})'
 
-    async def __call__(self, **kwargs: Any) -> None:
+    def __call__(self, **kwargs: Any) -> None | Coroutine[Any, Any, Any]:
         """Will call the hook with the given parameter."""
-        result = self.hook(**kwargs)
-        if inspect.iscoroutine(result):
-            await result
+        return self.hook(**kwargs)
 
     def highlight(
         self,

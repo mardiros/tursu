@@ -38,6 +38,25 @@ def scenario(steps: Sequence[GherkinStep]) -> GherkinScenario:
     )
 
 
+@pytest.fixture()
+def async_scenario(steps: Sequence[GherkinStep]) -> GherkinScenario:
+    return GherkinScenario(
+        id="1",
+        location=GherkinLocation(line=1, column=1),
+        name="dummy",
+        description="",
+        keyword="Scenario",
+        steps=steps,
+        tags=[
+            GherkinTag(
+                name="asyncio",
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+            )
+        ],
+    )
+
+
 @pytest.mark.parametrize(
     "steps,expected_fixtures",
     [
@@ -1252,5 +1271,118 @@ def test_parse_docstring(
             )
         ]
     )
+    tmod = TestModule("dummy", module)
+    assert str(tmod) == expected_result
+
+
+@pytest.mark.parametrize(
+    "steps,step,handler,expected_result",
+    [
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content="username",
+                    delimiter="",
+                    mediaType="csv",
+                ),
+            ),
+            given_raw_doc_string,
+            textwrap.dedent(
+                '''
+def test_1_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu):
+    """dummy"""
+    with TursuRunner(request, capsys, tursu, ['🎬 Scenario: dummy']) as tursu_runner:
+        tursu_runner.run_step('Given', 'a set of users:', doc_string='username')
+                '''
+            ).strip(),
+            id="raw",
+        ),
+    ],
+)
+def test_build_function(
+    scenario: GherkinScenario,
+    step: GherkinStep,
+    handler: Any,
+    expected_result: str,
+):
+    registry = Tursu()
+    step_keyword = cast(StepKeyword, step.keyword)
+    registry.register_step_definition(
+        "tests.unittests.service.fixtures", step_keyword, step.text, handler
+    )
+    fn = TestFunctionWriter(
+        scenario,
+        registry,
+        stack=[scenario],
+        steps=[step],
+        package_name="tests.unittests.service.fixtures",
+    )
+    fn.add_step(step, [scenario, step])
+
+    module = ast.Module(body=[fn.to_ast()])
+    tmod = TestModule("dummy", module)
+    assert str(tmod) == expected_result
+
+
+@pytest.mark.parametrize(
+    "steps,step,handler,expected_result",
+    [
+        pytest.param(
+            [],
+            GherkinStep(
+                id="1",
+                location=GherkinLocation(line=1, column=1),
+                keyword="Given",
+                text="a set of users:",
+                keywordType="Context",
+                docString=GherkinDocString(
+                    location=GherkinLocation(line=1, column=1),
+                    content="username",
+                    delimiter="",
+                    mediaType="csv",
+                ),
+            ),
+            given_raw_doc_string,
+            textwrap.dedent(
+                '''
+@pytest.mark.asyncio
+async def test_1_dummy(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu):
+    """dummy"""
+    with TursuRunner(request, capsys, tursu, ['🎬 Scenario: dummy']) as tursu_runner:
+        await tursu_runner.run_step_async('Given', 'a set of users:', doc_string='username')
+                '''
+            ).strip(),
+            id="raw",
+        ),
+    ],
+)
+def test_build_async_function(
+    async_scenario: GherkinScenario,
+    step: GherkinStep,
+    handler: Any,
+    expected_result: str,
+):
+    registry = Tursu()
+    step_keyword = cast(StepKeyword, step.keyword)
+    registry.register_step_definition(
+        "tests.unittests.service.fixtures", step_keyword, step.text, handler
+    )
+    fn = TestFunctionWriter(
+        async_scenario,
+        registry,
+        stack=[async_scenario],
+        steps=[step],
+        package_name="tests.unittests.service.fixtures",
+    )
+    fn.add_step(step, [async_scenario, step])
+
+    module = ast.Module(body=[fn.to_ast()])
     tmod = TestModule("dummy", module)
     assert str(tmod) == expected_result

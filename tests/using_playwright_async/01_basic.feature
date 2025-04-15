@@ -1,3 +1,4 @@
+@asyncio
 Feature: Basic Test
 
   Scenario: Hello world

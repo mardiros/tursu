@@ -109,7 +109,7 @@ class TursuRunner:
                     print(UP, end="")  # coverage: ignore
                 print(f"{text}{EL}", end=end)  # coverage: ignore
 
-    async def run_step(
+    def run_step(
         self,
         step: StepKeyword,
         text: str,
@@ -124,7 +124,26 @@ class TursuRunner:
         :raises ScenarioFailed: if the step did not run properly.
         """
         try:
-            await self.tursu.run_step(self, step, text, **kwargs)
+            self.tursu.run_step(self, step, text, **kwargs)
+        except Exception as exc:
+            raise ScenarioFailed(self.fancy()) from exc
+
+    async def run_step_async(
+        self,
+        step: StepKeyword,
+        text: str,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Will run the given step using the tursu registry, raised an error if its fail.
+
+        :param step: gherkin keyword.
+        :param text: text that should match a step definition.
+
+        :raises ScenarioFailed: if the step did not run properly.
+        """
+        try:
+            await self.tursu.run_step_async(self, step, text, **kwargs)
         except Exception as exc:
             raise ScenarioFailed(self.fancy()) from exc
 

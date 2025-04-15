@@ -13,6 +13,7 @@ from tests.unittests.runtime.fixtures.dataset_factory import (
 from tests.unittests.runtime.fixtures.steps import (
     assert_api_response,
     assert_api_response_json_as_any,
+    assert_async_api_response,
     assert_dataset_raw,
     assert_mailbox_contains,
     assert_user_has_mailbox,
@@ -92,14 +93,20 @@ def test_scan():
             StepDefinition("the users dataset is", assert_dataset),
             StepDefinition("the API for {username} is responding", assert_api_response),
             StepDefinition(
-                "the raw API for {username} is responding", assert_api_response_json_as_any
+                "the raw API for {username} is responding",
+                assert_api_response_json_as_any,
+            ),
+            StepDefinition(
+                "the async API for {username} is responding", assert_async_api_response
             ),
             StepDefinition("the users raw dataset is", assert_dataset_raw),
             StepDefinition(
                 'the mailbox {email} "{subject}" message is',
                 assert_mailbox_contains,
             ),
-            StepDefinition("{username} sees a mailbox {email}", assert_user_has_mailbox),
+            StepDefinition(
+                "{username} sees a mailbox {email}", assert_user_has_mailbox
+            ),
         ],
         "When": [
             StepDefinition("{username} creates a mailbox {email}", create_mailbox),
@@ -195,6 +202,61 @@ def test_registry_step(tursu_runner: TursuRunner, dummy_app: DummyApp, registry:
 │ ❌ When Bob sees a mailbox "bob@alice.net"  │
 └─────────────────────────────────────────────┘
 """
+    )
+
+
+async def test_registry_step_async(
+    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
+):
+    tursu_runner.verbose = 0
+    registry.run_step(tursu_runner, "Given", "a user Bob", dummy_app=dummy_app)
+    registry.run_step(
+        tursu_runner, "When", "Bob creates a mailbox bob@alice.net", dummy_app=dummy_app
+    )
+
+    await registry.run_step_async(
+        tursu_runner,
+        "Then",
+        "the async API for Bob is responding",
+        dummy_app=dummy_app,
+        doc_string=[
+            DummyMail(email="bob@alice.net", subject="Welcome Bob", body="...")
+        ],
+    )
+
+
+async def test_registry_step_async_unregistered(
+    tursu_runner: TursuRunner, dummy_app: DummyApp, registry: Tursu
+):
+    tursu_runner.verbose = 0
+
+    with pytest.raises(Unregistered) as ctx:
+        await registry.run_step_async(
+            tursu_runner,
+            "Then",
+            "the asyncio API for Bob is responding",
+            dummy_app=dummy_app,
+            doc_string=[
+                DummyMail(email="bob@alice.net", subject="Welcome Bob", body="...")
+            ],
+        )
+    assert str(ctx.value) == textwrap.dedent(
+        """\
+
+        Unregistered step:
+
+            Then the asyncio API for Bob is responding
+
+        Maybe you look for:
+
+            Then the async API for {username} is responding
+
+        Otherwise, to register this new step:
+
+            @then("the asyncio API for Bob is responding")
+            def step_definition(): ...
+
+        """
     )
 
 

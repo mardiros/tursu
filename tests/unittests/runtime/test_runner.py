@@ -3,6 +3,7 @@ from collections.abc import Iterator
 
 import pytest
 
+from tests.unittests.runtime.fixtures.conftest import DummyMail
 from tests.unittests.runtime.fixtures.steps import DummyApp
 from tursu.runtime.registry import ModRegistry, Tursu
 from tursu.runtime.runner import ScenarioFailed, TursuRunner
@@ -94,6 +95,23 @@ def test_run_step(tursu_runner: TursuRunner, dummy_app: DummyApp):
     ]
 
 
+async def test_run_step_async(tursu_runner: TursuRunner, dummy_app: DummyApp):
+    tursu_runner.verbose = False
+    tursu_runner.start_time = time.perf_counter()
+    await tursu_runner.run_step_async("Given", "a user Bob", dummy_app=dummy_app)
+    await tursu_runner.run_step_async(
+        "Then",
+        "the async API for Bob is responding",
+        dummy_app=dummy_app,
+        doc_string=[],
+    )
+
+    assert tursu_runner.runned == [
+        "\x1b[92m✅ Given a user \x1b[36mBob\x1b[92m\x1b[0m",
+        "\x1b[92m✅ Then the async API for \x1b[36mBob\x1b[92m is responding\x1b[0m",
+    ]
+
+
 def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     tursu_runner.verbose = False
     tursu_runner.start_time = time.perf_counter()
@@ -103,6 +121,25 @@ def test_run_step_error(tursu_runner: TursuRunner, dummy_app: DummyApp):
     assert tursu_runner.runned == [
         "\x1b[91m❌ Then\x1b[0m \x1b[36mX\x1b[91m sees a mailbox "
         "\x1b[36mX\x1b[91m\x1b[0m",
+    ]
+
+
+async def test_run_step_error_async(tursu_runner: TursuRunner, dummy_app: DummyApp):
+    tursu_runner.verbose = False
+    tursu_runner.start_time = time.perf_counter()
+    with pytest.raises(ScenarioFailed):
+        await tursu_runner.run_step_async(
+            "Then",
+            "the async API for Bob is responding",
+            dummy_app=dummy_app,
+            doc_string=[
+                DummyMail(email="bob@alice.net", subject="Welcome Bob", body="...")
+            ],
+        )
+
+    assert tursu_runner.runned == [
+        "\x1b[91m❌ Then\x1b[0m the async API for \x1b[36mBob\x1b[91m is responding"
+        "\x1b[0m",
     ]
 
 

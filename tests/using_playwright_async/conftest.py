@@ -1,5 +1,5 @@
-import socket
 import asyncio
+import socket
 
 import pytest
 import uvicorn

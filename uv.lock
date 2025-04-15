@@ -1063,7 +1063,6 @@ dependencies = [
     { name = "gherkin-official" },
     { name = "pydantic" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
     { name = "venusian" },
 ]
 
@@ -1081,6 +1080,7 @@ dev = [
     { name = "factory-boy" },
     { name = "mypy" },
     { name = "pytest" },
+    { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "starlette" },
     { name = "uvicorn" },
@@ -1106,7 +1106,6 @@ requires-dist = [
     { name = "myst-parser", marker = "python_full_version < '3.10' and extra == 'docs'", specifier = ">=3.0.0,<4" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pytest", specifier = ">=8.3.5" },
-    { name = "pytest-asyncio", specifier = ">=0.26.0" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.1,<8" },
     { name = "sphinx-autodoc2", marker = "extra == 'docs'", specifier = ">=0.5.0,<1" },
     { name = "venusian", specifier = ">=3.1.1,<4" },
@@ -1118,6 +1117,7 @@ dev = [
     { name = "factory-boy", specifier = ">=3.3.3" },
     { name = "mypy", specifier = ">=1.4.0,<2" },
     { name = "pytest", specifier = ">=8,<9" },
+    { name = "pytest-asyncio", specifier = ">=0.26.0" },
     { name = "pytest-cov", specifier = ">=6.0.0,<7" },
     { name = "starlette", specifier = ">=0.46.2" },
     { name = "uvicorn", specifier = ">=0.34.1" },
