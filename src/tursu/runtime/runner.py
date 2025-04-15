@@ -109,7 +109,7 @@ class TursuRunner:
                     print(UP, end="")  # coverage: ignore
                 print(f"{text}{EL}", end=end)  # coverage: ignore
 
-    def run_step(
+    async def run_step(
         self,
         step: StepKeyword,
         text: str,
@@ -124,7 +124,7 @@ class TursuRunner:
         :raises ScenarioFailed: if the step did not run properly.
         """
         try:
-            self.tursu.run_step(self, step, text, **kwargs)
+            await self.tursu.run_step(self, step, text, **kwargs)
         except Exception as exc:
             raise ScenarioFailed(self.fancy()) from exc
 

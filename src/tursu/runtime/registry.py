@@ -484,7 +484,7 @@ class Tursu:
             raise Unregistered(module_name, self, keyword, text)
         return step.pattern.extract_fixtures(text) or {}
 
-    def run_step(
+    async def run_step(
         self,
         tursu_runner: "TursuRunner",
         keyword: StepKeyword,
@@ -505,7 +505,7 @@ class Tursu:
         if handler:
             tursu_runner.emit_running(keyword, handler, matches)
             try:
-                handler(**matches)
+                await handler(**matches)
             except Exception:
                 tursu_runner.emit_error(keyword, handler, matches)
                 raise

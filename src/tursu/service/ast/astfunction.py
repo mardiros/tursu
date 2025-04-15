@@ -132,7 +132,7 @@ class TestFunctionWriter:
         docstring = f"{scenario.name}\n\n    {scenario.description}".strip()
 
         args = self.build_args(self.fixtures, examples_keys)
-        self.funcdef = ast.FunctionDef(
+        self.funcdef = ast.AsyncFunctionDef(
             name=f"test_{scenario.id}_{sanitize(scenario.name)}",
             args=ast.arguments(
                 args=args,
@@ -224,7 +224,15 @@ class TestFunctionWriter:
 
         :param stack: current compiler stack.
         """
-        decorator_list = []
+        decorator = ast.Attribute(
+            value=ast.Name(id="pytest", ctx=ast.Load()),
+            attr="mark",
+            ctx=ast.Load(),
+        )
+        asyncio_decorator = ast.Attribute(
+            value=decorator, attr="asyncio", ctx=ast.Load()
+        )
+        decorator_list = [asyncio_decorator]
         tags = self.get_tags(stack)
         if tags:
             for tag in tags:
@@ -556,19 +564,21 @@ class TestFunctionWriter:
         py_args = self.build_step_args(step_keyword, stp, examples)
         py_kwargs = self.build_step_kwargs(step_keyword, stp)
 
-        call_node = ast.Call(
-            func=ast.Attribute(
-                value=ast.Name(id="tursu_runner", ctx=ast.Load()),
-                attr="run_step",
-                ctx=ast.Load(),
-            ),
-            args=py_args,
-            keywords=py_kwargs,
+        call_node = ast.Await(
+            ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                    attr="run_step",
+                    ctx=ast.Load(),
+                ),
+                args=py_args,
+                keywords=py_kwargs,
+            )
         )
 
         # Add the call node to the body of the function
         self.step_list.append(ast.Expr(value=call_node, lineno=stp.location.line))
 
-    def to_ast(self) -> ast.FunctionDef:
+    def to_ast(self) -> ast.AsyncFunctionDef:
         """Convert the current state to ast code."""
         return self.funcdef
