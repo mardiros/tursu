@@ -1,11 +1,10 @@
 import ast
 import textwrap
 from collections.abc import Mapping, Sequence
-from typing import Annotated, cast
+from typing import Annotated, Any, cast
 
 import pytest
 from pydantic.main import BaseModel
-from typing_extensions import Any
 
 from tests.unittests.service.fixtures.steps import DummyApp
 from tursu.domain.model.gherkin import (

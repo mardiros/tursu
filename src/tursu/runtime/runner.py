@@ -5,10 +5,9 @@ import re
 import time
 from collections.abc import Mapping
 from types import TracebackType
-from typing import Self
+from typing import Any, Self
 
 import pytest
-from typing_extensions import Any
 
 from tursu.domain.model.steps import StepDefinition, StepKeyword
 from tursu.runtime.registry import Tursu

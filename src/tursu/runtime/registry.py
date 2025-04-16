@@ -8,10 +8,9 @@ from collections.abc import Mapping, Sequence
 from inspect import Parameter, iscoroutine
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, Any, Callable, get_args, get_origin
 
 import venusian
-from typing_extensions import Any
 
 from tursu.domain.model.steps import Handler, StepDefinition, StepKeyword
 from tursu.runtime.pattern_matcher import AbstractPattern
