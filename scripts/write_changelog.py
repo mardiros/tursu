@@ -9,5 +9,5 @@ header = (
 )
 with open("CHANGELOG.md.new", "w") as changelog:
     changelog.write(f"## {header}")
-    changelog.write("\n")
+    changelog.write("\n\n")
     changelog.write("* please write here \n\n")

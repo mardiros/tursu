@@ -1,3 +1,8 @@
+## 0.16.1 - Released on 2025-04-16
+
+* Update the doc.
+* Update github action to fix the build of the doc.
+
 ## 0.16.0 - Released on 2025-04-16
 
 * Add asyncio support.
