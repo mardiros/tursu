@@ -8,8 +8,6 @@ header = (
     f"Released on {datetime.datetime.now().date().isoformat()}"
 )
 with open("CHANGELOG.md.new", "w") as changelog:
-    changelog.write(header)
-    changelog.write("\n")
-    changelog.write("-" * len(header))
+    changelog.write(f"## {header}")
     changelog.write("\n")
     changelog.write("* please write here \n\n")
