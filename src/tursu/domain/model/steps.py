@@ -2,7 +2,7 @@
 
 import inspect
 import sys
-from collections.abc import Mapping
+from collections.abc import Coroutine, Mapping
 from typing import Any, Callable, Literal
 
 from tursu.runtime.pattern_matcher import (
@@ -14,7 +14,9 @@ from tursu.runtime.pattern_matcher import (
 StepKeyword = Literal["Given", "When", "Then"]
 """Gherkin keywords that can be mapped to step definitions."""
 
-Handler = Callable[..., None]
+SyncHandler = Callable[..., None]
+AsyncHandler = Callable[..., Coroutine[Any, None, None]]
+Handler = SyncHandler | AsyncHandler
 """
 The hook handler is a decorated function that have any parameters
 but can't return anything.
@@ -24,7 +26,7 @@ and fallback to pytest fixtures.
 """
 
 
-def discover_fixtures(hook: Callable[..., None]) -> dict[str, type]:
+def discover_fixtures(hook: Handler) -> dict[str, type]:
     """
     Get all the fixtures that have been declared in the hook module
     from the signature of the hook.
@@ -66,9 +68,9 @@ class StepDefinition:
     def __repr__(self) -> str:
         return f'StepDefinition("{self.pattern}", {self.hook.__qualname__})'
 
-    def __call__(self, **kwargs: Any) -> None:
+    def __call__(self, **kwargs: Any) -> None | Coroutine[Any, Any, Any]:
         """Will call the hook with the given parameter."""
-        self.hook(**kwargs)
+        return self.hook(**kwargs)
 
     def highlight(
         self,

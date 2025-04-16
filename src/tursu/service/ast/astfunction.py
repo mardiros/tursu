@@ -132,7 +132,9 @@ class TestFunctionWriter:
         docstring = f"{scenario.name}\n\n    {scenario.description}".strip()
 
         args = self.build_args(self.fixtures, examples_keys)
-        self.funcdef = ast.FunctionDef(
+        self.is_async = "asyncio" in self.get_tags(stack)
+        typ = ast.AsyncFunctionDef if self.is_async else ast.FunctionDef
+        self.funcdef = typ(
             name=f"test_{scenario.id}_{sanitize(scenario.name)}",
             args=ast.arguments(
                 args=args,
@@ -556,19 +558,33 @@ class TestFunctionWriter:
         py_args = self.build_step_args(step_keyword, stp, examples)
         py_kwargs = self.build_step_kwargs(step_keyword, stp)
 
-        call_node = ast.Call(
-            func=ast.Attribute(
-                value=ast.Name(id="tursu_runner", ctx=ast.Load()),
-                attr="run_step",
-                ctx=ast.Load(),
-            ),
-            args=py_args,
-            keywords=py_kwargs,
-        )
+        call_node: ast.expr
+        if self.is_async:
+            call_node = ast.Await(
+                ast.Call(
+                    func=ast.Attribute(
+                        value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                        attr="run_step_async",
+                        ctx=ast.Load(),
+                    ),
+                    args=py_args,
+                    keywords=py_kwargs,
+                )
+            )
+        else:
+            call_node = ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="tursu_runner", ctx=ast.Load()),
+                    attr="run_step",
+                    ctx=ast.Load(),
+                ),
+                args=py_args,
+                keywords=py_kwargs,
+            )
 
         # Add the call node to the body of the function
         self.step_list.append(ast.Expr(value=call_node, lineno=stp.location.line))
 
-    def to_ast(self) -> ast.FunctionDef:
+    def to_ast(self) -> ast.FunctionDef | ast.AsyncFunctionDef:
         """Convert the current state to ast code."""
         return self.funcdef

@@ -47,7 +47,10 @@ dev = [
   "factory-boy >=3.3.3",
   "mypy >=1.4.0,<2",
   "pytest >=8,<9",
+  "pytest-asyncio>=0.26.0",
   "pytest-cov >=6.0.0,<7",
+  "starlette>=0.46.2",
+  "uvicorn>=0.34.1",
 ]
 docs = [
   "sphinx >=7.0.0",
@@ -115,7 +118,10 @@ module = "tursu.*"
 ignore_missing_imports = true
 module = "venusian"
 
+
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = ["wip: work in progress."]
 
 [tool.coverage.report]

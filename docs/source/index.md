@@ -16,6 +16,7 @@ advanced_docstring
 using_tags
 working_with_fixtures
 working_with_playwright
+working_with_playwright_async
 migrate_from_behave
 migrate_from_pytest_bdd
 changelog

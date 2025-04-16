@@ -33,6 +33,21 @@ tests/functionals/test_1_Discover_Gherkin_tag.py::test_2_I_can_skip_a_test SKIPP
 ========================== 1 skipped in 0.01s ===========================
 ```
 
+## Asyncio support
+
+```gherkin
+@asyncio
+Feature: A feature where steps use asyncio
+
+  Scenario: I can run tests with pytest-asyncio
+    Given a user Bob
+
+```
+
+This test will be marked with `@pytest.mark.asyncio` and steps definition
+can be coroutine.
+
+
 ## Writing a wip tag
 
 ```gherkin

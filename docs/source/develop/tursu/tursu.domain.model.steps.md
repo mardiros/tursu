@@ -42,6 +42,11 @@
 :class: autosummary longtable
 :align: left
 
+* - {py:obj}`AsyncHandler <tursu.domain.model.steps.AsyncHandler>`
+  - ```{autodoc2-docstring} tursu.domain.model.steps.AsyncHandler
+    :parser: myst
+    :summary:
+    ```
 * - {py:obj}`Handler <tursu.domain.model.steps.Handler>`
   - ```{autodoc2-docstring} tursu.domain.model.steps.Handler
     :parser: myst
@@ -52,9 +57,25 @@
     :parser: myst
     :summary:
     ```
+* - {py:obj}`SyncHandler <tursu.domain.model.steps.SyncHandler>`
+  - ```{autodoc2-docstring} tursu.domain.model.steps.SyncHandler
+    :parser: myst
+    :summary:
+    ```
 ````
 
 ### API
+
+````{py:data} AsyncHandler
+:canonical: tursu.domain.model.steps.AsyncHandler
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.steps.AsyncHandler
+:parser: myst
+```
+
+````
 
 ````{py:data} Handler
 :canonical: tursu.domain.model.steps.Handler
@@ -81,7 +102,7 @@
 :parser: myst
 ```
 
-````{py:method} __call__(**kwargs: typing.Any) -> None
+````{py:method} __call__(**kwargs: typing.Any) -> None | collections.abc.Coroutine[typing.Any, typing.Any, typing.Any]
 :canonical: tursu.domain.model.steps.StepDefinition.__call__
 
 ```{autodoc2-docstring} tursu.domain.model.steps.StepDefinition.__call__
@@ -122,7 +143,18 @@
 
 ````
 
-````{py:function} discover_fixtures(hook: typing.Callable[..., None]) -> dict[str, type]
+````{py:data} SyncHandler
+:canonical: tursu.domain.model.steps.SyncHandler
+:value: >
+   None
+
+```{autodoc2-docstring} tursu.domain.model.steps.SyncHandler
+:parser: myst
+```
+
+````
+
+````{py:function} discover_fixtures(hook: tursu.domain.model.steps.Handler) -> dict[str, type]
 :canonical: tursu.domain.model.steps.discover_fixtures
 
 ```{autodoc2-docstring} tursu.domain.model.steps.discover_fixtures

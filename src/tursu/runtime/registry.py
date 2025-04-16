@@ -5,7 +5,7 @@ import importlib
 import sys
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
-from inspect import Parameter
+from inspect import Parameter, iscoroutine
 from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, get_args, get_origin
@@ -506,6 +506,43 @@ class Tursu:
             tursu_runner.emit_running(keyword, handler, matches)
             try:
                 handler(**matches)
+            except Exception:
+                tursu_runner.emit_error(keyword, handler, matches)
+                raise
+            else:
+                tursu_runner.emit_success(keyword, handler, matches)
+        else:
+            tursu_runner.emit_error(
+                keyword, StepDefinition(text, lambda: None), {}, unregistered=True
+            )
+            raise Unregistered(tursu_runner.module_name, self, keyword, text)
+
+    async def run_step_async(
+        self,
+        tursu_runner: "TursuRunner",
+        keyword: StepKeyword,
+        text: str,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Run the step that match the parameter and emit information to the runner
+        as a coroutine.
+
+        :param tursu_runner: the fixtures pytest fixtures from the test function.
+        :param keyword: gherkin step to match.
+        :param text: text to match the definition.
+        :param kwargs: the fixtures pytest fixtures from the test function.
+        """
+        handler, matches = self._registry.get_matched_step(
+            tursu_runner.module_name, keyword, text, kwargs
+        )
+        if handler:
+            tursu_runner.emit_running(keyword, handler, matches)
+            try:
+                result = handler(**matches)
+                if iscoroutine(result):
+                    await result
+
             except Exception:
                 tursu_runner.emit_error(keyword, handler, matches)
                 raise

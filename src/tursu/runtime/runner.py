@@ -128,6 +128,25 @@ class TursuRunner:
         except Exception as exc:
             raise ScenarioFailed(self.fancy()) from exc
 
+    async def run_step_async(
+        self,
+        step: StepKeyword,
+        text: str,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Will run the given step using the tursu registry, raised an error if its fail.
+
+        :param step: gherkin keyword.
+        :param text: text that should match a step definition.
+
+        :raises ScenarioFailed: if the step did not run properly.
+        """
+        try:
+            await self.tursu.run_step_async(self, step, text, **kwargs)
+        except Exception as exc:
+            raise ScenarioFailed(self.fancy()) from exc
+
     def format_example_step(self, text: str, **kwargs: Any) -> str:
         """
         Format the scenario outline with args that comes from the parametrized mark.

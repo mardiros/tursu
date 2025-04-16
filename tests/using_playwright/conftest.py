@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
@@ -29,7 +30,7 @@ def wait_for_socket(host: str, port: int, timeout: int = 5):
 
 
 @pytest.fixture(autouse=True)
-def http_server():
+def http_server() -> Iterator[str]:
     """Start the service I test in a thread."""
     server_address = ("127.0.0.1", 8888)
     httpd = HTTPServer(server_address, HelloWorldHandler)
@@ -38,7 +39,7 @@ def http_server():
     thread.start()
 
     wait_for_socket(*server_address)
-    yield
+    yield "http://127.0.0.1:8888"
 
     httpd.shutdown()
     thread.join()
