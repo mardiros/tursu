@@ -33,6 +33,8 @@ tests/functionals/test_1_Discover_Gherkin_tag.py::test_2_I_can_skip_a_test SKIPP
 ========================== 1 skipped in 0.01s ===========================
 ```
 
+(using-tags-asyncio)=
+
 ## Asyncio support
 
 ```gherkin

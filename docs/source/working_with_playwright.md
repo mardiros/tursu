@@ -88,54 +88,9 @@ $ uv run playwright show-trace test-results/**/trace.zip
 ## Asyncio
 
 pytest-playwright does not works well with pytest-asyncio, both plugins conflicts
-on the asyncio loop.
+on the asyncio loop, and in that case, the package
+[pytest-playwright-asyncio](https://pypi.org/project/pytest-playwright-asyncio/)
+shoud be used, and step definition has to be coroutine and the scenario decorated
+manually with a [@asyncio](#using-tags-asyncio) tag.
 
-To start an async application, like a FastAPI app, you can start the app in a separated
-thread or use the asyncio version.
-
-Example with FastAPI and uvicorn:
-
-```python
-import socket
-import threading
-import time
-from collections.abc import Iterator
-
-from fastapi import FastAPI
-import pytest
-import uvicorn
-
-
-def wait_for_socket(host: str, port: int, timeout: int = 5):
-    """Wait until the socket is open before proceeding."""
-    for _ in range(timeout * 10):  # Check every 0.1s for `timeout` seconds
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            if sock.connect_ex((host, port)) == 0:
-                return  # Socket is open
-        time.sleep(0.1)
-    raise RuntimeError(f"Server on {host}:{port} did not start in time.")
-
-
-@pytest.fixture(autouse=True)
-def fastapi_endpoint(app: FastAPI) -> Iterator[str]:
-    config = uvicorn.Config(
-        app,
-        host="127.0.0.1",
-        port=8888,
-        loop="asyncio",
-        lifespan="off",
-        log_level="info",
-    )
-    server = uvicorn.Server(config)
-
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-
-    wait_for_socket("127.0.0.1", 8888)
-    yield "http://127.0.0.1:8888"
-    server.should_exit = True
-    thread.join()
-```
-
-Alternatively, you can also run tests with asyncio, and this is the subject
-of the [next chapter](#playwright-asyncio).
+This is the subject of the [next chapter](#playwright-asyncio).

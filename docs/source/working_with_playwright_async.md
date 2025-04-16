@@ -28,5 +28,13 @@ instead of function.
 ```
 
 ```{note}
-In this test, a page fixture has been created instead of using `pytest-playwright-asyncio`.
+In this test, a page fixture has been created instead of using `pytest-playwright-asyncio`,
+
+this should not be necessary, if the package
+[pytest-playwright-asyncio](https://pypi.org/project/pytest-playwright-asyncio/)
+is installed.
+
+A more complete example is available at:
+
+https://github.com/mardiros/fastlife/tree/main/tests/functionals
 ```
