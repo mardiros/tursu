@@ -102,37 +102,23 @@ def tursu_collect_file() -> None:
     used to collect tests that tursu use to generate the tests suite from
     Gherkin files.
 
-    the conftest.py has to be created with in the same directory structure of
-    .scenario file.
+    A conftest.py has to be created with in the same directory structure of
+    .scenario file containing tursu_collect_file(). A parent conftest.py
+    file can exists in order to have shared fixtures between multiple tests suite.
 
-    Function Tests Directory Structure:
+    Minimal Function Tests Directory Structure:
 
     ```
     tests/functionals/
+    │── __init__.py        # Must be present for the scenarios discovery.
     │── conftest.py        # Must contains `tursu_collect_file()`
-    │── steps.py           # Step definitions for Gherkin scenarios
     │── example.scenario   # Gherkin scenario file
+    │── steps.py           # Step definitions for Gherkin scenarios
     ```
 
-    If you want to rearrange your scenario in subdirectory, or
-    just your steps, it is not a problem, pytest will walk under all directory
-    tree. Tursu will collect all steps definifition too.
-
-    ```
-    tests/functionals/
-    │── conftest.py        # Must contains `tursu_collect_file()`
-    │── steps.py           # Common step definitions for Gherkin scenarios
-    │── features1/
-    │   ├── other_steps.py    # Step definitions for Gherkin scenarios
-    │   ├── example.scenario  # Gherkin scenario file
-    ```
-
-    ```{important}
-    steps definition using the ([@given](#tursu.given),
-    [@when](#tursu.when), [@then](#tursu.then)) are globals.
-
-    Says differently, **they are not scoped per sub-directories**.
-    ```
+    It is also possible to nest scenario and scope steps definition per module.
+    To get advanced directory structure, read the [project layout chapter](#project-layout)
+    from the documentation.
     """
     conftest_mod = inspect.getmodule(inspect.stack()[1][0])  # this is conftest.py
     assert conftest_mod
