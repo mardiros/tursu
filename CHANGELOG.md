@@ -1,3 +1,8 @@
+## 0.16.2 - Released on 2025-04-17
+
+* Update the doc.
+* Smal refactors in tests
+
 ## 0.16.1 - Released on 2025-04-16
 
 * Update the doc.
