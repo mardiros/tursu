@@ -1,6 +1,6 @@
 (using-tags)=
 
-# Gherkin tag as pytest markers
+# Gherkin tags as pytest markers
 
 Gherkin support tags on multiple keywords, such as `Feature`, `Rule`, `Scenario`
 and `Scenario Outline`.
