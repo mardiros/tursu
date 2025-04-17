@@ -20,7 +20,7 @@ class HelloWorldHandler(BaseHTTPRequestHandler):
 
 
 def wait_for_socket(host: str, port: int, timeout: int = 5, poll_time: float = 0.1):
-    """Wait until the socket is open before proceeding."""
+    """Wait until the socket is open, or raise an error if the timeout is exceeded."""
     for _ in range(timeout * int(1 / poll_time)):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             if sock.connect_ex((host, port)) == 0:
@@ -32,7 +32,7 @@ def wait_for_socket(host: str, port: int, timeout: int = 5, poll_time: float = 0
 
 @pytest.fixture(autouse=True)
 def http_server() -> Iterator[str]:
-    """Start the service I test in a thread."""
+    """Start the service in a thread."""
     server_address = ("127.0.0.1", 8888)
     httpd = HTTPServer(server_address, HelloWorldHandler)
 
