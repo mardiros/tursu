@@ -289,7 +289,7 @@ tests/using_playwright/01_basic.feature::test_2_Hello_world[chromium]
 
 >>>>>>>>>>>>>>> PDB continue (IO-capturing resumed for fixture capsys) >>>>>>>>>>>>>>>>
 ✅ Given anonymous user on /
-✅ Then I see the text "Hello, World!"
+✅ Then the user sees the text "Hello, World!"
 127.0.0.1 - - [14/Mar/2025 21:51:08] "GET / HTTP/1.1" 200 -
 127.0.0.1 - - [14/Mar/2025 21:51:08] "GET /favicon.ico HTTP/1.1" 200 -
                                                                            PASSED

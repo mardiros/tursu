@@ -50,7 +50,7 @@ def assert_not_connected(app: DummyApp):
     assert app.connected_user is None
 
 
-@then("I see the docstring")
+@then("the user sees the docstring")
 def assert_docstring(app: DummyApp, doc_string: dict[str, str]):
     assert doc_string == {"nick": app.connected_user}
 
@@ -64,7 +64,7 @@ def assert_parsed_docstring(app: DummyApp, doc_string: ParsedDocstring):
     assert doc_string.nick == app.connected_user
 
 
-@then("I see the data_table")
+@then("the user sees the data_table")
 def assert_data_table(app: DummyApp, data_table: list[dict[str, str]]):
     records = [{"username": key, "password": val} for key, val in app.users.items()]
     assert records == data_table, records

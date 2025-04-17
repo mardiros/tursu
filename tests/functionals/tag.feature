@@ -6,7 +6,7 @@ Feature: doc string
   @wip
   Scenario: see the doc string
     When Bob signs in with password dumbsecret
-    Then I see the docstring
+    Then the user sees the docstring
     """json
     {
       "nick": "Bob"

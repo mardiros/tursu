@@ -9,7 +9,7 @@ def i_visit(page: Page, http_server: str, path: str):
     page.goto(f"{http_server}{path}")
 
 
-@then('I see the text "{text}"')
+@then('the user sees the text "{text}"')
 def assert_text(page: Page, text: str):
     loc = page.get_by_text(text)
     expect(loc).to_be_visible()

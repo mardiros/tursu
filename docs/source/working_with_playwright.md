@@ -59,7 +59,7 @@ collected 1 item
 🥒 Feature: Basic Test
 🎬 Scenario: Hello world
 ✅ Given anonymous user on /
-✅ Then I see the text "Hello, World!"
+✅ Then the user sees the text "Hello, World!"
                                                                            PASSED [100%]
 
 ================================== 1 passed in 0.94s ==================================

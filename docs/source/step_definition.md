@@ -38,10 +38,10 @@ But if it is enclosed by `"`, then it can be a sentence.
     "{username}"
     ```
   - ```python
-    @then('I see the text "{expected}"')
+    @then('the user sees the text "{expected}"')
     ```
   - ```Gherkin
-    I see the text "Welcome Alice"
+    the user sees the text "Welcome Alice"
     ```
 :::
 
@@ -245,11 +245,11 @@ Afterwhat, the named capturing group syntax has to be used `(?P<matched_name>reg
     r'(?P<expected>[^\"]+)'
   - ```python
     @then(
-      RegEx(r'I see the text "(?P<expected>[^\"]+)"')
+      RegEx(r'the user sees the text "(?P<expected>[^\"]+)"')
     )
     ```
   - ```Gherkin
-    I see the text "Welcome Alice"
+    the user sees the text "Welcome Alice"
     ```
 :::
 
