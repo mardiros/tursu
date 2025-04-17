@@ -293,6 +293,9 @@ See the [example in the documentation](https://mardiros.github.io/tursu/working_
 
 ### Great support of asyncio.
 
+Turşu can also be combined with [pytest-playwright-asyncio](https://pypi.org/project/pytest-playwright-asyncio/)
+and run tests has coroutine using [pytest-asyncio](https://pypi.org/project/pytest-asyncio/).
+
 Scenario can be decorated with a `@asyncio` tag. And they will run as a
 coroutine marked with `@pytest.mark.asyncio`.
 
