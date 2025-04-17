@@ -21,14 +21,17 @@ async def homepage(request: Request):
 app = Starlette(routes=[Route("/", homepage)])
 
 
-async def wait_for_socket(host: str, port: int, timeout: int = 5):
+async def wait_for_socket(
+    host: str, port: int, timeout: int = 5, poll_time: float = 0.1
+):
     """Wait until the socket is open before proceeding."""
-    for _ in range(timeout * 10):  # Check every 0.1s for `timeout` seconds
+    for _ in range(timeout * int(1 / poll_time)):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             if sock.connect_ex((host, port)) == 0:
-                return  # Socket is open
-        await asyncio.sleep(0.1)
-    raise RuntimeError(f"Server on {host}:{port} did not start in time.")
+                break
+        await asyncio.sleep(poll_time)
+    else:
+        raise RuntimeError(f"Server on {host}:{port} did not start in time.")
 
 
 @pytest.fixture(autouse=True)
