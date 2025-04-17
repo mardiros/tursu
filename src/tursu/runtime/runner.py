@@ -148,7 +148,7 @@ class TursuRunner:
 
     def format_example_step(self, text: str, **kwargs: Any) -> str:
         """
-        Format the scenario outline with args that comes from the parametrized mark.
+        Format the scenario outline with args that comes from the parametrize mark.
 
         :param text: gherkin step from scenario file.
         :param **kwargs: example line for the Examples of the scenario outline.

@@ -298,7 +298,7 @@ package to parse Gherkin Scenario beeing compiled to python.
 
 - ✅ Feature _(converted to python module)_
 - ✅ Scenario _(converted to debuggable python test function or coroutine)_
-- ✅ Scenario Outlines / Examples _(converted to @pytest.mark.parametrized test function or coroutine)_
+- ✅ Scenario Outlines / Examples _(converted to @pytest.mark.parametrize test function or coroutine)_
 - ✅ Background _(Step copied to all the functions of the scenario)_
 - ✅ Rule _(tags converted to pytest marker)_
 - ✅ Steps _(Given, When, Then, And, But, bound to the [step definition](https://mardiros.github.io/tursu/step_definition.html) provided.)_
