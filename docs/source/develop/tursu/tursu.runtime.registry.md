@@ -211,7 +211,7 @@
 
 ````
 
-````{py:method} get_matched_step(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, fixtures: collections.abc.Mapping[str, typing_extensions.Any]) -> tuple[tursu.domain.model.steps.StepDefinition | None, collections.abc.Mapping[str, typing_extensions.Any]]
+````{py:method} get_matched_step(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, fixtures: collections.abc.Mapping[str, typing.Any]) -> tuple[tursu.domain.model.steps.StepDefinition | None, collections.abc.Mapping[str, typing.Any]]
 :canonical: tursu.runtime.registry.Registry.get_matched_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Registry.get_matched_step
@@ -264,7 +264,7 @@
 
 ````
 
-````{py:method} extract_fixtures(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> collections.abc.Mapping[str, typing_extensions.Any]
+````{py:method} extract_fixtures(module_name: str, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing.Any) -> collections.abc.Mapping[str, typing.Any]
 :canonical: tursu.runtime.registry.Tursu.extract_fixtures
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.extract_fixtures
@@ -291,7 +291,7 @@
 
 ````
 
-````{py:method} get_models_type(module_name: str, typ: type[typing_extensions.Any]) -> str
+````{py:method} get_models_type(module_name: str, typ: type[typing.Any]) -> str
 :canonical: tursu.runtime.registry.Tursu.get_models_type
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.get_models_type
@@ -327,7 +327,7 @@
 
 ````
 
-````{py:method} run_step(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+````{py:method} run_step(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing.Any) -> None
 :canonical: tursu.runtime.registry.Tursu.run_step
 
 ```{autodoc2-docstring} tursu.runtime.registry.Tursu.run_step
@@ -336,7 +336,7 @@
 
 ````
 
-````{py:method} run_step_async(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing_extensions.Any) -> None
+````{py:method} run_step_async(tursu_runner: tursu.runtime.runner.TursuRunner, keyword: tursu.domain.model.steps.StepKeyword, text: str, **kwargs: typing.Any) -> None
 :canonical: tursu.runtime.registry.Tursu.run_step_async
 :async:
 

@@ -5,15 +5,14 @@
 [![Continuous Integration](https://github.com/mardiros/tursu/actions/workflows/tests.yml/badge.svg)](https://github.com/mardiros/tursu/actions/workflows/tests.yml)
 [![Coverage Report](https://codecov.io/gh/mardiros/tursu/graph/badge.svg?token=DTpi73d7mf)](https://codecov.io/gh/mardiros/tursu)
 
-
 This project allows you to write **Gherkin**-based behavior-driven development (BDD) tests
 and execute them using **pytest**.
 
 It compiles Gherkin syntax into Python code using **Abstract Syntax Tree (AST)** manipulation,
 enabling seamless integration with pytest for running your tests.
 
-Enjoy practicing BDD in modern Python (3.10+), type hinting, dataclasses or Pydantic, pytest,
-playwright.
+Enjoy practicing BDD in **modern Python** (3.10+), type hinting, asyncio, dataclasses or Pydantic,
+pytest, playwright.
 
 ## Features
 
@@ -63,6 +62,7 @@ collected 3 items
 ### Run the tests.
 
 ## All the suite
+
 ```bash
 𝝿 uv run pytest tests/functionals
 ========================== test session starts ==========================
@@ -269,22 +269,6 @@ the `???` in the context are replaced by the generated python test function.
 This may be usefull in case of hard time debugging.
 ```
 
-### All Gherkin features are support.
-
-Turşu use the [gherkin-official](https://pypi.org/project/gherkin-official/)
-package to parse Gherkin Scenario beeing compiled to python.
-
-- ✅ Feature  *(converted to python module)*
-- ✅ Scenario *(converted to python test functions)*
-- ✅ Scenario Outlines / Examples *(converted to @pytest.mark.parametrized test function)*
-- ✅ Background *(Step copied to all the function of the scenario)*
-- ✅ Rule
-- ✅ Steps *(Given, When, Then, And, But, bound to the step definition provided.)*
-- ✅ Tags *(converted as pytest marker on Feature, Scenario, Scenario Outline and Rule)*
-- ✅ Doc String *(support casting of json to python model with the lib of your choice: pydantic, dataclasses,...)*
-- ✅ Data Table *(support casting to python model with the lib of your choice: pydantic, dataclasses,...)*
-
-
 ### Great support of playwright.
 
 Combining Turşu and [pytest-playwright](https://pypi.org/project/pytest-playwright/)
@@ -306,3 +290,18 @@ See the [pytest-playwright-asyncio example in the documentation](https://mardiro
 ### Great support of pytest fixtures and faker.
 
 See the [example in the documentation](https://mardiros.github.io/tursu/working_with_fixtures.html)
+
+### All Gherkin features are support.
+
+Turşu use the [gherkin-official](https://pypi.org/project/gherkin-official/)
+package to parse Gherkin Scenario beeing compiled to python.
+
+- ✅ Feature _(converted to python module)_
+- ✅ Scenario _(converted to debuggable python test function or coroutine)_
+- ✅ Scenario Outlines / Examples _(converted to @pytest.mark.parametrized test function or coroutine)_
+- ✅ Background _(Step copied to all the functions of the scenario)_
+- ✅ Rule _(tags converted to pytest marker)_
+- ✅ Steps _(Given, When, Then, And, But, bound to the [step definition](https://mardiros.github.io/tursu/step_definition.html) provided.)_
+- ✅ Tags _([converted to pytest marker](https://mardiros.github.io/tursu/using_tags.html) on Feature, Scenario, Scenario Outline and Rule)_
+- ✅ Doc String _(support casting of json to [python model with the lib of your choice: pydantic, dataclasses,...](https://mardiros.github.io/tursu/advanced_docstring.html))_
+- ✅ Data Table _(support casting to [python model with the lib of your choice](https://mardiros.github.io/tursu/advanced_datatable.html))_

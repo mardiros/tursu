@@ -1,6 +1,6 @@
 (using-tags)=
 
-# Gherkin tag as pytest tag
+# Gherkin tag as pytest markers
 
 Gherkin support tags on multiple keywords, such as `Feature`, `Rule`, `Scenario`
 and `Scenario Outline`.
@@ -49,6 +49,22 @@ Feature: A feature where steps use asyncio
 This test will be marked with `@pytest.mark.asyncio` and steps definition
 can be coroutine.
 
+```{literalinclude} ../../tests/using_playwright_async/steps.py
+
+```
+
+````{important}
+The dependency [pytest-asyncio](https://pypi.org/project/pytest-asyncio/) has to be
+installed as a dependency. The [tursu](https://pypi.org/project/tursu/) package will
+not install it.
+
+example with uv:
+
+```bash
+uv add --group dev pytest-asyncio
+```
+
+````
 
 ## Writing a wip tag
 
