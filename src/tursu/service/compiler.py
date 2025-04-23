@@ -145,22 +145,24 @@ class GherkinCompiler:
                         test_function.add_step(step, stack)
 
                 case GherkinScenarioOutline(steps=steps, examples=examples):
-                    test_function = TestFunctionWriter(
-                        el,
-                        self.registry,
-                        [*background_steps, *steps],
-                        stack,
-                        self.package_name,
-                    )
-                    assert module_node is not None
-                    module_node.append_test(test_function)
-                    module_node.append_fixtures(test_function.fixtures)
-                    if background_steps:
-                        for step in background_steps:
-                            test_function.add_step(step, stack)
+                    for ex in examples:
+                        test_function = TestFunctionWriter(
+                            el,
+                            self.registry,
+                            [*background_steps, *steps],
+                            [*stack, ex],
+                            self.package_name,
+                            ex,
+                        )
+                        assert module_node is not None
+                        module_node.append_test(test_function)
+                        module_node.append_fixtures(test_function.fixtures)
+                        if background_steps:
+                            for step in background_steps:
+                                test_function.add_step(step, stack)
 
-                    for step in steps:
-                        test_function.add_step(step, stack, examples)
+                        for step in steps:
+                            test_function.add_step(step, stack, ex)
 
                 case _:
                     # print(el)

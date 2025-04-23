@@ -11,11 +11,11 @@ Feature: Localized tests per tag
     Then the user is not connected
 
     @en
-    Examples:
+    Examples: english
       | username | password      | message                      |
       | Bob      | anothersecret | Invalid username of password |
 
     @fr
-    Examples:
+    Examples: french
       | username | password      | message                                      |
       | Robert   | anothersecret | Nom d'utilisateur ou mot de passe incorrect. |

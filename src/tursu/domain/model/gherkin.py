@@ -139,6 +139,9 @@ class GherkinExamples(BaseModel):
     table_header: GherkinTableRow = Field(alias="tableHeader")
     table_body: Sequence[GherkinTableRow] = Field(alias="tableBody")
 
+    def __repr__(self) -> str:
+        return f"📓 Examples: {self.name or self.id}"
+
 
 class GherkinScenario(BaseModel):
     id: str

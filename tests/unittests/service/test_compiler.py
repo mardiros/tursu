@@ -165,20 +165,19 @@ def test_compiler_tagged_examples(
         from tests.unittests.service.fixtures.steps import app
 
         @pytest.mark.en
-        @pytest.mark.parametrize('username,password,message', [pytest.param('Bob', 'anothersecret', 'Invalid username of password', id='Examples_0')])
-        def test_15_The_app_is_localized(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
+        @pytest.mark.parametrize('username,password,message', [pytest.param('Bob', 'anothersecret', 'Invalid username of password', id='english')])
+        def test_15_The_app_is_localized_10(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
             """The app is localized"""
-            with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized']) as tursu_runner:
+            with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized', '📓 Examples: english']) as tursu_runner:
                 tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')])
                 tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password, message=message), app=app)
                 tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password, message=message), app=app)
 
-
         @pytest.mark.fr
-        @pytest.mark.parametrize('username,password,message', [pytest.param('Robert', 'anothersecret', "Nom d'utilisateur ou mot de passe incorrect.", id='Examples_1')])
-        def test_15_The_app_is_localized(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
+        @pytest.mark.parametrize('username,password,message', [pytest.param('Robert', 'anothersecret', "Nom d'utilisateur ou mot de passe incorrect.", id='french')])
+        def test_15_The_app_is_localized_14(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
             """The app is localized"""
-            with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized']) as tursu_runner:
+            with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized', '📓 Examples: french']) as tursu_runner:
                 tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')])
                 tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password, message=message), app=app)
                 tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password, message=message), app=app)
