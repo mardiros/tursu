@@ -1,3 +1,7 @@
+## 0.16.3 - Released on 2025-04-23
+
+* Implement tags on Examples of Scenario Outlines.
+
 ## 0.16.2 - Released on 2025-04-17
 
 * Update the doc.
