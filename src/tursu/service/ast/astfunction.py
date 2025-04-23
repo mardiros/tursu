@@ -60,6 +60,7 @@ class TestFunctionWriter:
         steps: Sequence[GherkinStep],
         stack: Sequence[Any],
         package_name: str,
+        examples: GherkinExamples | None = None,
     ) -> None:
         self.registry = registry
         self.gherkin_keyword: StepKeyword | None = None
@@ -68,27 +69,29 @@ class TestFunctionWriter:
         self.fixtures = self.build_fixtures(steps, registry)
         decorator_list = self.build_tags_decorators(stack)
         examples_keys = None
-        if isinstance(scenario, GherkinScenarioOutline) and scenario.examples:
-            examples_keys = [c.value for c in scenario.examples[0].table_header.cells]
+        funcname = f"test_{scenario.id}_{sanitize(scenario.name)}"
+
+        if examples:
+            examples_keys = [c.value for c in examples.table_header.cells]
             params = ",".join(examples_keys)
             params_name = ast.Constant(params)
             data: list[ast.expr] = []
-            for ex in scenario.examples:
-                id_ = ex.name or ex.keyword
-                for row in ex.table_body:
-                    parametrized_set = ast.Attribute(
-                        value=ast.Name(id="pytest", ctx=ast.Load()),
-                        attr="param",
-                        ctx=ast.Load(),
+            id_ = examples.name or f"{examples.keyword}_{examples.id}"
+            funcname += f"_{sanitize(examples.id)}"
+            for row in examples.table_body:
+                parametrized_set = ast.Attribute(
+                    value=ast.Name(id="pytest", ctx=ast.Load()),
+                    attr="param",
+                    ctx=ast.Load(),
+                )
+                dataset: list[ast.expr] = [ast.Constant(c.value) for c in row.cells]
+                data.append(
+                    ast.Call(
+                        func=parametrized_set,
+                        args=dataset,
+                        keywords=[ast.keyword("id", ast.Constant(id_))],
                     )
-                    dataset: list[ast.expr] = [ast.Constant(c.value) for c in row.cells]
-                    data.append(
-                        ast.Call(
-                            func=parametrized_set,
-                            args=dataset,
-                            keywords=[ast.keyword("id", ast.Constant(id_))],
-                        )
-                    )
+                )
             ex_args: list[ast.expr] = [
                 params_name,
                 ast.List(elts=data, ctx=ast.Load()),
@@ -135,7 +138,7 @@ class TestFunctionWriter:
         self.is_async = "asyncio" in self.get_tags(stack)
         typ = ast.AsyncFunctionDef if self.is_async else ast.FunctionDef
         self.funcdef = typ(
-            name=f"test_{scenario.id}_{sanitize(scenario.name)}",
+            name=funcname,
             args=ast.arguments(
                 args=args,
                 posonlyargs=[],
@@ -284,7 +287,7 @@ class TestFunctionWriter:
         self,
         step_keyword: StepKeyword,
         stp: GherkinStep,
-        examples: Sequence[GherkinExamples] | None = None,
+        examples: GherkinExamples | None = None,
     ) -> list[ast.expr]:
         """
         Get a step ast argument.
@@ -301,8 +304,7 @@ class TestFunctionWriter:
         text = ast.Constant(value=stp.text)
         if examples:
             format_keywords = []
-            ex = examples[0]
-            for cell in ex.table_header.cells:
+            for cell in examples.table_header.cells:
                 format_keywords.append(
                     ast.keyword(
                         arg=cell.value, value=ast.Name(id=cell.value, ctx=ast.Load())
@@ -545,7 +547,7 @@ class TestFunctionWriter:
         self,
         stp: GherkinStep,
         stack: list[Any],
-        examples: Sequence[GherkinExamples] | None = None,
+        examples: GherkinExamples | None = None,
     ) -> None:
         """
         Appened the given step to the test function.

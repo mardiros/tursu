@@ -28,6 +28,13 @@ def doc():
 
 
 @pytest.fixture
+def doc_tagged_example():
+    return GherkinDocument.from_file(
+        Path(__file__).parent / "fixtures" / "tagged_example.feature"
+    )
+
+
+@pytest.fixture
 def registry() -> Tursu:
     import tests.unittests.service.fixtures
 
