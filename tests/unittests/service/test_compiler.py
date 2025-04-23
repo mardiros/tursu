@@ -133,10 +133,10 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
                     tursu_runner.run_step('When', 'Bob signs in with password notthat', app=app)
                     tursu_runner.run_step('Then', 'the user is not connected', app=app)
 
-            @pytest.mark.parametrize('username,password', [pytest.param('Bob', 'anothersecret', id='Examples'), pytest.param('Alice', 'dumbsecret', id='Examples')])
-            def test_18_User_can_t_login_with_someone_else_username(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str):
+            @pytest.mark.parametrize('username,password', [pytest.param('Bob', 'anothersecret', id='Examples_17'), pytest.param('Alice', 'dumbsecret', id='Examples_17')])
+            def test_18_User_can_t_login_with_someone_else_username_17(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str):
                 """User can't login with someone else username"""
-                with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User signs in with the right password', '🔹 Rule: Failed login attempts', "🎬 Scenario Outline: User can't login with someone else username"]) as tursu_runner:
+                with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User signs in with the right password', '🔹 Rule: Failed login attempts', "🎬 Scenario Outline: User can't login with someone else username", '📓 Examples: 17']) as tursu_runner:
                     tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
                     tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password), app=app)
                     tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password), app=app)

@@ -94,8 +94,8 @@ def test_collect_and_run(
     assert [repr(fn) for fn in fns] == [
         "<Function test_7_Successful_sign_in_with_valid_credentials>",
         "<Function test_10_Sign_in_fails_with_wrong_password>",
-        "<Function test_17_User_can_t_login_with_someone_else_username[Examples0]>",
-        "<Function test_17_User_can_t_login_with_someone_else_username[Examples1]>",
+        "<Function test_17_User_can_t_login_with_someone_else_username_16[Examples_16_0]>",
+        "<Function test_17_User_can_t_login_with_someone_else_username_16[Examples_16_1]>",
     ]
     tursu = Tursu()
     import tests.unittests.entrypoints.fixtures
