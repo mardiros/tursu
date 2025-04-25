@@ -571,7 +571,7 @@ class TestFunctionWriter:
         step_fixtures = self.registry.extract_fixtures(
             self.package_name, step_keyword, stp.text
         )
-        for key, _val in step_fixtures.items():
+        for key in step_fixtures:
             py_kwargs.append(
                 ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
             )
