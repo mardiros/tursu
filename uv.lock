@@ -1057,7 +1057,7 @@ wheels = [
 
 [[package]]
 name = "tursu"
-version = "0.16.3"
+version = "0.17.0"
 source = { editable = "." }
 dependencies = [
     { name = "gherkin-official" },

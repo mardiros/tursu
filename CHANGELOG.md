@@ -1,3 +1,8 @@
+## 0.17.0 - Released on 2025-04-25
+
+* Add support of Scenario Outline Placeholder to data_table.
+* Add a pseudo fixture `example_row` to access to the outline parameters on step definitions.
+
 ## 0.16.3 - Released on 2025-04-23
 
 * Implement tags on Examples of Scenario Outlines.
