@@ -236,7 +236,7 @@ class RegexBasePattern(AbstractPatternMatcher):
             for key, val in self.signature.parameters.items():
                 if key in matchdict:
                     continue
-                elif key in ("doc_string", "data_table"):
+                elif key in ("doc_string", "data_table", "example_row"):
                     continue
                 if val.default != val.empty:
                     continue
