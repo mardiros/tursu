@@ -415,7 +415,10 @@ class TestFunctionWriter:
         )
 
     def parse_data_table(
-        self, step_keyword: StepKeyword, stp: GherkinStep
+        self,
+        step_keyword: StepKeyword,
+        stp: GherkinStep,
+        examples: GherkinExamples | None = None,
     ) -> ast.keyword:
         """
         Parse the data table to its step definition signature.
@@ -431,6 +434,14 @@ class TestFunctionWriter:
         typ: type | None = None
         is_reversed = False
         anon = step_def.pattern.signature.parameters["data_table"].annotation
+        placeholders = (
+            {
+                f"<{c.value}>": ast.Name(c.value, ctx=ast.Load())
+                for c in examples.table_header.cells
+            }
+            if examples
+            else {}
+        )
         if anon:
             param_origin = get_origin(anon)
             if param_origin is Annotated:
@@ -472,7 +483,9 @@ class TestFunctionWriter:
             datatable_keywords = [
                 ast.keyword(
                     arg=row.cells[0].value,
-                    value=ast.Constant(value=row.cells[1].value),
+                    value=placeholders.get(
+                        row.cells[1].value, ast.Constant(value=row.cells[1].value)
+                    ),
                 )
                 for row in stp.data_table.rows
                 if row.cells[1].value != self.registry.DATA_TABLE_EMPTY_CELL
@@ -542,7 +555,7 @@ class TestFunctionWriter:
             py_kwargs.append(self.parse_doc_string(step_keyword, stp))
 
         if stp.data_table:
-            py_kwargs.append(self.parse_data_table(step_keyword, stp))
+            py_kwargs.append(self.parse_data_table(step_keyword, stp, examples))
 
         if examples:
             example_row = ast.Dict(

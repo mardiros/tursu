@@ -17,10 +17,21 @@ Feature: data table
     When Bob signs in with password dumbsecret
     Then the user Bob is connected
 
-  @wip
   Scenario: parse reversed datatable
     Given a user with the following properties:
       | username | Bob        |
       | password | dumbsecret |
-      When Bob signs in with password dumbsecret
+    When Bob signs in with password dumbsecret
     Then the user Bob is connected
+
+  @wip
+  Scenario Outline: Mix data table and example table
+    Given a user with the following properties:
+      | username | <username> |
+      | password | <password> |
+    When <username> signs in with password <password>
+    Then the user <username> is connected
+
+    Examples:
+      | username | password   |
+      | Bob      | dumbsecret |
