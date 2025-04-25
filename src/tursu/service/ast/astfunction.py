@@ -516,7 +516,10 @@ class TestFunctionWriter:
             )
 
     def build_step_kwargs(
-        self, step_keyword: StepKeyword, stp: GherkinStep
+        self,
+        step_keyword: StepKeyword,
+        stp: GherkinStep,
+        examples: GherkinExamples | None = None,
     ) -> list[ast.keyword]:
         """
         Get the step kwargs, e.g. pytest fixtures for the given step.
@@ -541,6 +544,16 @@ class TestFunctionWriter:
         if stp.data_table:
             py_kwargs.append(self.parse_data_table(step_keyword, stp))
 
+        if examples:
+            example_row = ast.Dict(
+                keys=[ast.Constant(k.value) for k in examples.table_header.cells],
+                values=[
+                    ast.Name(id=v.value, ctx=ast.Load())
+                    for v in examples.table_header.cells
+                ],
+            )
+            py_kwargs.append(ast.keyword(arg="example_row", value=example_row))
+
         return py_kwargs
 
     def add_step(
@@ -558,7 +571,7 @@ class TestFunctionWriter:
         """
         step_keyword = self.get_keyword(stp)
         py_args = self.build_step_args(step_keyword, stp, examples)
-        py_kwargs = self.build_step_kwargs(step_keyword, stp)
+        py_kwargs = self.build_step_kwargs(step_keyword, stp, examples)
 
         call_node: ast.expr
         if self.is_async:
