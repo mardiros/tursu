@@ -1,3 +1,8 @@
+## 0.17.1 - Released on 2025-04-25
+
+* Authorize Scenario Outline Placeholders in background step.
+  Note that this is not compatible with cucumber Gherkin.
+
 ## 0.17.0 - Released on 2025-04-25
 
 * Add support of Scenario Outline Placeholder to data_table.
