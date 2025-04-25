@@ -24,7 +24,6 @@ Feature: data table
     When Bob signs in with password dumbsecret
     Then the user Bob is connected
 
-  @wip
   Scenario Outline: Mix data table and example table
     Given a user with the following properties:
       | username | <username> |
@@ -33,5 +32,6 @@ Feature: data table
     Then the user <username> is connected
 
     Examples:
-      | username | password   |
-      | Bob      | dumbsecret |
+      | username | password             |
+      | Bob      | dumbsecret           |
+      | Alice    | alice-hasabetter_pwd |
