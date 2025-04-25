@@ -41,6 +41,12 @@ such as `<username>:<password>`.
 
 Also [doc strings](#advanced-doc-string) does not supports any replacement directly.
 
+```{important}
+The first row of examples, which is the header, identified the placeholder.
+
+Those placeholder must be **valid python identifiers**.
+```
+
 ## Advanced usage
 
 Because the placeholder replacement has its limitation, a parameter `example_row`
