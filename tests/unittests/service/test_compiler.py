@@ -137,7 +137,7 @@ def test_compiler(doc: GherkinDocument, registry: Tursu) -> None:
             def test_18_User_can_t_login_with_someone_else_username_17(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str):
                 """User can't login with someone else username"""
                 with TursuRunner(request, capsys, tursu, ['📄 Document: login.feature', '🥒 Feature: User signs in with the right password', '🔹 Rule: Failed login attempts', "🎬 Scenario Outline: User can't login with someone else username", '📓 Examples: 17']) as tursu_runner:
-                    tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')])
+                    tursu_runner.run_step('Given', tursu_runner.format_example_step('a set of users:', username=username, password=password), app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Alice', password='anothersecret')], example_row={'username': username, 'password': password})
                     tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password), app=app, example_row={'username': username, 'password': password})
                     tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password), app=app, example_row={'username': username, 'password': password})
             '''
@@ -169,7 +169,7 @@ def test_compiler_tagged_examples(
         def test_15_The_app_is_localized_10(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
             """The app is localized"""
             with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized', '📓 Examples: english']) as tursu_runner:
-                tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')])
+                tursu_runner.run_step('Given', tursu_runner.format_example_step('a set of users:', username=username, password=password, message=message), app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')], example_row={'username': username, 'password': password, 'message': message})
                 tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password, message=message), app=app, example_row={'username': username, 'password': password, 'message': message})
                 tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password, message=message), app=app, example_row={'username': username, 'password': password, 'message': message})
 
@@ -178,7 +178,7 @@ def test_compiler_tagged_examples(
         def test_15_The_app_is_localized_14(request: pytest.FixtureRequest, capsys: pytest.CaptureFixture[str], tursu: Tursu, app: Any, username: str, password: str, message: str):
             """The app is localized"""
             with TursuRunner(request, capsys, tursu, ['📄 Document: tagged_example.feature', '🥒 Feature: Localized tests per tag', '🎬 Scenario Outline: The app is localized', '📓 Examples: french']) as tursu_runner:
-                tursu_runner.run_step('Given', 'a set of users:', app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')])
+                tursu_runner.run_step('Given', tursu_runner.format_example_step('a set of users:', username=username, password=password, message=message), app=app, data_table=[User0(username='Bob', password='dumbsecret'), User0(username='Robert', password='anothersecret')], example_row={'username': username, 'password': password, 'message': message})
                 tursu_runner.run_step('When', tursu_runner.format_example_step('<username> signs in with password <password>', username=username, password=password, message=message), app=app, example_row={'username': username, 'password': password, 'message': message})
                 tursu_runner.run_step('Then', tursu_runner.format_example_step('the user is not connected', username=username, password=password, message=message), app=app, example_row={'username': username, 'password': password, 'message': message})
         ''').strip()
