@@ -64,6 +64,13 @@ def assert_parsed_docstring(app: DummyApp, doc_string: ParsedDocstring):
     assert doc_string.nick == app.connected_user
 
 
+@then("the user sees the docstring from the example")
+def assert_parsed_docstring_custom(
+    app: DummyApp, doc_string: ParsedDocstring, example_row: dict[str, str]
+):
+    assert example_row[doc_string.nick[1:-1]] == app.connected_user
+
+
 @then("the user sees the data_table")
 def assert_data_table(app: DummyApp, data_table: list[dict[str, str]]):
     records = [{"username": key, "password": val} for key, val in app.users.items()]

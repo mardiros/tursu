@@ -415,7 +415,10 @@ class TestFunctionWriter:
         )
 
     def parse_data_table(
-        self, step_keyword: StepKeyword, stp: GherkinStep
+        self,
+        step_keyword: StepKeyword,
+        stp: GherkinStep,
+        examples: GherkinExamples | None = None,
     ) -> ast.keyword:
         """
         Parse the data table to its step definition signature.
@@ -431,6 +434,14 @@ class TestFunctionWriter:
         typ: type | None = None
         is_reversed = False
         anon = step_def.pattern.signature.parameters["data_table"].annotation
+        placeholders = (
+            {
+                f"<{c.value}>": ast.Name(c.value, ctx=ast.Load())
+                for c in examples.table_header.cells
+            }
+            if examples
+            else {}
+        )
         if anon:
             param_origin = get_origin(anon)
             if param_origin is Annotated:
@@ -455,24 +466,46 @@ class TestFunctionWriter:
         if typ is None:
             if is_reversed:
                 rev_tabl = {
-                    row.cells[0].value: row.cells[1].value
+                    row.cells[0].value: placeholders.get(
+                        row.cells[1].value, ast.Constant(value=row.cells[1].value)
+                    )
                     for row in stp.data_table.rows
                 }
-                return ast.keyword(arg="data_table", value=ast.Constant(value=rev_tabl))
+                return ast.keyword(
+                    arg="data_table",
+                    value=ast.Dict(
+                        keys=[ast.Constant(k) for k in rev_tabl.keys()],
+                        values=[val for val in rev_tabl.values()],
+                    ),
+                )
             else:
-                tabl = []
+                rawtabl: list[ast.expr] = []
                 hdr = [c.value for c in stp.data_table.rows[0].cells]
                 for row in stp.data_table.rows[1:]:
-                    vals = [c.value for c in row.cells]
-                    tabl.append(dict(zip(hdr, vals)))
+                    vals: list[ast.expr] = [
+                        placeholders.get(c.value, ast.Constant(value=c.value))
+                        for c in row.cells
+                    ]
+                    rawtabl.append(
+                        ast.Dict(
+                            keys=[ast.Constant(k) for k in hdr],
+                            values=vals,
+                        )
+                    )
 
-                return ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+                return ast.keyword(arg="data_table", value=ast.List(elts=rawtabl))
 
         if is_reversed:
             datatable_keywords = [
                 ast.keyword(
                     arg=row.cells[0].value,
-                    value=ast.Constant(value=row.cells[1].value),
+                    value=placeholders.get(
+                        row.cells[1].value,
+                        placeholders.get(
+                            row.cells[1].value,
+                            ast.Constant(value=row.cells[1].value),
+                        ),
+                    ),
                 )
                 for row in stp.data_table.rows
                 if row.cells[1].value != self.registry.DATA_TABLE_EMPTY_CELL
@@ -487,18 +520,23 @@ class TestFunctionWriter:
             return ast.keyword(arg="data_table", value=call_rev_datatable_node)
         else:
             # we have to parse the value
-            tabl = []
             hdr = [c.value for c in stp.data_table.rows[0].cells]
             call_datatable_node: list[ast.expr] = []
             for row in stp.data_table.rows[1:]:
-                vals = [c.value for c in row.cells]
+                rawvals = [c.value for c in row.cells]
                 datatable_keywords = []
-                for key, val in zip(hdr, vals):
+                for key, val in zip(hdr, rawvals):
                     if val == self.registry.DATA_TABLE_EMPTY_CELL:
                         # empty string are our null value
                         continue
                     datatable_keywords.append(
-                        ast.keyword(arg=key, value=ast.Constant(value=val))
+                        ast.keyword(
+                            arg=key,
+                            value=placeholders.get(
+                                val,
+                                ast.Constant(value=val),
+                            ),
+                        )
                     )
 
                 call_datatable_node.append(
@@ -516,7 +554,10 @@ class TestFunctionWriter:
             )
 
     def build_step_kwargs(
-        self, step_keyword: StepKeyword, stp: GherkinStep
+        self,
+        step_keyword: StepKeyword,
+        stp: GherkinStep,
+        examples: GherkinExamples | None = None,
     ) -> list[ast.keyword]:
         """
         Get the step kwargs, e.g. pytest fixtures for the given step.
@@ -530,7 +571,7 @@ class TestFunctionWriter:
         step_fixtures = self.registry.extract_fixtures(
             self.package_name, step_keyword, stp.text
         )
-        for key, _val in step_fixtures.items():
+        for key in step_fixtures:
             py_kwargs.append(
                 ast.keyword(arg=key, value=ast.Name(id=key, ctx=ast.Load()))
             )
@@ -539,7 +580,17 @@ class TestFunctionWriter:
             py_kwargs.append(self.parse_doc_string(step_keyword, stp))
 
         if stp.data_table:
-            py_kwargs.append(self.parse_data_table(step_keyword, stp))
+            py_kwargs.append(self.parse_data_table(step_keyword, stp, examples))
+
+        if examples:
+            example_row = ast.Dict(
+                keys=[ast.Constant(k.value) for k in examples.table_header.cells],
+                values=[
+                    ast.Name(id=v.value, ctx=ast.Load())
+                    for v in examples.table_header.cells
+                ],
+            )
+            py_kwargs.append(ast.keyword(arg="example_row", value=example_row))
 
         return py_kwargs
 
@@ -558,7 +609,7 @@ class TestFunctionWriter:
         """
         step_keyword = self.get_keyword(stp)
         py_args = self.build_step_args(step_keyword, stp, examples)
-        py_kwargs = self.build_step_kwargs(step_keyword, stp)
+        py_kwargs = self.build_step_kwargs(step_keyword, stp, examples)
 
         call_node: ast.expr
         if self.is_async:

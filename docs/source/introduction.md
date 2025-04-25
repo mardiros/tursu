@@ -129,6 +129,7 @@ But those parameters named are reserved
 
 - `doc_string` which is reserved for the associated Gherkin feature, seen later.
 - `data_table` which is reserved for the associated Gherkin feature, seen later.
+- `example_row` which is reserved for scenario outline example.
 - `tursu` an instance of `Tursu` used as a step registry.
 - `request`, the pytest request fixture object.
 - `capsys`, the pytest fixture capture fixture.
@@ -137,7 +138,8 @@ You should probably not used other native pytest fixture as keyword for extensib
 
 In our example, we have an `app` that represent a configured app from a fixture.
 
-You may also use the `page` fixture while using `pytest-playwright`.
+You may also use the `page` fixture while using `pytest-playwright` or
+`pytest-playwright-asyncio`.
 
 ## Running the tests
 

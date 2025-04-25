@@ -48,7 +48,7 @@
 
 ### API
 
-`````{py:class} TestFunctionWriter(scenario: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline, registry: tursu.runtime.registry.Tursu, steps: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinStep], stack: collections.abc.Sequence[typing.Any], package_name: str)
+`````{py:class} TestFunctionWriter(scenario: tursu.domain.model.gherkin.GherkinScenario | tursu.domain.model.gherkin.GherkinScenarioOutline, registry: tursu.runtime.registry.Tursu, steps: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinStep], stack: collections.abc.Sequence[typing.Any], package_name: str, examples: tursu.domain.model.gherkin.GherkinExamples | None = None)
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter
@@ -62,7 +62,7 @@
 :parser: myst
 ```
 
-````{py:method} add_step(stp: tursu.domain.model.gherkin.GherkinStep, stack: list[typing.Any], examples: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinExamples] | None = None) -> None
+````{py:method} add_step(stp: tursu.domain.model.gherkin.GherkinStep, stack: list[typing.Any], examples: tursu.domain.model.gherkin.GherkinExamples | None = None) -> None
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.add_step
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.add_step
@@ -89,7 +89,7 @@
 
 ````
 
-````{py:method} build_step_args(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep, examples: collections.abc.Sequence[tursu.domain.model.gherkin.GherkinExamples] | None = None) -> list[ast.expr]
+````{py:method} build_step_args(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep, examples: tursu.domain.model.gherkin.GherkinExamples | None = None) -> list[ast.expr]
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.build_step_args
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.build_step_args
@@ -98,7 +98,7 @@
 
 ````
 
-````{py:method} build_step_kwargs(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep) -> list[ast.keyword]
+````{py:method} build_step_kwargs(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep, examples: tursu.domain.model.gherkin.GherkinExamples | None = None) -> list[ast.keyword]
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.build_step_kwargs
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.build_step_kwargs
@@ -134,7 +134,7 @@
 
 ````
 
-````{py:method} parse_data_table(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep) -> ast.keyword
+````{py:method} parse_data_table(step_keyword: tursu.domain.model.steps.StepKeyword, stp: tursu.domain.model.gherkin.GherkinStep, examples: tursu.domain.model.gherkin.GherkinExamples | None = None) -> ast.keyword
 :canonical: tursu.service.ast.astfunction.TestFunctionWriter.parse_data_table
 
 ```{autodoc2-docstring} tursu.service.ast.astfunction.TestFunctionWriter.parse_data_table

@@ -14,6 +14,7 @@ step_definition
 advanced_datatable
 advanced_docstring
 using_tags
+scenario_outline
 working_with_fixtures
 working_with_playwright
 working_with_playwright_async

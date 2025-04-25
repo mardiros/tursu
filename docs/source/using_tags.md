@@ -87,7 +87,7 @@ markers = ["wip: work in progress."]
 ```
 
 ```bash
-𝝿 uv run pytest tests/functionals2 -m wip
+𝝿 uv run pytest tests/functionals -m wip
 ========================== test session starts ==========================
 platform linux -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
 configfile: pyproject.toml

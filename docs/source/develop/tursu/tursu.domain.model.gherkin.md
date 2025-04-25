@@ -450,6 +450,11 @@ Bases: {py:obj}`pydantic.BaseModel`
 
 Bases: {py:obj}`pydantic.BaseModel`
 
+````{py:method} __repr__() -> str
+:canonical: tursu.domain.model.gherkin.GherkinExamples.__repr__
+
+````
+
 ````{py:attribute} description
 :canonical: tursu.domain.model.gherkin.GherkinExamples.description
 :type: tursu.domain.model.gherkin.StrippedWhitespace
