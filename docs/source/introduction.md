@@ -138,7 +138,8 @@ You should probably not used other native pytest fixture as keyword for extensib
 
 In our example, we have an `app` that represent a configured app from a fixture.
 
-You may also use the `page` fixture while using `pytest-playwright`.
+You may also use the `page` fixture while using `pytest-playwright` or
+`pytest-playwright-asyncio`.
 
 ## Running the tests
 
