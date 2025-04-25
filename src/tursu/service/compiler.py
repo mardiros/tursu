@@ -159,8 +159,7 @@ class GherkinCompiler:
                         module_node.append_fixtures(test_function.fixtures)
                         if background_steps:
                             for step in background_steps:
-                                # background step can't consume the gherkin examples.
-                                test_function.add_step(step, stack)
+                                test_function.add_step(step, stack, ex)
 
                         for step in steps:
                             test_function.add_step(step, stack, ex)
