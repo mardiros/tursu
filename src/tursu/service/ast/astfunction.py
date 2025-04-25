@@ -466,25 +466,45 @@ class TestFunctionWriter:
         if typ is None:
             if is_reversed:
                 rev_tabl = {
-                    row.cells[0].value: row.cells[1].value
+                    row.cells[0].value: placeholders.get(
+                        row.cells[1].value, ast.Constant(value=row.cells[1].value)
+                    )
                     for row in stp.data_table.rows
                 }
-                return ast.keyword(arg="data_table", value=ast.Constant(value=rev_tabl))
+                return ast.keyword(
+                    arg="data_table",
+                    value=ast.Dict(
+                        keys=[ast.Constant(k) for k in rev_tabl.keys()],
+                        values=[val for val in rev_tabl.values()],
+                    ),
+                )
             else:
-                tabl = []
+                rawtabl: list[ast.expr] = []
                 hdr = [c.value for c in stp.data_table.rows[0].cells]
                 for row in stp.data_table.rows[1:]:
-                    vals = [c.value for c in row.cells]
-                    tabl.append(dict(zip(hdr, vals)))
+                    vals: list[ast.expr] = [
+                        placeholders.get(c.value, ast.Constant(value=c.value))
+                        for c in row.cells
+                    ]
+                    rawtabl.append(
+                        ast.Dict(
+                            keys=[ast.Constant(k) for k in hdr],
+                            values=vals,
+                        )
+                    )
 
-                return ast.keyword(arg="data_table", value=ast.Constant(value=tabl))
+                return ast.keyword(arg="data_table", value=ast.List(elts=rawtabl))
 
         if is_reversed:
             datatable_keywords = [
                 ast.keyword(
                     arg=row.cells[0].value,
                     value=placeholders.get(
-                        row.cells[1].value, ast.Constant(value=row.cells[1].value)
+                        row.cells[1].value,
+                        placeholders.get(
+                            row.cells[1].value,
+                            ast.Constant(value=row.cells[1].value),
+                        ),
                     ),
                 )
                 for row in stp.data_table.rows
@@ -500,18 +520,23 @@ class TestFunctionWriter:
             return ast.keyword(arg="data_table", value=call_rev_datatable_node)
         else:
             # we have to parse the value
-            tabl = []
             hdr = [c.value for c in stp.data_table.rows[0].cells]
             call_datatable_node: list[ast.expr] = []
             for row in stp.data_table.rows[1:]:
-                vals = [c.value for c in row.cells]
+                rawvals = [c.value for c in row.cells]
                 datatable_keywords = []
-                for key, val in zip(hdr, vals):
+                for key, val in zip(hdr, rawvals):
                     if val == self.registry.DATA_TABLE_EMPTY_CELL:
                         # empty string are our null value
                         continue
                     datatable_keywords.append(
-                        ast.keyword(arg=key, value=ast.Constant(value=val))
+                        ast.keyword(
+                            arg=key,
+                            value=placeholders.get(
+                                val,
+                                ast.Constant(value=val),
+                            ),
+                        )
                     )
 
                 call_datatable_node.append(
