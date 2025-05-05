@@ -1,3 +1,7 @@
+## 0.17.2 - Released on 2025-05-05
+
+* Add support of union type in step definitions.
+
 ## 0.17.1 - Released on 2025-04-25
 
 * Authorize Scenario Outline Placeholders in background step.
