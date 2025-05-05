@@ -13,6 +13,8 @@ from enum import Enum
 from inspect import Signature
 from typing import Any, Literal, get_args, get_origin
 
+from tursu.shared.utils import is_union
+
 
 class PatternError(RuntimeError):
     """
@@ -33,6 +35,16 @@ def cast_to_annotation(
 
     :return: The casted value if successful, otherwise raises a ValueError.
     """
+
+    if is_union(annotation):
+        for arg in get_args(annotation):
+            try:
+                v = cast_to_annotation(value, arg)
+            except (ValueError, TypeError):
+                pass
+            else:
+                return v
+        raise ValueError(f"Cannot cast '{value}' to {annotation}")
 
     # Define safe standard library types
     safe_types = (int, float, bool, str, date, datetime)
