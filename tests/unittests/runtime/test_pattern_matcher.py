@@ -72,6 +72,12 @@ class Foobar(Enum):
             datetime(2000, 1, 2, 10, tzinfo=UTC),
             id="UTC datetime",
         ),
+        pytest.param(
+            "2000-01-02T10:00Z",
+            date | datetime,
+            datetime(2000, 1, 2, 10, tzinfo=UTC),
+            id="union",
+        ),
     ],
 )
 def test_cast_to_annotation(value: Any, annotation: Any, expected: Any) -> None:
@@ -120,6 +126,12 @@ def test_cast_to_annotation(value: Any, annotation: Any, expected: Any) -> None:
             id="literal",
         ),
         pytest.param("Foo", Foobar, "Cannot cast 'Foo' to Enum Foobar", id="enum"),
+        pytest.param(
+            "2025, August the 1st",
+            date | datetime,
+            "Cannot cast '2025, August the 1st' to datetime.date | datetime.datetime",
+            id="union",
+        ),
     ],
 )
 def test_cast_to_annotation_value_error(
