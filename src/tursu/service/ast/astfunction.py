@@ -121,7 +121,7 @@ class TestFunctionWriter:
                             ast.Name(id="request", ctx=ast.Load()),
                             ast.Name(id="capsys", ctx=ast.Load()),
                             ast.Name(id="tursu", ctx=ast.Load()),
-                            ast.Constant(value=repr_stack(stack)),
+                            ast.Constant(value=repr_stack(stack)),  # type: ignore
                         ],
                         keywords=[],
                     ),
@@ -411,7 +411,10 @@ class TestFunctionWriter:
             return ast.keyword(arg="doc_string", value=call_doc_string_node)
 
         return ast.keyword(
-            arg="doc_string", value=ast.Constant(value=stp.doc_string.content)
+            arg="doc_string",
+            value=ast.Constant(
+                value=stp.doc_string.content,  # type: ignore
+            ),
         )
 
     def parse_data_table(
@@ -525,7 +528,7 @@ class TestFunctionWriter:
             for row in stp.data_table.rows[1:]:
                 rawvals = [c.value for c in row.cells]
                 datatable_keywords = []
-                for key, val in zip(hdr, rawvals):
+                for key, val in zip(hdr, rawvals, strict=False):
                     if val == self.registry.DATA_TABLE_EMPTY_CELL:
                         # empty string are our null value
                         continue

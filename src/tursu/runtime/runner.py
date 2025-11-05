@@ -90,7 +90,7 @@ class TursuRunner:
 
         middle_lines = []
         sep = f"{RED}│{RESET}"
-        for line, length in zip(lines, line_lengthes):
+        for line, length in zip(lines, line_lengthes, strict=False):
             middle_lines.append(
                 f"{sep} {line + ' ' * (max_line_length - length)} {sep}"
             )

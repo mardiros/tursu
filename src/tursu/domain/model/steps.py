@@ -2,8 +2,8 @@
 
 import inspect
 import sys
-from collections.abc import Coroutine, Mapping
-from typing import Any, Callable, Literal
+from collections.abc import Callable, Coroutine, Mapping
+from typing import Any, Literal
 
 from tursu.runtime.pattern_matcher import (
     AbstractPattern,
