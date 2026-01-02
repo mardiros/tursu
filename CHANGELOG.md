@@ -1,3 +1,8 @@
+## 1.0.1 - Released on 2026-01-02
+
+* Add __package__ property on the test module.
+* Add python 3.14 support.
+
 ## 1.0.0 - Released on 2025-11-05
 
 * Update dependencies.
