@@ -27,4 +27,4 @@ jobs:
         with:
           documentation_path: docs/source
           publish: ${{ !inputs.dry-run }}
-          python_version: 3.12
+          python_version: 3.13
