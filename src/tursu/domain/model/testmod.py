@@ -46,15 +46,23 @@ class TestModule:
             ast.unparse(self.module_node), filename=self.filename, mode="exec"
         )
 
-    def to_python_module(self) -> ModuleType:
-        """Generate a python module."""
+    def to_python_module(self, parent: str) -> ModuleType:
+        """
+        Generate a python module.
+
+        :param parent: the python package name that own the module.
+        :return: the python compiled module.
+        """
         mod = ModuleType(self.modname)
+        mod.__package__ = parent
         exec(self.compile(), mod.__dict__)
         return mod
 
     def write_temporary(self, parent: Path) -> None:
         """
         Temporary write the module on the disk. used while tracing to get debug step.
+
+        :param parent: path to dick of the parent package.
         """
         test_casefile = parent / self.filename
         test_casefile.write_text(str(self), encoding="utf-8")

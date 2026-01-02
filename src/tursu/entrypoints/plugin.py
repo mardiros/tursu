@@ -80,7 +80,7 @@ class GherkinTestModule(pytest.Module):
 
     def _getobj(self) -> ModuleType:
         """Convert the scenario to a python module."""
-        return self.test_mod.to_python_module()
+        return self.test_mod.to_python_module(self.module_name)
 
     def __repr__(self) -> str:
         return f"<GherkinDocument {self.gherkin_doc}>"
