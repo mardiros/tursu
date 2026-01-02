@@ -15,7 +15,7 @@ on:
         type: string
 
 env:
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.13"
 
 permissions:
   contents: read
@@ -69,7 +69,7 @@ jobs:
     with:
       release-version: ${{ needs.plan.outputs.release_version }}
       dry-run: ${{ needs.plan.outputs.dry-run == 'true' }}
-      python-version: '3.12'
+      python-version: '3.13'
 
   tests-artifacts:
     needs:
