@@ -5,7 +5,13 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-DEFAULT_INIT = '''\
+DEFAULT_TESTS_INIT = """\
+import pytest
+
+pytest.register_assert_rewrite("tests.functionals")
+"""
+
+DEFAULT_FUNCTIONAL_INIT = '''\
 """
 Functional tests suite based on Turşu.
 
@@ -122,15 +128,17 @@ def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
     if outpath.is_file():
         outpath.unlink()
 
-    outpath.mkdir(exist_ok=True, parents=True)
-    (outpath / "__init__.py").write_text(DEFAULT_INIT)
-    (outpath / "conftest.py").write_text(
+    (outpath / "functionals").mkdir(exist_ok=True, parents=True)
+    (outpath / "__init__.py").write_text(DEFAULT_TESTS_INIT)
+    tests_outpath = outpath / "functionals"
+    (tests_outpath / "__init__.py").write_text(DEFAULT_FUNCTIONAL_INIT)
+    (tests_outpath / "conftest.py").write_text(
         DEFAULT_CONFTEST_WITH_DUMMIES if with_dummies else DEFAULT_CONFTEST
     )
 
     if with_dummies:
-        (outpath / "steps.py").write_text(DEFAULT_STEPS)
-        (outpath / "login.feature").write_text(DEFAULT_FEATURE)
+        (tests_outpath / "steps.py").write_text(DEFAULT_STEPS)
+        (tests_outpath / "login.feature").write_text(DEFAULT_FEATURE)
 
 
 def main(args: Sequence[str] = sys.argv) -> None:
