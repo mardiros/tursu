@@ -2,6 +2,7 @@
 
 * Update the CLI to get pytest.register_assert_rewrite used in order
   to get beautifull pytest assertion on tests result.
+* Not the cli write errors on stderr instead of std out.
 
 ## 1.0.1 - Released on 2026-01-02
 
