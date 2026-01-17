@@ -24,10 +24,12 @@ def test_main_replace_file(tmp_path: Path):
     (tmp_path / "tursu").write_text("dummy")
     main(["tursu", "init", "-o", str(tmp_path / "tursu"), "--overwrite"])
     files = {f.name: f.read_text() for f in tmp_path.glob("tursu/*.py")}
+    assert set(files.keys()) == {"__init__.py"}
+    files = {f.name: f.read_text() for f in tmp_path.glob("tursu/functionals/*.py")}
     assert set(files.keys()) == {"__init__.py", "conftest.py", "steps.py"}
 
 
 def test_main_no_dummies(tmp_path: Path):
     main(["tursu", "init", "-o", str(tmp_path / "tursu"), "--no-dummies"])
-    files = {f.name: f.read_text() for f in tmp_path.glob("tursu/*.py")}
+    files = {f.name: f.read_text() for f in tmp_path.glob("tursu/functionals/*.py")}
     assert set(files.keys()) == {"__init__.py", "conftest.py"}
