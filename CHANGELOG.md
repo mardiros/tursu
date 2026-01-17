@@ -1,3 +1,8 @@
+## 1.0.2 - Released on 2026-01-17
+
+* Update the CLI to get pytest.register_assert_rewrite used in order
+  to get beautifull pytest assertion on tests.
+
 ## 1.0.1 - Released on 2026-01-02
 
 * Add __package__ property on the test module.
