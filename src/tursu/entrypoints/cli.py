@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import textwrap
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -121,16 +122,33 @@ def init(outdir: str, overwrite: bool, no_dummies: bool) -> None:
     """
     with_dummies = not no_dummies
     outpath = Path(outdir)
-    if outpath.exists() and not overwrite:
-        print(f"{outdir} already exists")
+    tests_outpath = outpath / "functionals"
+    if tests_outpath.exists() and not overwrite:
+        print(f"{outdir} already exists", file=sys.stderr)
         sys.exit(1)
 
-    if outpath.is_file():
-        outpath.unlink()
+    if tests_outpath.is_file() and overwrite:
+        tests_outpath.unlink()
 
-    (outpath / "functionals").mkdir(exist_ok=True, parents=True)
-    (outpath / "__init__.py").write_text(DEFAULT_TESTS_INIT)
-    tests_outpath = outpath / "functionals"
+    tests_outpath.mkdir(exist_ok=True, parents=True)
+    if (outpath / "__init__.py").exists() and overwrite:
+        (outpath / "__init__.py").unlink()
+
+    if (outpath / "__init__.py").exists():
+        print(
+            f"{(outpath / '__init__.py')} exists, stay intact.",
+            file=sys.stderr,
+        )
+        print(
+            "Manually add the following instruction to get pytest assertion on "
+            "step files:\n",
+            file=sys.stderr,
+        )
+        print(textwrap.indent(DEFAULT_TESTS_INIT, "    "), file=sys.stderr)
+        print("", file=sys.stderr)
+    else:
+        (outpath / "__init__.py").write_text(DEFAULT_TESTS_INIT)
+
     (tests_outpath / "__init__.py").write_text(DEFAULT_FUNCTIONAL_INIT)
     (tests_outpath / "conftest.py").write_text(
         DEFAULT_CONFTEST_WITH_DUMMIES if with_dummies else DEFAULT_CONFTEST
