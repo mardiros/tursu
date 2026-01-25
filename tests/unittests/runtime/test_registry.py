@@ -21,13 +21,15 @@ from tests.unittests.runtime.fixtures.steps import (
     give_user,
 )
 from tursu.domain.model.steps import StepDefinition, StepKeyword
+from tursu.runtime.exceptions import Unregistered
 from tursu.runtime.registry import (
     ModRegistry,
     Tursu,
-    Unregistered,
     normalize_module_name,
 )
 from tursu.runtime.runner import TursuRunner
+
+# @pytest.fixture(autouse=True)
 
 
 @pytest.fixture()
@@ -82,36 +84,38 @@ def test_scan():
     registry.scan()
 
     assert registry._registry._step_defs.keys() == {"tests.unittests.runtime.fixtures"}
-    assert registry._registry._step_defs[
-        "tests.unittests.runtime.fixtures"
-    ]._step_defs == {
-        "Given": [
-            StepDefinition("a set of users:", a_set_of_users),
-            StepDefinition("a user {username}", give_user),
-        ],
-        "Then": [
-            StepDefinition("the users dataset is", assert_dataset),
-            StepDefinition("the API for {username} is responding", assert_api_response),
-            StepDefinition(
-                "the raw API for {username} is responding",
-                assert_api_response_json_as_any,
-            ),
-            StepDefinition(
-                "the async API for {username} is responding", assert_async_api_response
-            ),
-            StepDefinition("the users raw dataset is", assert_dataset_raw),
-            StepDefinition(
-                'the mailbox {email} "{subject}" message is',
-                assert_mailbox_contains,
-            ),
-            StepDefinition(
-                "{username} sees a mailbox {email}", assert_user_has_mailbox
-            ),
-        ],
-        "When": [
-            StepDefinition("{username} creates a mailbox {email}", create_mailbox),
-        ],
-    }
+    assert registry._registry._step_defs["tests.unittests.runtime.fixtures"]._step_defs[
+        "Given"
+    ] == [
+        StepDefinition("a set of users:", a_set_of_users),
+        StepDefinition("a user {username}", give_user),
+    ]
+
+    assert registry._registry._step_defs["tests.unittests.runtime.fixtures"]._step_defs[
+        "When"
+    ] == [
+        StepDefinition("{username} creates a mailbox {email}", create_mailbox),
+    ]
+
+    assert registry._registry._step_defs["tests.unittests.runtime.fixtures"]._step_defs[
+        "Then"
+    ] == [
+        StepDefinition("the users dataset is", assert_dataset),
+        StepDefinition("{username} sees a mailbox {email}", assert_user_has_mailbox),
+        StepDefinition(
+            'the mailbox {email} "{subject}" message is',
+            assert_mailbox_contains,
+        ),
+        StepDefinition("the API for {username} is responding", assert_api_response),
+        StepDefinition(
+            "the async API for {username} is responding", assert_async_api_response
+        ),
+        StepDefinition("the users raw dataset is", assert_dataset_raw),
+        StepDefinition(
+            "the raw API for {username} is responding",
+            assert_api_response_json_as_any,
+        ),
+    ]
 
 
 def test_registry_get_step(registry: Tursu):
@@ -128,7 +132,7 @@ def test_registry_datatable(mod_registry: ModRegistry):
     mod_registry.register_data_table(
         StepDefinition("the users dataset is", assert_dataset)
     )
-    assert mod_registry.models_types[Dataset] == "Dataset1"
+    assert mod_registry.models_types[Dataset] == "Dataset0"
 
 
 def test_registry_doc_string(mod_registry: ModRegistry):

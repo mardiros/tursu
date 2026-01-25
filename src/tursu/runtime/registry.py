@@ -5,12 +5,13 @@ import importlib
 import sys
 from collections import defaultdict
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from inspect import Parameter, iscoroutine
 from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Any, get_args, get_origin
 
-import venusian
+import tamahagane as th
 
 from tursu.domain.model.steps import Handler, StepDefinition, StepKeyword
 from tursu.runtime.pattern_matcher import AbstractPattern
@@ -21,7 +22,15 @@ if TYPE_CHECKING:
 
 from tursu.runtime.exceptions import Unregistered
 
-VENUSIAN_CATEGORY = "tursu"
+TH_CATEGORY = "tursu"
+
+
+@dataclass
+class ThRegistry:
+    tursu: "Tursu"
+
+
+Scanner = th.Scanner[ThRegistry]
 
 
 def is_init_file(module: ModuleType) -> bool:
@@ -47,17 +56,13 @@ def _step(
     keyword: StepKeyword, step_pattern: str | AbstractPattern
 ) -> Callable[[Handler], Handler]:
     def wrapper(wrapped: Handler) -> Handler:
-        def callback(scanner: venusian.Scanner, name: str, ob: Handler) -> None:
-            if not hasattr(scanner, "registry"):
-                return  # coverage: ignore
-
-            step_module = normalize_module_name(ob.__module__)
-
-            scanner.registry.register_step_definition(  # type: ignore
+        def callback(registry: ThRegistry) -> None:
+            step_module = normalize_module_name(wrapped.__module__)
+            registry.tursu.register_step_definition(
                 step_module, keyword, step_pattern, wrapped
             )
 
-        venusian.attach(wrapped, callback, category=VENUSIAN_CATEGORY)
+        th.attach(wrapped, callback, category=TH_CATEGORY)
         return wrapped
 
     return wrapper
@@ -573,6 +578,6 @@ class Tursu:
         assert mod
         if mod not in self.scanned:
             self.scanned.add(mod)
-            scanner = venusian.Scanner(registry=self)
-            scanner.scan(mod, categories=[VENUSIAN_CATEGORY])
+            scanner = Scanner(ThRegistry(tursu=self))
+            scanner.scan(mod)
         return self

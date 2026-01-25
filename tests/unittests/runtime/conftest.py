@@ -11,7 +11,7 @@ from tursu.runtime.registry import ModRegistry, Tursu
 def registry():
     import tests.unittests.runtime.fixtures
 
-    return Tursu().scan(tests.unittests.runtime.fixtures)
+    yield Tursu().scan(tests.unittests.runtime.fixtures)
 
 
 @pytest.fixture()
