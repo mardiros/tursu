@@ -1267,6 +1267,15 @@ wheels = [
 ]
 
 [[package]]
+name = "tamahagane"
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/4f/8add1e78be795fc03c77637ae503d0413efc278d0e1b3416db0870ac672d/tamahagane-0.4.0.tar.gz", hash = "sha256:e592108072aa3a1c8a60db48678d47398d535a583e20558ed2bcc116b9a00a9e", size = 5342, upload-time = "2026-01-25T19:27:47.499Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/eb/664c0a2ae163d5016b82a9e89341707fa547bee99214ea01f474638b7692/tamahagane-0.4.0-py3-none-any.whl", hash = "sha256:aee858604190c2312afaaa3e96a257a1a38833f7aa9918abd687aafb925a8274", size = 6303, upload-time = "2026-01-25T19:27:46.157Z" },
+]
+
+[[package]]
 name = "text-unidecode"
 version = "1.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1332,7 +1341,7 @@ dependencies = [
     { name = "gherkin-official" },
     { name = "pydantic" },
     { name = "pytest" },
-    { name = "venusian" },
+    { name = "tamahagane" },
 ]
 
 [package.optional-dependencies]
@@ -1373,11 +1382,11 @@ requires-dist = [
     { name = "linkify-it-py", marker = "extra == 'docs'", specifier = ">=2.0.3,<3" },
     { name = "myst-parser", marker = "python_full_version >= '3.10' and extra == 'docs'", specifier = ">=4.0.0,<5" },
     { name = "myst-parser", marker = "python_full_version < '3.10' and extra == 'docs'", specifier = ">=3.0.0,<4" },
-    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pydantic", specifier = ">=2.10.6,<3" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.1,<8" },
     { name = "sphinx-autodoc2", marker = "extra == 'docs'", specifier = ">=0.5.0,<1" },
-    { name = "venusian", specifier = ">=3.1.1,<4" },
+    { name = "tamahagane", specifier = ">=0.4,<0.5" },
 ]
 provides-extras = ["docs"]
 
@@ -1464,13 +1473,4 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c3/d1/8f3c683c9561a4e6689dd3b1d345c815f10f86acd044ee1fb9a4dcd0b8c5/uvicorn-0.40.0.tar.gz", hash = "sha256:839676675e87e73694518b5574fd0f24c9d97b46bea16df7b8c05ea1a51071ea", size = 81761, upload-time = "2025-12-21T14:16:22.45Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3d/d8/2083a1daa7439a66f3a48589a57d576aa117726762618f6bb09fe3798796/uvicorn-0.40.0-py3-none-any.whl", hash = "sha256:c6c8f55bc8bf13eb6fa9ff87ad62308bbbc33d0b67f84293151efe87e0d5f2ee", size = 68502, upload-time = "2025-12-21T14:16:21.041Z" },
-]
-
-[[package]]
-name = "venusian"
-version = "3.1.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/70/4c/eefa68085c555dc11e6744b9c6fbe5966b1c9378c47267776a448923e9a5/venusian-3.1.1.tar.gz", hash = "sha256:534fb3b355669283eb3954581931e5d1d071fce61d029d58f3219a5e3a6f0c41", size = 39269, upload-time = "2024-12-02T02:35:04.033Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/4b/34d926eba40db81b204066a60b4efdc5d8867a8efcbfe44d69b634b1c907/venusian-3.1.1-py3-none-any.whl", hash = "sha256:0845808a985976acbceaa1fbb871c7fac4fb28ae75453232970e9c2c2866dbf4", size = 14026, upload-time = "2024-12-02T02:35:03.056Z" },
 ]
