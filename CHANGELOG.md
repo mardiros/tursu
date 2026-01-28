@@ -1,3 +1,7 @@
+## 1.0.3 - Released on 2026-01-28
+
+* Replace venusian by tamahagane.
+
 ## 1.0.2 - Released on 2026-01-17
 
 * Update the CLI to get pytest.register_assert_rewrite used in order
