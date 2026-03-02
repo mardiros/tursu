@@ -263,7 +263,7 @@ FAILED tests/functionals/login.feature::test_3_User_can_login - tursu.runner.Sce
 
 ```{note}
 
-If --trace is used, or -vvv, the tests files are written on the disk, and
+If --trace is used, the tests files are written on the disk, and
 the `???` in the context are replaced by the generated python test function.
 
 This may be usefull in case of hard time debugging.
