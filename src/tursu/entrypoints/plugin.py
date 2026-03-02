@@ -67,10 +67,7 @@ class GherkinTestModule(pytest.Module):
 
         self.test_casefile = path.parent / case.filename
         super().__init__(path=self.test_casefile, parent=parent, **kwargs)
-        if (
-            self.session.config.getoption("--trace")
-            or self.session.config.option.verbose == 3
-        ):
+        if self.session.config.getoption("--trace"):
             case.write_temporary(path.parent)  # coverage: ignore
             # we preload before updating the path
             self._obj = super()._getobj()  # coverage: ignore
