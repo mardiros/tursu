@@ -1,3 +1,9 @@
+## 1.1.0 - Released on 2026-03-02
+
+* Change behavior of -vvv of pytest: don't write the compiled version to disk.
+  This behavior can still be nice while tracing but is more annoying than usefull
+  while using -vvv.
+
 ## 1.0.3 - Released on 2026-01-28
 
 * Replace venusian by tamahagane.
