@@ -68,7 +68,7 @@ class StepDefinition:
     def __repr__(self) -> str:
         return f'StepDefinition("{self.pattern}", {self.hook.__qualname__})'
 
-    def __call__(self, **kwargs: Any) -> None | Coroutine[Any, Any, Any]:
+    def __call__(self, **kwargs: Any) -> Coroutine[Any, Any, Any] | None:
         """Will call the hook with the given parameter."""
         return self.hook(**kwargs)
 
