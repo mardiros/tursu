@@ -1505,8 +1505,7 @@ requires-dist = [
     { name = "furo", marker = "extra == 'docs'", specifier = ">=2024.5.6" },
     { name = "gherkin-official", specifier = ">=32.0.0" },
     { name = "linkify-it-py", marker = "extra == 'docs'", specifier = ">=2.0.3,<3" },
-    { name = "myst-parser", marker = "python_full_version >= '3.10' and extra == 'docs'", specifier = ">=4.0.0,<5" },
-    { name = "myst-parser", marker = "python_full_version < '3.10' and extra == 'docs'", specifier = ">=3.0.0,<4" },
+    { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=4.0.0,<5" },
     { name = "pydantic", specifier = ">=2.10.6,<3" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.1,<8" },
@@ -1528,8 +1527,7 @@ dev = [
 docs = [
     { name = "furo", specifier = ">=2024.8.6" },
     { name = "linkify-it-py", specifier = ">=2.0.3,<3" },
-    { name = "myst-parser", marker = "python_full_version < '3.10'", specifier = ">=3.0.0,<4" },
-    { name = "myst-parser", marker = "python_full_version >= '3.10'", specifier = ">=4.0.0,<5" },
+    { name = "myst-parser", specifier = ">=4.0.0,<5" },
     { name = "sphinx", specifier = ">=7.0.0" },
     { name = "sphinx-autodoc2", specifier = ">=0.5.0,<1" },
 ]
